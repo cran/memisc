@@ -1,0 +1,54 @@
+import(grid,lattice)
+importFrom(utils,toLatex)
+importFrom(stats,aggregate,reorder)
+export(
+      cases,
+      colrename,
+      dimrename,
+      mtable,
+      write.mtable,
+      getSummary,
+      getSummary.glm,
+      getSummary.lm,
+      applyTemplate,
+      getSummaryTemplate,
+      setSummaryTemplate,
+      getCoefTemplate,
+      setCoefTemplate,
+      percent,
+      recode,
+      relabel,
+      rename,
+      rowrename,
+      reorder.array,
+      reorder.matrix,
+      Simulate,
+      trimws,
+      aggregateDB,
+      genTable,
+      By,
+      Sapply,
+      Lapply,
+      to.data.frame,
+      prediction.frame,
+      Termplot,
+      Transform
+      )
+S3method(aggregate,formula)
+S3method(getSummary,lm)
+S3method(getSummary,glm)
+S3method(print,mtable)
+S3method(format,mtable)
+S3method(toLatex,mtable)
+S3method(prediction.frame,default)
+S3method(Termplot,default)
+S3method(predict,lm)
+S3method(predict,glm)
+S3method(Transform,data.frame)
+S3method(recode,default)
+S3method(recode,factor)
+S3method(recode,numeric)
+S3method(relabel,default)
+S3method(relabel,factor)
+S3method(reorder,matrix)
+S3method(reorder,array)
