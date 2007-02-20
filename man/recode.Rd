@@ -10,7 +10,8 @@
   commercial statistical packages.
 }
 \usage{
-  recode(x,...)
+  \method{recode}{default}(x,...,otherwise="NA",to.factor=FALSE)
+  \method{recode}{factor}(x,...,otherwise="NA")
 }
 \arguments{
   \item{x}{A factor or numerical vector}
@@ -24,6 +25,18 @@
     If one of the arguments to \code{range} is \code{max},
     it is substituted by the maximum of \code{x}.
     }
+  \item{otherwise}{a character string or some other value
+    that the result may obtain. If equal to \code{NA} or \code{"NA"},
+    original codes not given an explicit new code are recoded into
+    \code{NA}. If equal to \code{"copy"},
+    original codes not given an explicit new code are copied.
+    }
+  \item{to.factor}{a logical value; if \code{TRUE}, a numeric
+    argument is recoded into a factor, if \code{TRUE},
+    the result is numeric if \code{x} is numeric.
+    Defaults to \code{TRUE} if new codes are character strings
+    and defaults to \code{FALSE} if new codes are numeric.
+  }
 }
 
 \value{

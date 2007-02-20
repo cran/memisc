@@ -9,21 +9,14 @@
   in which a variable appears are summed and plotted.
   }
 \usage{
-Termplot(object,...)
   
-Termplot.default(object, ..., variables=NULL,  col.term = 2,
+\method{Termplot}{default}(object, ..., variables=NULL,  col.term = 2,
         lty.term = 1, lwd.term = 1.5, col.se = "orange", lty.se = 2,
         lwd.se = 1, col.res = "gray", cex = 1, pch = par("pch"),
         col.smth = "darkred", lty.smth = 2, lwd.smth = 1,
         span.smth = 2/3, aspect="fill", xlab=NULL, ylab=NULL,
-        main=paste(deparse(object$call),collapse="\n"))
-
-Termplot.lmList(object ,...,
-        variables=NULL, col.term = 2, lty.term = 1, lwd.term = 1.5,
-        col.se = "orange", lty.se = 2, lwd.se = 1, col.res = "gray",
-        cex = 1, pch = par("pch"), col.smth = "darkred", lty.smth = 2,
-        lwd.smth = 1, span.smth = 2/3, aspect="fill", xlab=NULL,
-        ylab=NULL, main=NULL, models = c("rows", "columns"), layout = NULL)
+        main=paste(deparse(object$call),collapse="\n"),
+        models = c("rows", "columns"), layout = NULL)
 }
 \arguments{
   \item{object}{an model fit object, or a list of model objects}

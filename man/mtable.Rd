@@ -17,7 +17,7 @@ mtable(...,coef.style=getOption("coef.style"),
            float.style=getOption("float.style"),
            digits=min(3,getOption("digits")))
 
-format.mtable(x,
+\method{format}{mtable}(x,
           coef.title="Coefficients",
           summary.title="Summaries",
           colsep="\t",
@@ -43,14 +43,15 @@ format.mtable(x,
           ...
           )
 
-print.mtable(x,trim=FALSE,center.at=getOption("OutDec"),
+\method{print}{mtable}(x,trim=FALSE,center.at=getOption("OutDec"),
       colsep=" ",
       topsep="=",bottomsep="=",sectionsep="-",...)
 
-toLatex.mtable(object,...)
+\method{toLatex}{mtable}(object,...)
+
 write.mtable(object,file="",...)
 
-relabel.mtable(x,...)
+\method{relabel}{mtable}(x,...)
 }
 \arguments{
      \item{...}{as argument to \code{mtable}: several model objects, e.g. of class \code{\link{lm}}; as argument to \code{print.mtable},

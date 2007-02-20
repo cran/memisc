@@ -9,8 +9,8 @@
   a function applied.
 }
 \usage{
-reorder.array(x,dim=1,names=NULL,indices=NULL,FUN=mean,...)
-reorder.matrix(x,dim=1,names=NULL,indices=NULL,FUN=mean,...)
+\method{reorder}{array}(x,dim=1,names=NULL,indices=NULL,FUN=mean,...)
+\method{reorder}{matrix}(x,dim=1,names=NULL,indices=NULL,FUN=mean,...)
 }
 \arguments{
   \item{x}{An array}

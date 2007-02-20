@@ -1,6 +1,6 @@
+importFrom(stats,aggregate,reorder)
 import(grid,lattice)
 importFrom(utils,toLatex)
-importFrom(stats,aggregate,reorder)
 export(
       cases,
       colrename,
@@ -20,8 +20,6 @@ export(
       relabel,
       rename,
       rowrename,
-      reorder.array,
-      reorder.matrix,
       Simulate,
       trimws,
       aggregateDB,
@@ -42,12 +40,9 @@ S3method(format,mtable)
 S3method(toLatex,mtable)
 S3method(prediction.frame,default)
 S3method(Termplot,default)
-S3method(predict,lm)
-S3method(predict,glm)
 S3method(Transform,data.frame)
 S3method(recode,default)
 S3method(recode,factor)
-S3method(recode,numeric)
 S3method(relabel,default)
 S3method(relabel,factor)
 S3method(reorder,matrix)

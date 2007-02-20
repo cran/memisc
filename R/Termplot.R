@@ -121,7 +121,9 @@ Termplot.default <- function(object,
         aspect="fill",
         xlab=NULL,
         ylab=NULL,
-        main=paste(deparse(object$call),collapse="\n")
+        main=paste(deparse(object$call),collapse="\n"),
+        models=c("rows","columns"),
+        layout=NULL
   ){
   if(!require(lattice)) stop("Termplot needs the lattice package")
   if(!missing(object) && !length(object$terms) && length(object[[1]]$terms)){

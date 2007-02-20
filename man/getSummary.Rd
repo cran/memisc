@@ -7,9 +7,8 @@
   and summary statistics from a model object.
   }
 \usage{
-  getSummary(obj, alpha=.05)
-  getSummary.lm(obj, alpha=.05)
-  getSummary.glm(obj, alpha=.05)
+  \method{getSummary}{lm}(obj, alpha=.05)
+  \method{getSummary}{glm}(obj, alpha=.05)
 }
 \arguments{
   \item{obj}{a model object, e.g. of class \code{lm} or \code{glm}}
