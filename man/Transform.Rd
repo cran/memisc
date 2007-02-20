@@ -19,14 +19,14 @@ variable transformations.}
     \code{Transform} is a slightly extended version of \code{\link{transform}}.
     Thus it only does useful things with data frames.
     
-    If an expression is given as second argument (\code{_expr}) then it
-    is evaluated with \code{_data} as environment (that is, the
+    If an expression is given as second argument (\code{.expr.}) then it
+    is evaluated with \code{.data.} as environment (that is, the
     variables inside this data frame can be accessed directly in the
     expression). If this expression returns a list with named elements,
     these elements can be accessed in subsequent tag-value assignments.
 }
 \value{
-  The modified value of \code{_data} with all the attributes of \code{_data}
+  The modified value of \code{.data.} with all the attributes of \code{.data.}
   (only the \code{names} attribute is updated, of course).
 }
 \examples{

@@ -33,8 +33,8 @@ Transform.data.frame <- function(.data.,.expr.,...){
         .data.[inx[matched]] <- e[matched]
         .data. <- data.frame(.data.)
     }
-    .data. <- if (!all(matched))
-        data.frame(.data., e[!matched])
+    if (!all(matched))
+        .data. <- data.frame(.data., e[!matched])
     save.attribs$names <-names(.data.)
     attributes(.data.) <- save.attribs
     .data.

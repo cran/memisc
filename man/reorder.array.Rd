@@ -37,7 +37,7 @@
   The result of \code{rename(x,dim,indices)} is \code{x}
   reordered along \code{dim} according to \code{indices}.
 
-  The result of \code{rename(x,dim,indices)} is \code{x}
+  The result of \code{rename(x,dim,FUN)} is \code{x}
   reordered along \code{dim} according to \code{order(apply(x,dim,FUN))}.
   
 }
