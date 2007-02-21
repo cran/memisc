@@ -1,12 +1,13 @@
 \name{prediction.frame}
 \alias{prediction.frame}
+\alias{prediction.frame.default}
 \title{Produce a Data Frame of Predictions and Independent Variables}
 \description{
   \code{prediction.frame} produces a data frame that contains
   the independent variables of a model together with model generated predictions.
   }
 \usage{
-  prediction.frame(object,newdata=NULL,...,residuals=NULL)
+  \method{prediction.frame}{default}(object,newdata=NULL,...,residuals=NULL)
 }
 \arguments{
 \item{object}{a model object from which predictions are generated.}

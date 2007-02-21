@@ -1,12 +1,13 @@
 \name{Transform}
 \alias{Transform}
+\alias{Transform.data.frame}
 \title{Extended Data Frame Transformation}
 \description{Transform is a variant of \code{\link[base]{transform}} that preserves
 the attributes of the transformed data frame 
 and allows for some preliminary computations, which can be used in
 variable transformations.}
 \usage{
-Transform(.data.,.expr.,\dots)
+\method{Transform}{data.frame}(.data.,.expr.,\dots)
 }
 \arguments{
     \item{.data.}{The object to be transformed}

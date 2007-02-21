@@ -2,8 +2,8 @@ Package: memisc
 Type: Package
 Title: Miscellaneous Tools for Data Management,
     Simulation, and Presentation of Estimates. 
-Version: 0.11-4
-Date: 2007-02-13
+Version: 0.11-5
+Date: 2007-02-20
 Author: Martin Elff
 Maintainer: Martin Elff <elff@uni-mannheim.de>
 Depends: R (>= 2.4.0), stats, lattice, grid
@@ -14,4 +14,4 @@ Description: A couple of tools
   of results of statistical analyses.
 License: GPL Version 2 or later.
 LazyLoad: No
-Packaged: Tue Feb 13 20:48:16 2007; hornik
+Packaged: Tue Feb 20 22:26:39 2007; elff

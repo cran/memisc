@@ -90,7 +90,7 @@ recode <- function(x,...)
 #   factor(res,levels=newcodes,labels=newlabels)
 # }
 
-recode.numeric <- function(x,...,otherwise="NA",to.factor=FALSE){
+recode.default <- function(x,...,otherwise="NA",to.factor=FALSE){
   mycall <- match.call()
   mycall$otherwise <- mycall$to.factor <- NULL
   recodings <- as.list(mycall[-(1:2)])
@@ -119,7 +119,7 @@ recode.numeric <- function(x,...,otherwise="NA",to.factor=FALSE){
       recoded[to.change] <- TRUE
       res[to.change] <- new[1]
     }
-    if(!all(recoded) && otherwise!="NA"){
+    if(!all(recoded) && !is.na(otherwise[1]) && otherwise[1]!="NA"){
       if(otherwise=="copy")
         res[!recoded] <- x[!recoded]
       else
@@ -150,7 +150,7 @@ recode.numeric <- function(x,...,otherwise="NA",to.factor=FALSE){
       recoded[to.change] <- TRUE
       res[to.change] <- new[1]
     }
-    if(!all(recoded) && otherwise!="NA"){
+    if(!all(recoded) && !is.na(otherwise[1]) && otherwise[1]!="NA"){
       if(otherwise=="copy"){
         otherlabels <- as.character(unique(x[!recoded]))
         othercodes <- max(codes) + seq(length(otherlabels))
@@ -171,7 +171,7 @@ recode.numeric <- function(x,...,otherwise="NA",to.factor=FALSE){
   return(res)
 }
 
-recode.factor <- function(x,...,otherwise="NA"){
+recode.factor <- function(x,...,otherwise=NA){
   mycall <- match.call()
   mycall$otherwise <- NULL
   if(length(mycall)<=2) return(x)
@@ -188,10 +188,10 @@ recode.factor <- function(x,...,otherwise="NA"){
     }
   }
   if(!all(recoded)){
-    if(otherwise=="copy")
-      newlevels <- unique(tmp)
-    else if(otherwise=="NA")
+    if(is.na(otherwise[1]) || otherwise[1]=="NA")
       newlevels <- unique(tmp[recoded])
+    else if(otherwise=="copy")
+      newlevels <- unique(tmp)
     else {
       tmp[!recoded] <- as.character(otherwise[1])
       newlevels <- unique(tmp)
@@ -203,7 +203,7 @@ recode.factor <- function(x,...,otherwise="NA"){
 }
 
 
-recode.default <- recode.numeric
+# recode.default <- recode.numeric
 
 #  debug(recode.numeric)
   

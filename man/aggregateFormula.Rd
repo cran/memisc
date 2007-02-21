@@ -10,7 +10,7 @@
   \code{genTable} does the same, but produces a \code{table}.
   }
 \usage{
-aggregate.formula(x, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, NaN),
+\method{aggregate}{formula}(x, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, NaN),
       drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,...)
 
 genTable(formula, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, NaN),

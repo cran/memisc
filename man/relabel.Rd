@@ -8,7 +8,8 @@
   that has a \code{names}, \code{labels}, \code{value.labels}, or \code{variable.labels} attribute.
 }
 \usage{
-relabel(x,...)
+\method{relabel}{default}(x,...)
+\method{relabel}{factor}(x,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
