@@ -1,8 +1,8 @@
 Package: memisc
 Type: Package
-Title: Miscellaneous Tools for Data Management,
+Title: Tools for Data Management,
     Simulation, and Presentation of Estimates. 
-Version: 0.11-5
+Version: 0.11-6
 Date: 2007-02-20
 Author: Martin Elff
 Maintainer: Martin Elff <elff@uni-mannheim.de>
@@ -14,4 +14,4 @@ Description: A couple of tools
   of results of statistical analyses.
 License: GPL Version 2 or later.
 LazyLoad: No
-Packaged: Tue Feb 20 22:26:39 2007; elff
+Packaged: Sat Mar 31 14:28:02 2007; elff
