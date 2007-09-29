@@ -45,7 +45,7 @@
   \item{ylab}{label of the y axis, see \code{\link{xyplot}}.}
   \item{main}{main heading, see \code{\link{xyplot}}.}
   \item{models}{character; should models arranged in rows or columns?}
-  \item{layout}{layout specification, see \code{\link{xyplot}.}}
+  \item{layout}{layout specification, see \code{\link[lattice]{xyplot}.}}
 }
 \value{
   A trellis object.
