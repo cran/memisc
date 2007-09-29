@@ -8,7 +8,7 @@
   }
 \usage{
 applyTemplate(x,template,float.style=getOption("float.style"),
-                      digits=getOption("digits"),
+                      digits=min(3,getOption("digits")),
                       signif.symbols=getOption("signif.symbols"))
 }
 \arguments{

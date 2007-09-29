@@ -29,6 +29,36 @@ SapplyOLD <- function (X, FUN, ..., test.dim=FALSE, simplify = TRUE, USE.NAMES =
   }
 }
 
+
+
+
+numericIfPossible <- function(x){
+    if(is.atomic(x)) return(.numericIfPossible(x))
+    else {
+        res <- lapply(x,.numericIfPossible)
+        attributes(res) <- attributes(x)
+        return(res)
+    }
+}
+
+.numericIfPossible <- function(x){
+    if(is.numeric(x)) return(x) 
+    else if(is.character(x)) return(.Call("numeric_if_possible", as.character(x)))
+    else if(is.factor(x)) {
+        levels <- .Call("numeric_if_possible",levels(x),PACKAGE="memisc")
+        if(is.numeric(levels)){
+            return(levels[as.numeric(x)])
+        } else return(x)
+    }
+    else return(x)
+}
+
+
+
+
+
+
+
 Sapply <- function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE){
     FUN <- match.fun(FUN)
     if(length(dim(X))){
@@ -99,17 +129,18 @@ Lapply <- function(X,FUN,...){
 
 to.data.frame <- function(X,as.vars=1){
   if(is.atomic(X)){
-    as.vars <- as.vars[1]
     ncols <- dim(X)[as.vars]
     nrows <- prod(dim(X)[-as.vars])
     coln <- dimnames(X)[[as.vars]]
     Z <- dimnames(X)[-as.vars]
-    Z <- expand.grid(Z)
+    Z <- numericIfPossible(expand.grid(Z))
+    ii <- seq(length(dim(X)))
+    X <- aperm(X,c(ii[-as.vars],ii[as.vars]))
     dim(X) <- c(nrows,ncols)
-    X <- as.data.frame(X)
+    X <- as.data.frame.matrix(X)
     rownames(X) <- rownames(Z) <- 1:nrows
     names(X) <- coln
-    }
+   }
   else {
     nrows <- prod(dim(X))
     Z <- dimnames(X)

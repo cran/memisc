@@ -6,19 +6,19 @@ quickInteraction <- function(by){
     for(i in 1:n.arg){
       y <- by[[i]]
       y <- as.numeric(y)
-      uy <- .Internal(unique(y))
-      y <- .Internal(match(y,uy,NA))
+      uy <- unique(y)
+      y <- match(y,uy,NA)
       l <- length(uy)
       f <- f*l + y - 1
-      uf <- .Internal(unique(f))
-      f <- as.double(.Internal(match(f,uf,NA)))
+      uf <- unique(f)
+      f <- as.double(match(f,uf,NA))
       uf <- seq(length(uf))
     }
   }
   else {
     by <- as.numeric(by)
-    uf <- .Internal(unique(by))
-    f <- .Internal(match(by,uf,NA))
+    uf <- unique(by)
+    f <- match(by,uf,NA)
     uf <- seq(length(uf))
   }
   return(structure(f,unique=uf))

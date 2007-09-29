@@ -2,7 +2,10 @@ allequal <- function(x) length(unique(x)) == 1
 
 get.substr <- function(pattern, text, extended = TRUE, perl = FALSE,
         fixed = FALSE, useBytes = FALSE){
-        rr <- gregexpr(pattern,text,extended,perl,fixed,useBytes)
+        if(fixed)
+          rr <- gregexpr(pattern,text,fixed=TRUE,perl=FALSE,useBytes=useBytes)
+        else
+          rr <- gregexpr(pattern,text,extended=extended,perl=perl,useBytes=useBytes)
         positions <- lapply(rr,function(rr){
           if(rr[1]<0) return(NULL)
           len <- attr(rr,"match.length")
@@ -36,7 +39,7 @@ get.substr <- function(pattern, text, extended = TRUE, perl = FALSE,
 
 get.oneSubstr <- function(pattern,text){
   if(length(text)>1) {
-    warn("only first element used")
+    warning("only first element used")
     text <- text[1]
     }
   start <- regexpr(pattern,text)
@@ -53,7 +56,7 @@ options(signif.symbols=c(
 
 formatSigSymbols <- function(x,signif.symbols=getOption("signif.symbols")){
   if(length(x)>1) {
-    warn("only first element used")
+    warning("only first element used")
     x <- x[1]
     }
   signif.symbols <- sort(signif.symbols)
@@ -64,7 +67,7 @@ formatSigSymbols <- function(x,signif.symbols=getOption("signif.symbols")){
 }
 
 formatOne <- function(x,spec,format="f",
-                      digits=getOption("digits"),
+                      digits=min(3,getOption("digits")),
                       signif.symbols=getOption("signif.symbols")
                       ){
   if(length(x)>1) {
@@ -102,10 +105,10 @@ formatOne <- function(x,spec,format="f",
   return(formatC(x,digits=digits,format=format,width=-1))
 }
 
-formatVec <- function(x,formats,default="f"){
+formatVec <- function(x,formats,default="f",digits=min(3,getOption("digits"))){
   i <- 1:length(formats)
   res <- sapply(i,function(i) if(length(formats[[i]]))
-      sapply(formats[[i]],function(format)formatOne(x,spec=format,format=default))
+      sapply(formats[[i]],function(format)formatOne(x,spec=format,format=default,digits=digits))
       else NULL
       )
 }
@@ -118,7 +121,7 @@ get.format <- function(x){
 
 
 applyTemplate <- function(x,template,float.style=getOption("float.style"),
-                      digits=getOption("digits"),
+                      digits=min(3,getOption("digits")),
                       signif.symbols=getOption("signif.symbols")){
    template <- as.matrix(template)
    if(is.numeric(x))
@@ -139,7 +142,7 @@ applyTemplate <- function(x,template,float.style=getOption("float.style"),
       targets <- get.substr(patterns[i],template)
       positions <- attr(targets,"positions")
       formats <- lapply(targets,get.format)
-      formatted <- formatVec(x[i],formats,default=float.style)
+      formatted <- formatVec(x[i],formats,default=float.style,digits=digits)
       for(j in 1:length(template)){
         if(length(targets[[j]])){
           targets.j <- targets[[j]]
@@ -154,7 +157,7 @@ applyTemplate <- function(x,template,float.style=getOption("float.style"),
           targets <- get.substr(npatterns[n],template)
           positions <- attr(targets,"positions")
           formats <- lapply(targets,get.format)
-          formatted <- formatVec(x[n],formats,default=float.style)
+          formatted <- formatVec(x[n],formats,default=float.style,digits=digits)
           for(j in 1:length(template)){
             if(length(targets[[j]])){
               targets.j <- targets[[j]]

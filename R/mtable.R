@@ -54,7 +54,7 @@ setCoefTemplate <- function(...){
   argnames <- names(args)
   OldCoefTemplates <- .CoefTemplates
   for(coef.style in argnames){
-      .CoefTemplates[[coef.style]] <<- arg[[coef.style]]
+      .CoefTemplates[[coef.style]] <<- args[[coef.style]]
   }
   return(invisible(OldCoefTemplates))
 }
@@ -227,7 +227,7 @@ setSummaryTemplate <- function(...){
   argnames <- names(args)
   OldSummaryTemplates <- .SummaryTemplates
   for(cls in argnames){
-      .SummaryTemplates[[cls]] <<- arg[[cls]]
+      .SummaryTemplates[[cls]] <<- args[[cls]]
   }
   return(invisible(OldSummaryTemplates))
 }
@@ -311,7 +311,7 @@ mtable <- function(...,
   stemplates <- lapply(args,getSummaryTemplate)
   sumstats <- lapply(seq(n.args),function(i){
         drop(applyTemplate(summaries[[i]]$sumstat,
-            template=stemplates[[i]]))
+            template=stemplates[[i]],digits=digits))
       })
   ctemplate <- getCoefTemplate(coef.style)
   ctdims <- dim(ctemplate)
@@ -328,7 +328,7 @@ mtable <- function(...,
                         xlevels=xlevels.i,
                         factor.style=factor.style)
         ans <- apply(coef.i,1,function(x)applyTemplate(x,
-            template=ctemplate,float.style=float.style))
+            template=ctemplate,float.style=float.style,digits=digits))
         if(length(dim(ctemplate))){
           newdims <- c(dim(ctemplate),dim(ans)[-1])
           newdimnames <- c(dimnames(ctemplate),dimnames(ans)[-1])
@@ -688,7 +688,7 @@ print.mtable <- function(x,trim=FALSE,center.at=getOption("OutDec"),
       print(calls[[i]])
     }
   cat("\n")
-  cat(format.mtable(x,trimleft=trimleft,trimright=trimright,center.at=center.at,
+  cat(format.mtable(x,trimleft=trim,trimright=trim,center.at=center.at,
       colsep=colsep,topsep=topsep,bottomsep=bottomsep,sectionsep=sectionsep,...))
 }
 
