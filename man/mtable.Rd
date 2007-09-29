@@ -133,43 +133,6 @@ lm2 <- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
 
 (mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2))
 
-#
-# This should result in the following output:
-#
-# Calls:
-# Model 1: lm(formula = sr ~ pop15 + pop75, data = LifeCycleSavings)
-# Model 2: lm(formula = sr ~ dpi + ddpi, data = LifeCycleSavings)
-# Model 3: lm(formula = sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
-#
-# ==================================================
-#                  Model 1     Model 2     Model 3
-# --------------------------------------------------
-# Coefficients
-# (Intercept)      30.628***    6.360***   28.566***
-#                  (7.409)     (1.252)     (7.355)
-# pop15            -0.471**                -0.461**
-#                  (0.147)                 (0.145)
-# pop75            -1.934                  -1.691
-#                  (1.041)                 (1.084)
-# dpi                           0.001      -0.000
-#                              (0.001)     (0.001)
-# ddpi                          0.529*      0.410*
-#                              (0.210)     (0.196)
-# --------------------------------------------------
-# Summaries
-# R-squared         0.262       0.162       0.338
-# adj. R-squared    0.230       0.126       0.280
-# sigma             3.931       4.189       3.803
-# F                 8.3         4.5         5.8
-# p                 0.001       0.016       0.001
-# Log-likelihood -137.8      -141.0      -135.1
-# Deviance        726.2       824.7       650.7
-# AIC             283.7       290.0       282.2
-# BIC             291.3       297.7       293.7
-# N                50          50          50
-# ==================================================
-#
-#
 
 # Some other output formats
 
@@ -181,49 +144,6 @@ file.show(file123)}
 \dontrun{texfile123 <- "mtable123.tex"
 cat(toLatex(mtable123),sep="\\n",file=texfile123)
 file.show(texfile123)}
-#
-# You should see:
-# \%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%
-# \%
-# \% Calls:
-# \% Model 1:   lm(formula = sr ~ pop15 + pop75, data = LifeCycleSavings)
-# \% Model 2:   lm(formula = sr ~ dpi + ddpi, data = LifeCycleSavings)
-# \% Model 3:   lm(formula = sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
-# \%
-# \%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%\%
-# \begin{tabular}{lD{.}{.}{-1}D{.}{.}{-1}D{.}{.}{-1}}
-# \toprule
-#  & \multicolumn{1}{c}{Model 1}
-#  & \multicolumn{1}{c}{Model 2}
-#  & \multicolumn{1}{c}{Model 3}
-# \\\\
-# \midrule
-# Coefficients    &                 &                 &                \\\\
-# (Intercept)     &   30.628^{***}  &    6.360^{***}  &   28.566^{***} \\\\
-#                 &   (7.409)       &   (1.252)       &   (7.355)      \\\\
-# pop15           &   -0.471^{**}   &                 &   -0.461^{**}  \\\\
-#                 &   (0.147)       &                 &   (0.145)      \\\\
-# pop75           &   -1.934        &                 &   -1.691       \\\\
-#                 &   (1.041)       &                 &   (1.084)      \\\\
-# dpi             &                 &    0.001        &   -0.000       \\\\
-#                 &                 &   (0.001)       &   (0.001)      \\\\
-# ddpi            &                 &    0.529^{*}    &    0.410^{*}   \\\\
-#                 &                 &   (0.210)       &   (0.196)      \\\\
-# \midrule
-# Summaries       &                 &                 &                \\\\
-# R-squared       &    0.262        &    0.162        &    0.338       \\\\
-# adj. R-squared  &    0.230        &    0.126        &    0.280       \\\\
-# sigma           &    3.931        &    4.189        &    3.803       \\\\
-# F               &    8.3          &    4.5          &    5.8         \\\\
-# p               &    0.001        &    0.016        &    0.001       \\\\
-# Log-likelihood  & -137.8          & -141.0          & -135.1         \\\\
-# Deviance        &  726.2          &  824.7          &  650.7         \\\\
-# AIC             &  283.7          &  290.0          &  282.2         \\\\
-# BIC             &  291.3          &  297.7          &  293.7         \\\\
-# N               &   50            &   50            &   50           \\\\
-# \bottomrule
-# \end{tabular}
-#
 
 berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
 
@@ -233,49 +153,6 @@ berk2 <- glm(cbind(Admitted,Rejected)~Gender+Dept,data=berkeley,family="binomial
 
 mtable(berk0,berk1,berk2)
 
-#
-# This should result in the following output:
-# 
-# Calls:
-# berk0: glm(formula = cbind(Admitted, Rejected) ~ 1, family = "binomial",
-#     data = berkeley)
-# berk1: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = berkeley)
-# berk2: glm(formula = cbind(Admitted, Rejected) ~ Gender + Dept, family = "binomial",
-#     data = berkeley)
-#
-# =======================================================
-#                        berk0       berk1       berk2
-# -------------------------------------------------------
-# Coefficients
-# (Intercept)           -0.457***   -0.220***    0.582***
-#                     (-14.972)    (-5.675)     (8.436)
-# Gender: Female-Male               -0.610***    0.100
-#                                  (-9.553)     (1.235)
-# Dept: B-A                                     -0.043
-#                                              (-0.395)
-# Dept: C-A                                     -1.263***
-#                                             (-11.841)
-# Dept: D-A                                     -1.295***
-#                                             (-12.234)
-# Dept: E-A                                     -1.739***
-#                                             (-13.792)
-# Dept: F-A                                     -3.306***
-#                                             (-19.452)
-# -------------------------------------------------------
-# Summaries
-# McFadden R-sq.                     0.107       0.977
-# Cox-Snell R-sq.                    0.020       0.172
-# Nagelkerke R-sq.                   0.116       0.979
-# phi                    1.000       1.000       1.000
-# Likelihood-ratio                  93.4       856.9
-# p                                  0.000       0.000
-# Log-likelihood      -473.0      -426.3       -44.6
-# Deviance             877.1       783.6        20.2
-# AIC                  948.0       856.5       103.1
-# BIC                  954.4       869.4       148.1
-# N                   4526        4526        4526
-# =======================================================
 
 mtable(berk0,berk1,berk2,coef.style="stat")
 mtable(berk0,berk1,berk2,coef.style="ci")
@@ -285,85 +162,10 @@ mtable(berk0,berk1,berk2,coef.style="all")
 mtable(berk0,berk1,berk2,coef.style="all.nostar")
 
 mtable(by(berkeley,berkeley$Dept,function(x)glm(cbind(Admitted,Rejected)~Gender,data=x,family="binomial")))
-#
-# This should result in the following output:
-#
-# Calls:
-# A: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# B: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# C: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# D: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# E: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# F: glm(formula = cbind(Admitted, Rejected) ~ Gender, family = "binomial",
-#     data = x)
-# 
-# =====================================================================================
-#                         A          B          C          D          E          F
-# -------------------------------------------------------------------------------------
-# Coefficients
-# (Intercept)           0.492***   0.534***  -0.536***  -0.704***  -0.957***  -2.770***
-#                      (0.072)    (0.088)    (0.115)    (0.104)    (0.162)    (0.220)
-# Gender: Female-Male   1.052***   0.220     -0.125      0.082     -0.200      0.189
-#                      (0.263)    (0.438)    (0.144)    (0.150)    (0.200)    (0.305)
-# -------------------------------------------------------------------------------------
-# Summaries
-# McFadden R-sq.        1.000      1.000      1.000      1.000      1.000      1.000
-# Cox-Snell R-sq.       0.020      0.000      0.001      0.000      0.002      0.001
-# Nagelkerke R-sq.      1.000      1.000      1.000      1.000      1.000      1.000
-# phi                   1.000      1.000      1.000      1.000      1.000      1.000
-# Likelihood-ratio     19.1        0.3        0.8        0.3        1.0        0.4
-# p                     0.000      0.611      0.386      0.585      0.320      0.536
-# Log-likelihood       -5.9       -5.1       -6.4       -6.3       -5.8       -4.9
-# Deviance              0.0        0.0       -0.0        0.0        0.0       -0.0
-# AIC                  15.7       14.3       16.9       16.6       15.6       13.8
-# BIC                  25.4       23.0       26.5       26.0       24.3       23.0
-# N                   933        585        918        792        584        714
-# =====================================================================================
 
 
 
 mtable(By(~Gender,glm(cbind(Admitted,Rejected)~Dept,family="binomial"),data=berkeley))
-#
-# This should result in the following output:
-#
-# Male: glm(formula = cbind(Admitted, Rejected) ~ Dept, family = "binomial")
-# Female: glm(formula = cbind(Admitted, Rejected) ~ Dept, family = "binomial")
-# 
-# ========================================
-#                     Male       Female
-# ----------------------------------------
-# Coefficients
-# (Intercept)         0.492***    1.544***
-#                    (0.072)     (0.253)
-# Dept: B-A           0.042      -0.790
-#                    (0.113)     (0.498)
-# Dept: C-A          -1.028***   -2.205***
-#                    (0.135)     (0.267)
-# Dept: D-A          -1.196***   -2.166***
-#                    (0.126)     (0.275)
-# Dept: E-A          -1.449***   -2.701***
-#                    (0.177)     (0.279)
-# Dept: F-A          -3.262***   -4.125***
-#                    (0.231)     (0.330)
-# ----------------------------------------
-# Summaries
-# McFadden R-sq.      1.000       1.000
-# Cox-Snell R-sq.     0.174       0.136
-# Nagelkerke R-sq.    1.000       1.000
-# phi                 1.000       1.000
-# Likelihood-ratio  514.8       268.9
-# p                   0.000       0.000
-# Log-likelihood    -18.4       -16.1
-# Deviance           -0.0         0.0
-# AIC                48.7        44.2
-# BIC                84.1        77.3
-# N                2691        1835
-# ========================================
 
 }
 \keyword{misc}

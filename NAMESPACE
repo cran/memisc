@@ -1,3 +1,4 @@
+useDynLib(memisc)
 importFrom(stats,aggregate,reorder)
 import(grid,lattice)
 importFrom(utils,toLatex)
