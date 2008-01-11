@@ -1,6 +1,6 @@
 \name{trimws}
 \alias{trimws}
-\title{Trim Leading and Trailing Whitespaces}
+\title{Trim leading and/or trailing whitespace}
 \description{
   \code{trimws} returns a character string with leading and/or trailing
   whitespaces removed. This is just a shorthand for an appropriate call to \link{sub}.

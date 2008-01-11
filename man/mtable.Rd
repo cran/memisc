@@ -5,9 +5,10 @@
 \alias{toLatex.mtable}
 \alias{write.mtable}
 \alias{relabel.mtable}
-\title{Comparative Table of Model Estimates}
+\title{Publication-ready tables of model estimates}
 \description{
-  \code{mtable} produces a table of estimates for several models.
+  \code{mtable} produces a table of estimates for several models
+  in a format typically required for social science publications.
   }
 \usage{
 mtable(...,coef.style=getOption("coef.style"),

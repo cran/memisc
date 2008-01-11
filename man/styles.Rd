@@ -5,7 +5,7 @@
 \alias{getCoefTemplate}
 \alias{getSummaryTemplate}
 \alias{setSummaryTemplate}
-\title{Formatting Styles for Coefficients and Factor Contrasts}
+\title{Formatting styles for coefficients and factor contrasts for use with "mtable"}
 \description{
   Methods for setting and getting templates for formatting
   model coefficients and summaries.

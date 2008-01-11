@@ -1,7 +1,7 @@
 \name{applyTemplate}
 \alias{applyTemplate}
 \alias{template}
-\title{Apply a Formatting Template to a Numeric or Character Vector}
+\title{Format a numeric or character vector according to a template}
 \description{
   \code{applyTemplate} is called internally by \code{\link{mtable}}
   to format coefficients and summary statistics.

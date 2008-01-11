@@ -1,10 +1,10 @@
 \name{prediction.frame}
 \alias{prediction.frame}
 \alias{prediction.frame.default}
-\title{Produce a Data Frame of Predictions and Independent Variables}
+\title{Data frame of model predictions and independent variables}
 \description{
-  \code{prediction.frame} produces a data frame that contains
-  the independent variables of a model together with model generated predictions.
+  \code{prediction.frame} is a convenience function that produces a data frame 
+  of independent variables and predictions of a fitted model.
   }
 \usage{
   \method{prediction.frame}{default}(object,newdata=NULL,...,residuals=NULL)

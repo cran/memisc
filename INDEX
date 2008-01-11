@@ -1,0 +1,27 @@
+aggregateDB             Aggregate database tables
+aggregate.formula       Convenient and flexible aggregation of data
+                        frames
+applyTemplate           Format a numeric or character vector according
+                        to a template
+By                      Conditional evaluation of an expression
+cases                   Code several logical conditions into a factor
+coef.style              Formatting styles for coefficients and factor
+                        contrasts for use with "mtable"
+dimrename               Change dimnames, rownames, or colnames
+getSummary              Get model summaries for use with "mtable"
+mtable                  Publication-ready tables of model estimates
+percent                 Table of percentages with percentage Base
+prediction.frame        Data frame of model predictions and independent
+                        variables
+recode                  Recode factors and numeric vectors
+relabel                 Change Labels of factors or of any labeled
+                        object
+rename                  Change names of a named object
+reorder.array           Reorder an array or matrix
+Sapply                  A dimension preserving variant of "sapply"
+Simulate                A convenience function for simulation studies
+Termplot                Termplot lattices
+to.data.frame           Flexible conversion of arrays into data frames
+Transform               Extended data frame transformation
+trimws                  Trim leading and/or trailing whitespace
+wtable                  One-dimensional table of (weighted) frequencies

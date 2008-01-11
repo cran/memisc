@@ -2,9 +2,10 @@
 \alias{reorder}
 \alias{reorder.array}
 \alias{reorder.matrix}
-\title{Reorder an Array or Matrix}
+\title{Reorder an array or matrix}
 \description{
-  \code{reorder.array} reorders an array along a specified
+  A \code{reorder} method for arrays and matrices. It reorders an array
+  or a matrix along a specified
   dimension according given names, indices or results of
   a function applied.
 }

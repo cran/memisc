@@ -2,7 +2,7 @@
 \alias{Termplot}
 \alias{Termplot.default}
 \alias{Termplot.lmList}
-\title{Produce a Term Plot Lattice}
+\title{Termplot lattices}
 \description{
   \code{Termplot} produces a lattice plot of termplots.
   Terms are not plotted individually, rather the terms

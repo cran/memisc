@@ -2,7 +2,7 @@
 \alias{getSummary}
 \alias{getSummary.lm}
 \alias{getSummary.glm}
-\title{Get Model Summaries for Use with "mtable"}
+\title{Get model summaries for use with "mtable"}
 \description{A generic function and methods to collect coefficients
   and summary statistics from a model object.
   }

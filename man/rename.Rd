@@ -1,6 +1,6 @@
 \name{rename}
 \alias{rename}
-\title{Change Names of a Named Object}
+\title{Change names of a named object}
 \description{
   \code{rename} changes the names of a named object.
 }

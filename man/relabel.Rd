@@ -2,7 +2,7 @@
 \alias{relabel}
 \alias{relabel.default}
 \alias{relabel.factor}
-\title{Change labels of factors or of any labeled object}
+\title{Change Labels of factors or of any labeled object}
 \description{
   This function changes the labels of a factor of any object
   that has a \code{names}, \code{labels}, \code{value.labels}, or \code{variable.labels} attribute.

@@ -2,7 +2,8 @@
 \alias{By}
 \title{Conditional evaluation of an expression}
 \description{
-
+  The function \code{By} evaluates an expression within subsets of
+  a data frame, where the subsets are defined by a formula.
   }
 \usage{
 By(formula,expr,data=parent.frame())
@@ -33,4 +34,3 @@ detach(berkeley)
 
 }
 \keyword{manip}
-\keyword{univar}

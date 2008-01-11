@@ -3,7 +3,7 @@
 \alias{recode.default}
 \alias{recode.factor}
 \alias{recode.numeric}
-\title{Recode Factors and Numeric Vectors}
+\title{Recode factors and numeric vectors}
 \description{
   \code{recode} substitutes old values of a factor or a numeric
   vector by new ones, just like the recode facilities in some

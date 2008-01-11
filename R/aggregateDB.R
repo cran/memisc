@@ -121,6 +121,7 @@ aggregateDB <- function (formula,
                         showSQL=TRUE,
                         allow.sql.eval=FALSE)
 {
+    if(!require(RSQLite)) stop("this function requires RSQLite")
     mycall <- match.call()
     fcall <- formula[[2]]
     sql.can.do.fcall <- sql.can.do(fcall)
