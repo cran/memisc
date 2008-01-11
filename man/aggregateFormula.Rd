@@ -1,7 +1,7 @@
-\name{aggragate.formula}
+\name{aggregate.formula}
 \alias{aggregate.formula}
 \alias{genTable}
-\title{Aggregate Data Frames According to a Formula}
+\title{Convenient and flexible aggregation of data frames}
 \description{
   \code{aggregate.formula} constructs a data frame of summaries conditional on
   given values of independent variables given by a formula. It is a method

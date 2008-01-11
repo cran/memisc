@@ -1,5 +1,5 @@
 \name{aggregateDB}
-\title{Aggregate Data Base Tables According to a Formula}
+\title{Aggregate database tables}
 \alias{aggregateDB}
 \alias{mergeSQL}
 \description{
@@ -40,7 +40,8 @@ mergeSQL(x,y,by=NULL,by.x=by,by.y=by,all=FALSE,all.x=all,all.y=all)
   \item{x,y}{data base table names.}
   \item{by,by.x,by.y}{names of data base table columns by which
   table rows are joined}
-  \item{all,all.x,all.y}{logical; should rows be used that contain NULL?}
+  \item{all,all.x,all.y}{logical; should rows be used that contain NULL?
+    See also \code{\link{merge}}.}
 }
 \details{
     If an expression is given as left hand side of the formula, its
@@ -59,26 +60,27 @@ mergeSQL(x,y,by=NULL,by.x=by,by.y=by,all=FALSE,all.x=all,all.y=all)
     counts weighted by this variable are computed. 
 
     \code{mergeSQL} is a little helper to conveniently construct
-    \code{JOIN}s of data base tables without the need to qode SQL
+    \code{JOIN}s of data base tables without the need to code SQL
     statements.
 }
 \value{
     A data frame with conditional summaries and unique value combinations
     of conditioning variables.
 }
-\seealso{\code{\link{aggregate.formula}}, packages \code{DBI} and \code{RSQLite}}
+\seealso{\code{\link{aggregate.formula}}, \code{\link{merge}},
+   packages \code{DBI} and \code{RSQLite}}
 \examples{
 \dontrun{
 # This is a real life data management example from the author's work.
 # It is the very reason for the existence of aggregatedDB
 #
-# First we got to 'plug in' the data base ...
+# First we have to 'plug in' the data base ...
 library(RSQLite)
 if(!exists("drv"))
   drv <- dbDriver("SQLite")
 if(!exists("con"))
   con <- dbConnect(drv, dbname = "~/forschung/pieb.db3")
-# This is a 400 MB(!) SQLite data base that contains
+# This is a 400 MB SQLite data base that contains
 # several tables contructed from cumulated eurobarometer
 # survey data files, spanning the period from 1973 to 2002.
 

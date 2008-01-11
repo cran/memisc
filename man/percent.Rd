@@ -1,6 +1,6 @@
 \name{percent}
 \alias{percent}
-\title{Table of Percentages with Percentage Base}
+\title{Table of percentages with percentage Base}
 \description{
   \code{percent} returns a table of percentages along with
   the percentage base. It will be useful

@@ -1,9 +1,9 @@
 \name{to.data.frame}
 \alias{to.data.frame}
-\title{Convert an Array into a Data Frame}
+\title{Flexible conversion of arrays into data frames}
 \description{
   \code{to.data.frame} converts an array into a data frame, in such a way
-  that a chosen dimensional extent forms variables in the data frame.
+  that a chosen dimensional extent forms the variables in the data frame.
   The elements of the array must be either atomic, data frames
   with matching variables, or coercable into such data frames.
 }

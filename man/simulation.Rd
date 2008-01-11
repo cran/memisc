@@ -1,6 +1,6 @@
 \name{Simulate}
 \alias{Simulate}
-\title{Simulate Values from a Function or Expression}
+\title{A convenience function for simulation studies}
 \description{
   \code{Simulate} is a function to simplify simulation studies.
    It evaluates or calls its first argument within the

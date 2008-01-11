@@ -1,7 +1,7 @@
 \name{Sapply}
 \alias{Lapply}
 \alias{Sapply}
-\title{A Dimension Preserving Variant of "sapply"}
+\title{A dimension preserving variant of "sapply"}
 \description{
   \code{Sapply} is equivalent to \code{\link{sapply}}, except
   that it preserves the dimension and dimension names of the

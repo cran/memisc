@@ -1,9 +1,10 @@
 \name{cases}
 \alias{cases}
-\title{Code Several Logical Conditions into a Factor}
+\title{Code several logical conditions into a factor}
 \description{
   \code{cases} takes a sequence of logical expressions and
-  codes them into levels of a factor
+  codes them into levels of a factor. It may be seen as
+  a generalisatin of \code{ifelse()}
   }
 \usage{
 cases(...)

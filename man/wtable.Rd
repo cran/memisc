@@ -1,10 +1,10 @@
 \name{wtable}
 \alias{wtable}
-\title{One-Dimensional Table of Frequencies with Weights}
+\title{One-dimensional table of (weighted) frequencies}
 \description{
   'wtable' is a helper function for \link{aggregate.formula} and \link{genTable}.
-  It is useful to recast a contingency table into a format suitable for
-  binomial logit analysis.
+  It can be used to recast a contingency table into a format needed for
+  binomial logit analyses.
   }
 \usage{
   wtable(x,w=NULL)
