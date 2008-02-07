@@ -50,6 +50,6 @@
   A <- sample(c(1:5,9),size=100,replace=TRUE)
   labels(A) <- c(a=1,b=2,c=3,d=4,e=5,dk=9)
   missing.values(A) <- 9
-  Table(A,percentages=TRUE)
+  Table(A,percentage=TRUE)
 }
 \keyword{univar}

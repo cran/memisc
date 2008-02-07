@@ -42,11 +42,11 @@ mtable(...,coef.style=getOption("coef.style"),
     LaTeXdec=".",
     ddigits=getOption("digits"),
     useBooktabs=TRUE,
-    toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
-    midrule=if(useBooktabs) "\\midrule" else "\\hline",
-    cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
-    bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
-    interaction.sep = if(forLaTeX) " $\\times$ " else " x ",
+    toprule=if(useBooktabs) "\\\\toprule" else "\\\\hline\\\\hline",
+    midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline",
+    cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
+    bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
+    interaction.sep = if(forLaTeX) " $\\\\times$ " else " x ",
     center.summaries=FALSE,
     ...
     )
@@ -133,7 +133,7 @@ write.mtable(object,file="",...)
 \value{
     A call to \code{mtable} results in an object that inherits from \code{mtable}
     with the following components:
-    
+
     \item{coefficients}{an array that contains the model coefficients.}
     \item{summaries}{a matrix that contains the model summaries.}
 

@@ -29,17 +29,17 @@
 \title{Object Oriented Intervace to Foreign Files}
 \description{
 Importer objects are objects that refer to an external
-data file. Currently only Stata files, 
+data file. Currently only Stata files,
 SPSS system, portable, and fixed-column files are supported.
 
-Data are actually imported by `translating' an 
+Data are actually imported by `translating' an
 importer file into a \code{\link{data.set}} using
 \code{as.data.set} or \code{subset}.
 
 The \code{importer} mechanism is more flexible and extensible
 than \code{\link[foreign]{read.spss}} and  \code{\link[foreign]{read.dta}}
 of package "foreign", as most of the
-parsing of the file headers is done in R. 
+parsing of the file headers is done in R.
 They are also
 adapted to load efficiently large data sets.
 Most importantly, importer objects support the
@@ -143,12 +143,12 @@ precedence and are \emph{not} coerced to lower case.
     the variables, such as the columns that they occupy
     (in case of \code{spss.fixed.file}), variable labels,
     value labels and missing values.
-    
+
     The information in the file header and/or the accompagnying
     files is then processed to prepare the file for importing.
     Thus the inner structure of an \code{importer} object may
     well vary according to what type of file is to imported and
-    what additional information is given. 
+    what additional information is given.
 
     The \code{as.data.set} and \code{subset} methods
     for \code{"importer"} objects internally use the
@@ -160,7 +160,7 @@ precedence and are \emph{not} coerced to lower case.
 }
 \examples{
 # Extract American National Election Study of 1948
-nes1948.por <- unzip("anes/NES1948.ZIP","NES1948.POR",
+nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",
                      package="memisc")
 
 # Get information about the variables contained.

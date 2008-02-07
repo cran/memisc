@@ -108,7 +108,7 @@ export(
       include,
       uninclude,
       detach.sources,
-      unzip,
+      UnZip,
       "%nin%",
       codebook,
       spss.fixed.file,
@@ -200,7 +200,7 @@ exportClasses(
 #   strict.index,
   codebook
   )
-  
+
 exportMethods(
     as.item,
     labels,

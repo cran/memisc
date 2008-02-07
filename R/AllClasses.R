@@ -41,24 +41,20 @@ setClass("double",
   prototype=double()
 )
 
+
+setClassUnion("numeric.item")
+setClassUnion("item.vector")
+
 setClass("integer.item",
-  contains=c("item","integer")
+  contains=c("item","numeric.item","item.vector","integer")
 )
 setClass("double.item",
-  contains=c("item","double","numeric")
+  contains=c("item","numeric.item","item.vector","double","numeric")
 )
 setClass("character.item",
-  contains=c("item","character")
+  contains=c("item","item.vector","character")
 )
 
-setClassUnion("numeric.item",
-  c("integer.item","double.item")
-)
-
-setClassUnion("item.vector",
-  c("integer.item","numeric.item","character.item")
-)
- 
 setClass("named.list",
   contains="list",
   representation(

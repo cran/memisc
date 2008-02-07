@@ -9,7 +9,7 @@
 \description{
   The function \code{query} can be used to search an object
   for a keyword.
-  
+
   The \code{\link{data.set}} and \code{\link{importer}} methods perform such a search
   through the annotations and value labels of
   the items in the data set.
@@ -47,13 +47,13 @@ query(x,pattern,\dots)
   and the value labels, otherwise if only the annotation or the value labels
   match the pattern, either the annotation or the value labels are returned,
   otherwise if neither matches the pattern, \code{query} returns \code{NULL}.
-  
+
   The methods of \code{query} for 'data.set' and 'importer' objects return
   a list of all non-\code{NULL} query results of all items contained by these
   objects, or \code{NULL}.
 }
 \examples{
-nes1948.por <- unzip("anes/NES1948.ZIP","NES1948.POR",
+nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",
                      package="memisc")
 nes1948 <- spss.portable.file(nes1948.por)
 query(nes1948,"TRUMAN")
