@@ -8,7 +8,7 @@
   \code{aggregate.formula} constructs a data frame of summaries conditional on
   given values of independent variables given by a formula. It is a method
   of the generic function \code{aggregate} applied to \code{formula} objects.
-  
+
   \code{genTable} does the same, but produces a \code{table}.
 
   \code{fapply} is a generic function that dispatches on its \code{data}
@@ -87,7 +87,7 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
     If a single factor is on the left hand side, then the left hand side is
     translated into an appropriate
     call to \code{table()}. Note that also in this case \code{addFreq} takes effect.
-    
+
     If a single numeric variable is on the left hand side, frequency
     counts weighted by this variable are computed. In these cases,
     \code{aggregate.formula} is equivalent to \code{as.data.frame(xtabs(\dots))}.
@@ -96,7 +96,7 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
     \code{aggregate.formula}
     results in a data frame with conditional summaries and unique value combinations
     of conditioning variables.
-    
+
     \code{genTable} returns a \link{table}, that is, an array with class \code{"table"}.
 }
 \seealso{\link{aggregate.data.frame}, \link{xtabs}}
@@ -114,12 +114,7 @@ aggregate(mean(x)~mean+sd,data=ex.data,name="Average")
 aggregate(c(mean(x),sd(x))~mean+sd,data=ex.data)
 aggregate(c(Mean=mean(x),StDev=sd(x),N=length(x))~mean+sd,data=ex.data)
 genTable(c(Mean=mean(x),StDev=sd(x),N=length(x))~mean+sd,data=ex.data)
-attach(ex.data)
-aggregate(c(Mean=mean(x),StDev=sd(x))~mean+sd)
-genTable(c(Mean=mean(x),StDev=sd(x))~mean+sd)
-aggregate(c(mean(x),sd(x))~mean+sd)
-genTable(c(mean(x),sd(x))~mean+sd)
-detach(ex.data)
+
 aggregate(table(Admit)~.,data=UCBAdmissions)
 aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 aggregate(Admit~.,data=UCBAdmissions)

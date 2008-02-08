@@ -6,18 +6,18 @@ quickInteraction <- function(by){
     for(i in rev(1:n.arg)){
       y <- by[[i]]
       y <- as.numeric(y)
-      uy <- unique(y)
+      uy <- unique(na.omit(y))
       y <- match(y,uy,NA)
       l <- length(uy)
       f <- f*l + y - 1
-      uf <- unique(f)
+      uf <- unique(na.omit(f))
       f <- match(f,uf,NA)
       uf <- seq(length(uf))
     }
   }
   else {
     by <- as.numeric(by)
-    uf <- unique(by)
+    uf <- unique(na.omit(by))
     f <- match(by,uf,NA)
     uf <- seq(length(uf))
   }
@@ -44,7 +44,7 @@ fapply.default <- function (formula,
       }
     else
       fcall <- NULL
-    
+
     #names(m)[2] <- "formula"
     m$formula <- formula
     if (is.matrix(data))
@@ -79,7 +79,7 @@ fapply.default <- function (formula,
             makeTableCall <- TRUE
         if(is.environment(data)
             && exists(fcall.c,envir=data)
-            && is.factor(get(fcall.c,envir=data))) 
+            && is.factor(get(fcall.c,envir=data)))
             makeTableCall <- TRUE
         if(makeTableCall)
           fcall <- as.call(c(as.symbol("table"),fcall))
@@ -87,7 +87,7 @@ fapply.default <- function (formula,
           fcall <- as.call(c(as.symbol("sum"),fcall))
       }
       if(addFreq){
-        if(length(fcall) > 1 && 
+        if(length(fcall) > 1 &&
             as.character(fcall[[1]]) %in% c("table","Table","percent","nvalid") &&
             !("weights" %in% names(fcall))
           ){
@@ -109,10 +109,21 @@ fapply.default <- function (formula,
       rows <- seq(nrow(data))
     }
     else rows <- seq(nrow(by))
-    #
-    # this is FAR less memory intensive than interaction split(rows,by)
+
     BY <- quickInteraction(by)
+
+    fntBY <- is.finite(BY)
+    BY <- BY[fntBY]
+    by <- by[fntBY,,drop=FALSE]
+    data <- data[fntBY,,drop=FALSE]
+
+    if(length(fcall)>1)
+      rows <- seq_len(nrow(data))
+    else
+      rows <- seq_len(length(BY))
+
     rows <- split.default(rows,BY)
+
     good <- TRUE
     data <- data[all.vars(fcall)]
     if(length(fcall)>1){
@@ -126,7 +137,7 @@ fapply.default <- function (formula,
         res <- res[good]
       if(as.character(fcall[[1]]) %in% c("table","Table")){
         if(length(dim(res[[1]]))<2) res <- lapply(res,c)
-      }          
+      }
     } else
     if(length(fcall)==1){
       res <- c(rowsum(x=data,group=BY,reorder=FALSE,na.rm=FALSE))
@@ -141,7 +152,7 @@ fapply.default <- function (formula,
     if(!all(good))
       by <- by[good,,drop=FALSE]
     ii <- do.call("order",rev(by))
-    
+
     structure(res[ii],
       by=by[ii,,drop=FALSE],
       formula=formula

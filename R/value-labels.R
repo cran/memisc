@@ -54,7 +54,7 @@ setMethod("[",signature(x="value.labels",i="logical",j="missing",drop="missing")
   function(x,i)
   new("value.labels",x@.Data[i], values=x@values[i]))
 
-setAs(from="vector",to="value.labels",function(from,to){
+setAs(from="numeric",to="value.labels",function(from,to){
   if(length(names(from))){
     new("value.labels",names(from),values=unname(from))
   }
@@ -71,7 +71,7 @@ setAs(from="character",to="value.labels",function(from,to){
 })
 
 
-setAs(from="value.labels",to="vector",function(from,to)
+setAs(from="value.labels",to="numeric",function(from,to)
   structure(as.vector(from@values),names=from@.Data)
 )
 
