@@ -114,7 +114,7 @@ setMethod("initialize","data.set",function(.Object,...,row.names=NULL,document=c
 })
 
 # dim.data.set <- dim.data.frame
-setMethod("dim","data.set",function(x) 
+setMethod("dim","data.set",function(x)
   c( length(x@row_names),
      length(x@.Data)
   )
@@ -142,7 +142,7 @@ setReplaceMethod("row.names","data.set",function(x,value){
 #     names(x@frame) <- value
 #     x
 #   })
-  
+
 setMethod("dimnames","data.set",function(x)
   list(x@row_names,x@names))
 
@@ -219,7 +219,7 @@ setMethod("[",signature(x="data.set",i="missing",j="atomic",drop="ANY"),
   function(x,i,j,...,drop=FALSE){
 #     cat("\ndata.set,missing,atomic\n")
     frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
-    frame <- frame[,j=j,drop=drop] 
+    frame <- frame[,j=j,drop=drop]
     if(is.data.frame(frame))
       new("data.set",
         unclass(frame),
@@ -232,7 +232,7 @@ setMethod("[",signature(x="data.set",i="missing",j="atomic",drop="ANY"),
 setMethod("[",signature(x="data.set",i="missing",j="missing",drop="ANY"),
   function(x,i,j,...,drop=FALSE){
     frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
-    frame <- frame[,,drop=drop] 
+    frame <- frame[,,drop=drop]
     if(is.data.frame(frame))
       new("data.set",
         unclass(frame),
@@ -261,7 +261,7 @@ setReplaceMethod("[",signature(x="data.set",i="ANY",j="ANY",value="ANY"),
 #       document=x@document
 #       )
 # })
-# 
+#
 # setReplaceMethod("[[","data.set",
 #   function(x,i,j,value){
 #     frame <- x@frame
@@ -312,7 +312,14 @@ as.data.frame.data.set <- function(x, row.names = NULL, optional = FALSE, ...){
 data.set <- function(..., row.names = NULL, check.rows = FALSE, check.names = TRUE,
     stringsAsFactors = default.stringsAsFactors(),
     document = NULL){
+
   args <- list(...)
+  if(!length(names(args))){
+
+    subst <- substitute(list(...))
+    names(args) <- as.character(subst[-1])
+  }
+  argn <- names(args)
   args <- lapply(seq_along(args),function(i){
       x <- args[[i]]
       n <- names(args)[[i]]
@@ -322,7 +329,7 @@ data.set <- function(..., row.names = NULL, check.rows = FALSE, check.names = TR
         structure(as.list(x),class="data.frame",row.names=x@row_names)
       else x
     })
-  names(args) <- names(list(...))
+  names(args) <- argn
   frame <- do.call(data.frame,
     c(args,
       row.names=row.names,
@@ -354,7 +361,7 @@ print.data.set <- function(x,max.obs=Inf,width=Inf,...){
   nrow.x <- nrow(x)
   frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
   if(is.finite(max.obs)){
-    if(nrow(x)<=max.obs) 
+    if(nrow(x)<=max.obs)
       {
         max.obs <- Inf
         res <- frame
@@ -368,7 +375,7 @@ print.data.set <- function(x,max.obs=Inf,width=Inf,...){
   res <- lapply(res,format)
   attr(res,"class") <- "data.frame"
   row.names(res) <- dn[[1]]
-  
+
   if(is.finite(width) && ncol(res)){
     width <- width - (if(nrow(res)) max(nchar(attr(res,"row.names"))) else 0) - 5
     names.w <- cumsum(nchar(names(res),"w")+1)
@@ -478,7 +485,7 @@ setMethod("subset","data.set",
     new("data.set",
       subset(frame,...),
       document=x@document
-      )  
+      )
 })
 
 
@@ -492,7 +499,7 @@ setMethod("within","data.set",function (data, expr, ...)
     rn <- row.names(frame)
     ret <- eval(substitute(expr), e)
     l <- rev(as.list(e))
-    
+
     wrong.length <- sapply(l,length) != nr
     if(any(wrong.length)){
       warning("Variables ",paste(sQuote(names(l)[wrong.length]),collapse=","),
@@ -542,9 +549,9 @@ setMethod("unique","data.set",function(x, incomparables = FALSE, ...){
   new("data.set",
       unique(frame,incomparables=incomparables,...),
       document=x@document
-      )  
+      )
 })
 
 
-fapply.data.set <- function(formula,data,...) 
+fapply.data.set <- function(formula,data,...)
   fapply.default(formula,data=as.data.frame(data,optional=TRUE),...)

@@ -1,8 +1,8 @@
 Package: memisc
 Type: Package
 Title: Tools for Management of Survey Data, Graphics, Programming, Statistics, and Simulation
-Version: 0.95-14
-Date: 2008-02-10
+Version: 0.95-15
+Date: 2008-02-12
 Author: Martin Elff
 Maintainer: Martin Elff <elff@uni-mannheim.de>
 Description: One of the aims of this package is to make life easier for useRs
@@ -17,4 +17,4 @@ License: GPL-2
 LazyLoad: Yes
 Depends: lattice, grid, stats, methods, utils, MASS
 URL: http://webrum.uni-mannheim.de/sowi/elff/content.php/EnglishVersion/MartinsRPackages
-Packaged: Tue Feb 10 11:56:43 2009; elff
+Packaged: Thu Feb 12 01:20:11 2009; elff

@@ -17,7 +17,6 @@
 \alias{as.data.frame.textfile_bucket}
 \alias{as.matrix.textfile_bucket}
 \alias{[.bucket}
-\alias{fapply.bucket}
 \title{Abstract Data Structures to Collect Simulation Results}
 \description{
   Buckets (objects that inherit from S3 class "bucket") are abstract data
@@ -49,7 +48,6 @@ textfile_bucket(size=1,name=date())
 \method{as.matrix}{textfile_bucket}(x,...)
 
 \method{print}{bucket}(x,...)
-\method{fapply}{bucket}(formula,data,...)
 \method{[}{bucket}(x,i,...)
 }
 \arguments{
@@ -60,7 +58,6 @@ textfile_bucket(size=1,name=date())
         either according to its \code{nsim} argument or according
         to \code{getOption("Simulation.chunk.size")}}
   \item{name}{a name for the textfile into which results are written.}
-  \item{formula}{a formula}
   \item{i}{a numerical vector to select replication results from the bucket.}
   \item{\dots}{other arguments, ignored or passed to other methods.}
 }
@@ -87,7 +84,7 @@ data were written.
   an object of class \code{"default_bucket"},
   while function \code{textfile_bucket} returns
   an object of class \code{"textfile_bucket"}.
-  
+
   The methods for \code{dim}, \code{as.data.frame},
   and \code{as.matrix} give the usual return values,
   of the generic functions.

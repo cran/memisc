@@ -164,7 +164,6 @@ S3method(pour_out,textfile_bucket)
 S3method(dim,textfile_bucket)
 S3method(as.data.frame,textfile_bucket)
 S3method(as.matrix,textfile_bucket)
-S3method(fapply,bucket)
 S3method("[",bucket)
 # S3method(groupwise,default)
 

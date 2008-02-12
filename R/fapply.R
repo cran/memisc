@@ -49,20 +49,17 @@ fapply.default <- function (formula,
     m$formula <- formula
     if (is.matrix(data))
         m$data <- data <- as.data.frame(data)
+
     m$... <- m$exclude <- m$drop.unused.levels <- m$names <- m$addFreq <- NULL
     #m <- m[c(1,3,2)]
     m[[1]] <- as.name("model.frame")
     if(!length(subset)) m$subset <- NULL
     else m$subset <- subset
     m$na.action <- na.action
-    if(is.environment(data)){
-      m$data <- NULL
-      by <- eval(m,enclos=data)
-    }
-    else {
-      m$data <- data
-      by <- eval(m, parent.frame())
-      }
+
+    m$data <- data
+    by <- eval(m, parent.frame())
+
     omitted <- attr(by,"na.action")
     if(as.character(formula[[2]])[1]==".")
       by <- by[setdiff(names(by),all.vars(fcall))]
@@ -111,7 +108,7 @@ fapply.default <- function (formula,
     else rows <- seq(nrow(by))
 
     BY <- quickInteraction(by)
-
+    uBY <- attr(BY,"unique")
     fntBY <- is.finite(BY)
     BY <- BY[fntBY]
     by <- by[fntBY,,drop=FALSE]
@@ -144,7 +141,7 @@ fapply.default <- function (formula,
       if(missing(names)) names <- "Freq"
     }
     else {
-      res <- tabulate(BY,nbins=length(attr(BY,"unique")))
+      res <- tabulate(BY,nbins=length(uBY))
       if(missing(names)) names <- "Freq"
     }
     urows <- sapply(rows,function(ix)ix[1])

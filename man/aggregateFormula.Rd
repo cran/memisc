@@ -90,6 +90,7 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
 
     If a single numeric variable is on the left hand side, frequency
     counts weighted by this variable are computed. In these cases,
+    \code{genTable} is equivalent to \code{\link[stats]{xtabs}} and
     \code{aggregate.formula} is equivalent to \code{as.data.frame(xtabs(\dots))}.
 }
 \value{
