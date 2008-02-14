@@ -18,31 +18,25 @@
   }
 \usage{
 \method{aggregate}{formula}(x, data=parent.frame(), subset=NULL,
-      na.action=getOption("na.action"), sort = FALSE, exclude = c(NA, NaN),
-      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE, as.vars=1,
+      sort = TRUE, names=NULL, addFreq=TRUE, as.vars=1,
       drop.constants=TRUE,\dots)
 
 genTable(formula, data=parent.frame(), subset=NULL,
-      na.action=getOption("na.action"),exclude = c(NA, NaN),
-      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,\dots)
+      names=NULL, addFreq=TRUE,\dots)
 
 fapply(formula,data,\dots) # calls UseMethod("fapply",data)
 \method{fapply}{default}(formula, data, subset=NULL,
-      na.action=getOption("na.action"),exclude = c(NA, NaN),
-      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,\dots)
+      names=NULL, addFreq=TRUE,\dots)
 }
 \arguments{
-  \item{x, formula}{a formula.
-    The right hand side specifies the grouping variables,
-    separated by \code{+}, on the right hand side.
-    The left hand side gives an expression evaluated for each
-    combination of unique values of the grouping variables.
-    The left hand side of the formula is optional, see details below.}
+  \item{x, formula}{a formula. The right hand side includes one or more
+  grouping variables separated by '+'. These may be factors, numeric,
+  or character vectors. The left hand side may be empty,
+  a numerical variable, a factor, or an expression.
+  See details below.}
   \item{data}{an environment or data frame or an object coercable into a data frame.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used.}
-  \item{na.action}{a function which indicates what should happen when
-    the data contain \code{NA}s.}
   \item{sort}{a logical value; determines the order in which the aggregated
     data appear in the data frame returned by \code{aggregate.formula}.
     If \code{sort} is TRUE, then the returned data frame is sorted by
@@ -50,9 +44,6 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
     the order of resulting data frame corresponds to the order in which
     the values of the grouping variables appear in the original data
     frame. }
-  \item{exclude}{a vector of values to be excluded from the grouping variables.}
-  \item{drop.unused.levels}{a logical indicating whether to drop unused
-    levels if factors are among the grouping variables.}
   \item{names}{an optional character vector giving names to the
     result(s) yielded by the expression on the left hand side of \code{formula}.
     This argument may be redundant if the left hand side results in is a named vector.
@@ -102,19 +93,21 @@ fapply(formula,data,\dots) # calls UseMethod("fapply",data)
 }
 \seealso{\link{aggregate.data.frame}, \link{xtabs}}
 \examples{
-ex.data <- expand.grid(mean=c(0,100),sd=c(1,10))[rep(1:4,rep(100,4)),]
-ex.data <- within(ex.data,{
-                  x<-rnorm(n=nrow(ex.data))
-                  mean<-ex.data$mean
-                  sd <- ex.data$sd
-                })
+ex.data <- expand.grid(mu=c(0,100),sigma=c(1,10))[rep(1:4,rep(100,4)),]
+ex.data <- within(ex.data,
+                  x<-rnorm(
+                    n=nrow(ex.data),
+                    mean=mu,
+                    sd=sigma
+                    )
+                  )
 
-aggregate(~mean+sd,data=ex.data)
-aggregate(mean(x)~mean+sd,data=ex.data)
-aggregate(mean(x)~mean+sd,data=ex.data,name="Average")
-aggregate(c(mean(x),sd(x))~mean+sd,data=ex.data)
-aggregate(c(Mean=mean(x),StDev=sd(x),N=length(x))~mean+sd,data=ex.data)
-genTable(c(Mean=mean(x),StDev=sd(x),N=length(x))~mean+sd,data=ex.data)
+aggregate(~mu+sigma,data=ex.data)
+aggregate(mean(x)~mu+sigma,data=ex.data)
+aggregate(mean(x)~mu+sigma,data=ex.data,name="Average")
+aggregate(c(mean(x),sd(x))~mu+sigma,data=ex.data)
+aggregate(c(Mean=mean(x),StDev=sd(x),N=length(x))~mu+sigma,data=ex.data)
+genTable(c(Mean=mean(x),StDev=sd(x),N=length(x))~mu+sigma,data=ex.data)
 
 aggregate(table(Admit)~.,data=UCBAdmissions)
 aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
