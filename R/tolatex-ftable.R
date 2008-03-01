@@ -20,7 +20,7 @@ toLatex.ftable <- function(object,
   n <- nrow(object)
   m <- ncol(object)
   d <- digits
-  digits <- integer(m) 
+  digits <- integer(m)
   digits[] <- d
   #print(digits)
   fo <- format
@@ -73,7 +73,7 @@ toLatex.ftable <- function(object,
     if(length(cmidrule)){
       if(i == n.col.vars)
         c.starts[[i]] <- length(row.vars) + 2 + (seq(lcv) - 1)*mcols[i]
-      else 
+      else
         c.starts[[i]] <- length(row.vars) + 2 + (seq(lcv) - 1)*(mcols[i]+1)
     c.ends[[i]] <- c.starts[[i]] + (mcols[i]-1)
     tmp.cln <- paste(cmidrule,"{",c.starts[[i]],"-",c.ends[[i]],"}",sep="")
@@ -142,9 +142,8 @@ toLatex.ftable <- function(object,
     }
   ans <- c(toprule,header,midrule,body,bottomrule)
   leader.spec <- paste(rep("l",length(row.vars)+1),collapse="")
-  #body.spec <- character(lcv)
-  #browser()
-  body.spec <- colspec
+  body.spec <- character(m)
+  body.spec[] <- colspec
   i <- rep(seq_len(m/lcv),each=lcv)
   body.spec <- split(body.spec,i)
   body.spec <- sapply(body.spec,paste,collapse="")
