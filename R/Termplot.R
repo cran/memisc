@@ -194,15 +194,12 @@ Termplot.default <- function(object,
                   names(P) <- c("fit","se.fit","resid")
                   x <- as.numeric(Predictions[[v]])
                   P <- P[order(x),]
-                  x <- x[order(x)]
-                  smooth <- lowess(x,P$resid,f=span.smth)$y
-                  transform(P,
-                            x=x,
-                            smooth=smooth,
-                            upper=fit+2*se.fit,
-                            lower=fit-2*se.fit,
-                            var =rep(varFactor[varFactor==v],nrow(P))
-                            )
+                  P$x <- x[order(x)]
+                  P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
+                  P$upper <- P$fit+2*P$se.fit
+                  P$lower <- P$fit-2*P$se.fit
+                  P$var <- rep(varFactor[varFactor==v],nrow(P))
+                  P
                   })
   Predictions <- do.call("rbind",Predictions)
   #browser()
@@ -334,15 +331,12 @@ Termplot.lmList <- function(object ,...,
                   x <- as.numeric(Predictions[[v]])
                   #browser()
                   P <- P[order(x),]
-                  x <- x[order(x)]
-                  smooth <- lowess(x,P$resid,f=span.smth)$y
-                  transform(P,
-                            x=x,
-                            smooth=smooth,
-                            upper=fit+2*se.fit,
-                            lower=fit-2*se.fit,
-                            var =rep(varFactor[varFactor==v],nrow(P))
-                            )
+                  P$x <- x[order(x)]
+                  P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
+                  P$upper <- P$fit+2*P$se.fit
+                  P$lower <- P$fit-2*P$se.fit
+                  P$var <- rep(varFactor[varFactor==v],nrow(P))
+                  P
                   })
                   do.call("rbind",Predictions[sapply(Predictions,NROW)>0])
             })

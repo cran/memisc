@@ -308,7 +308,8 @@ aggregateDB <- function (formula,
                                     "WHERE",get.basenames(tfield,table),"AND variable=",dQuote(v),
                                     ";")
       if(showSQL) cat(statement,"\n")
-      transform(dbGetQuery(connection,statement),value=as.numeric(value))
+      res <- dbGetQuery(connection,statement)
+      res$value <- as.numeric(res$value)
     })
     names(labels.group.vars) <- grouping.vars
     for(i in seq(grouping.vars))
@@ -332,7 +333,8 @@ aggregateDB <- function (formula,
                                     "WHERE",get.basenames(tfield,table),"AND variable=",dQuote(tv),
                                     ";")
       if(showSQL) cat(statement,"\n")
-      labels.target <- transform(dbGetQuery(connection,statement),value=as.numeric(value))
+      labels.target <- dbGetQuery(connection,statement)
+      labels.target$value <- as.numeric(labels.target$value)
       vls <- as.character(labels.target$value)
       no.by.names <- names(res)[!is.by.name]
       ii <- match(no.by.names,vls)
@@ -347,7 +349,8 @@ aggregateDB <- function (formula,
                                     dQuote(target.var),
                                     ";")
       if(showSQL) cat(statement,"\n")
-      labels.target <- transform(dbGetQuery(connection,statement),value=as.numeric(value))
+      labels.target <- dbGetQuery(connection,statement)
+      labels.target$value <- as.numeric(labels.target$value)
       vls <- as.character(labels.target$value)
       no.by.names <- names(res)[!is.by.name]
       ii <- match(no.by.names,paste("val",vls,sep="_"))

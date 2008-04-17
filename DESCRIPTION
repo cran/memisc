@@ -2,8 +2,8 @@ Package: memisc
 Type: Package
 Title: Convenience Tools for Data Management,
     Simulation, and Presentation of Estimates
-Version: 0.11-9
-Date: 2008-01-11
+Version: 0.11-10
+Date: 2008-04-17
 Author: Martin Elff
 Maintainer: Martin Elff <elff@uni-mannheim.de>
 Depends: R (>= 2.5.0), stats, lattice, grid
@@ -14,4 +14,4 @@ Description: A couple of tools
   of results of statistical analyses.
 License: GPL Version 2 or later.
 LazyLoad: No
-Packaged: Fri Jan 11 15:02:13 2008; elff
+Packaged: Thu Apr 17 16:00:04 2008; elff
