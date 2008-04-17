@@ -188,8 +188,8 @@ genTable <- function (formula,
    m[[1]] <- as.name("aggregate")
    names(m)[2] <- "x"
    X <- eval(m, parent.frame())
-   by.names <- X@by.vars
-   Xcall <- X@call
+   by.names <- attr(X,"by.vars")
+   Xcall <- attr(X,"call")
    response.names <- setdiff(names(X),by.names)
    by <- X[by.names]
    X <- X[response.names]
