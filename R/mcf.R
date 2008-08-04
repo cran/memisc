@@ -196,7 +196,8 @@ recode.factor <- function(x,...,otherwise=NA){
       tmp[!recoded] <- as.character(otherwise[1])
       newlevels <- unique(tmp)
     }
-  }
+  } else
+    newlevels <- unique(tmp)
   codetable <- match(tmp,newlevels)
   i <- match(x,levels(x))
   factor(codetable[i],levels=unique(codetable),labels=newlevels)
