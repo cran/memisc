@@ -1,3 +1,7 @@
+2009-10-14:
+  - removed 'extended' arguments from calls to 'regexpr' and 'sub' etc. (for compatibility
+    with R 2.11)
+
 2009-08-19:
   - corrected documentation for mtable (\usepackage instead of usepackage)
   - completed documentation for contrasts generic
