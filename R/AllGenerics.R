@@ -2,7 +2,7 @@ setGeneric("as.item",function(x,...)standardGeneric("as.item"))
 
 setGeneric("annotation",function(x)standardGeneric("annotation"))
 setGeneric("annotation<-",function(x,value)standardGeneric("annotation<-"))
- 
+
 # setGeneric("description",function(x)standardGeneric("description"))
 # setGeneric("description<-",function(x,value)standardGeneric("description<-"))
 
@@ -46,3 +46,13 @@ as.array <- function(x,...)base::as.array(x)
 setGeneric("as.array",
   function(x,...)standardGeneric("as.array")
   )
+
+contrasts <- function(x,...) stats::contrasts(x,...)
+setGeneric("contrasts",
+  function(x,...) standardGeneric("contrasts")
+)
+
+# "contrasts<-" <- function(x,how.many,value) stats::`contrasts<-`(x,how.many,value)
+# setGeneric("contrasts<-",
+#   function(x,how.many,value) standardGeneric("contrasts<-")
+# )

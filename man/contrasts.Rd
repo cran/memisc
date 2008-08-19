@@ -2,8 +2,12 @@
 \alias{contr.treatment}
 \alias{contr.sum}
 \alias{contr}
+\alias{contrasts}
 \alias{contrasts,item-method}
+\alias{contrasts,ANY-method}
+\alias{contrasts<-}
 \alias{contrasts<-,item-method}
+\alias{contrasts<-,ANY-method}
 \title{Convenience Methods for Setting Contrasts}
 \description{
   This package provides modified versions of
@@ -31,6 +35,9 @@ contr.treatment(n, base=1,contrasts=TRUE)
 contr.sum(n,base=NULL,contrasts=TRUE)
 \S4method{contrasts}{item}(x,contrasts=TRUE)
 \S4method{contrasts}{item}(x,how.many) <- value
+# These methods are defined implicitely by making 'contrasts' generic.
+\S4method{contrasts}{ANY}(x,contrasts=TRUE)
+\S4method{contrasts}{ANY}(x,how.many) <- value
 }
 \arguments{
   \item{type}{a character vector, specifying the type of the contrasts.
@@ -46,7 +53,7 @@ contr.sum(n,base=NULL,contrasts=TRUE)
     }
   \item{contrasts}{a logical value, see  \code{\link[stats]{contrasts}}}
   \item{how.many}{the number of contrasts to generate, see \code{\link[stats]{contrasts}}}
-  \item{x}{an object of class "item"}
+  \item{x}{a factor or an object of class "item"}
   \item{value}{a matrix, a function or the name of a function}
 }
 \value{

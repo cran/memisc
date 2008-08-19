@@ -100,7 +100,7 @@ setMethod("contrasts<-","item",function(x,how.many,value){
     vl <- vl[is.valid2(vl@values,x@value.filter)]
     nvl <- length(vl@values)
     labs <- vl@.Data
-    
+
     if (nvl < 2)
         stop("contrasts can be applied only to factors with 2 or more levels")
     if (is.numeric(value)) {

@@ -7,67 +7,73 @@
 #include "memisc.h"
 
 
-/** Code translation **/ /*From pspp documentation*/
-static const unsigned char latin1_tab[255] = {
- 0,0,0,0,0,  0,0,0,0,0, /* 0-9: control and reserved codes */
- 0,0,0,0,0,  0,0,0,0,0, /* 10-19: control codes */
- 0,0,0,0,0,  0,0,0,0,0, /* 20-29: control codes */
- 0,0,0,0,0,  0,0,0,0,0, /* 30-39: control codes */
- 0,0,0,0,0,  0,0,0,0,0, /* 40-49: control codes */
- 0,0,0,0,0,  0,0,0,0,0, /* 50-59: control codes */
- 0,0,0,0,               /* 60: control code, 61-63: `reserved' */
- '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', /* 64-73: digits */
- 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', /* 74-99: captial letters A-Z*/
- 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
- 'U', 'V', 'W', 'X', 'Y', 'Z',
- 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', /* 100-25: lowercase letters a-z*/
- 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
- 'u', 'v', 'w', 'x', 'y', 'z',
- 32,                     /* 126: space*/
- 46, 60, 40, 43,      /* 127-130: symbols .<(+     */
- 124, /* 131: solid vertical pipe */
- 38, 91, 93, 33, 36, 42, 41, 59, 94, 45, 47, /* 132-142: symbols &[]!$*);^-/ */
- 166, /* 143: broken vertical pipe */
- 44, 37, 95, 62, 63, 96, 58, /* 144-150: symbols ,%_>?`: */
- 163, /* 151: British pound symbol */
- 64, 39, 61, 34, /* 152-155: @'="*/
- /** Symbols beyond 155 do usually not make sense in latin1 **/
- 32, /* 156: Less than or equal symbol*/
- 32, /* 157: Empty box */
- 177, /* 158: Plus or minus */
- 32, /* 159: Filled box */
- 176, /* 160: Degree symbol */
- 32, /* 161: Dagger */
- 126, /* 162: Tilde */
- 32, /* 163: En dash */
- 32 ,/* 164: Lower left corner box draw */
- 32, /* 165: Upper left corner box draw */
- 32, /* 166: Greater than or equal symbol */
- 32,32,32,32,32, 32,32,32,32,32, /* 167-176: Superscript 0 through 9 */
- 32, /* 177: Lower right corner box draw */
- 32, /* 178: Upper right corner box draw */
- 32, /* 179: Not equal symbol */
- 32, /* 180: Em dash */
- 32, /* 181: Superscript ( */
- 32, /* 182: Superscript ) */
- 32, /* 183: Horizontal dagger (?) */
- 123,125,92, /* 184-186: Symbols {}\ */
- 162, /* 187: Cents symbol */
- 183, /* 188: Centered dot/bullet */
- 0, 
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0, /* 189-255: Reserved */
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0
+/** Code translation **/ /*From foreign package*/
+static const unsigned char latin1_tab[256] = {
+    "                                                                "
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ."
+    "<(+|&[]!$*);^-/|,%_>?`:$@'=\"      ~-   0123456789   -() {}\\     "
+    "                                                                "
 };
+
+//  0,0,0,0,0,  0,0,0,0,0, /* 0-9: control and reserved codes */
+//  0,0,0,0,0,  0,0,0,0,0, /* 10-19: control codes */
+//  0,0,0,0,0,  0,0,0,0,0, /* 20-29: control codes */
+//  0,0,0,0,0,  0,0,0,0,0, /* 30-39: control codes */
+//  0,0,0,0,0,  0,0,0,0,0, /* 40-49: control codes */
+//  0,0,0,0,0,  0,0,0,0,0, /* 50-59: control codes */
+//  0,0,0,0,               /* 60: control code, 61-63: `reserved' */
+//  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', /* 64-73: digits */
+//  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', /* 74-99: captial letters A-Z*/
+//  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+//  'U', 'V', 'W', 'X', 'Y', 'Z',
+//  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', /* 100-25: lowercase letters a-z*/
+//  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+//  'u', 'v', 'w', 'x', 'y', 'z',
+//  32,                     /* 126: space*/
+//  46, 60, 40, 43,      /* 127-130: symbols .<(+     */
+//  124, /* 131: solid vertical pipe */
+//  38, 91, 93, 33, 36, 42, 41, 59, 94, 45, 47, /* 132-142: symbols &[]!$*);^-/ */
+//  166, /* 143: broken vertical pipe */
+//  44, 37, 95, 62, 63, 96, 58, /* 144-150: symbols ,%_>?`: */
+//  163, /* 151: British pound symbol */
+//  64, 39, 61, 34, /* 152-155: @'="*/
+//  /** Symbols beyond 155 do usually not make sense in latin1 **/
+//  32, /* 156: Less than or equal symbol*/
+//  32, /* 157: Empty box */
+//  177, /* 158: Plus or minus */
+//  32, /* 159: Filled box */
+//  176, /* 160: Degree symbol */
+//  32, /* 161: Dagger */
+//  126, /* 162: Tilde */
+//  32, /* 163: En dash */
+//  32 ,/* 164: Lower left corner box draw */
+//  32, /* 165: Upper left corner box draw */
+//  32, /* 166: Greater than or equal symbol */
+//  32,32,32,32,32, 32,32,32,32,32, /* 167-176: Superscript 0 through 9 */
+//  32, /* 177: Lower right corner box draw */
+//  32, /* 178: Upper right corner box draw */
+//  32, /* 179: Not equal symbol */
+//  32, /* 180: Em dash */
+//  32, /* 181: Superscript ( */
+//  32, /* 182: Superscript ) */
+//  32, /* 183: Horizontal dagger (?) */
+//  123,125,92, /* 184-186: Symbols {}\ */
+//  162, /* 187: Cents symbol */
+//  183, /* 188: Centered dot/bullet */
+//  0,
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0, /* 189-255: Reserved */
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
+//  0, 0, 0, 0, 0,   0, 0, 0, 0, 0,
+//  0, 0, 0, 0, 0, 0
+// };
 
 /** Number translation **/
 
 
-static const unsigned char Por2int_tab[255] =
+static const unsigned char Por2int_tab[256] =
   {
     255,255,255,255,255,255,255,255,255,255, /*10*/
     255,255,255,255,255,255,255,255,255,255, /*10*/
@@ -95,7 +101,7 @@ static const unsigned char Por2int_tab[255] =
     255,255,255,255,255,255,255,255,255,255, /*10*/
     255,255,255,255,255,255,255,255,255,255, /*10*/
     255,255,255,255,255,255,255,255,255,255, /*10*/
-    255,255,255,255,255
+    255,255,255,255,255,255
   };
 
 
@@ -160,7 +166,7 @@ double Por2double(int len, char* text){
     text++;
     l_charact--;
     }
-  if(*text == '-'){ 
+  if(*text == '-'){
     sign = -1;
     text++;
     l_charact--;
@@ -215,14 +221,14 @@ double Por2double(int len, char* text){
 #endif
       result *= R_pow_di(30,exponent);
     }
-    
+
 #ifdef DEBUG
   Rprintf("\nresult = %f",result);
 #endif
-  
+
   if(sign == -1)
     return -result;
-  else 
+  else
     return result;
 }
 /** porStreamBuf **/
@@ -269,12 +275,13 @@ void por_make_trans(porStreamBuf *b, const char *in){
     b->translate[j] = latin1_tab[i];
 #ifdef DEBUG
     Rprintf("\ni=%d, in: '%c' out: '%c' ",i,in[i],latin1_tab[i]);
-#endif  
+#endif
     }
   }
 }
 // #undef DEBUG
 
+// #define DEBUG
 int fillPorStreamBuf(porStreamBuf *b) {
 #ifdef DEBUG
   Rprintf("\nfillPorStreamBuf");
@@ -291,13 +298,14 @@ int fillPorStreamBuf(porStreamBuf *b) {
     return 0;
   }
   fgets((char *)b->buf,BUFSIZE,b->f);
+
 #ifdef DEBUG
   Rprintf("\nbuffer = |%s|",b->buf);
 #endif
   int i, len = strlen((char *)b->buf), prtlen = 0;
   for(i = 0; i < len; i++) b->buf[i] = b->translate[(int)b->buf[i]];
   /* The following is for buggy portable files with short lines */
-  
+
   for(i = len; i >= 0; i++){
     if (b->buf[i] >= 32) /* found a printable character*/ {
       prtlen = i+1;
@@ -316,6 +324,7 @@ int fillPorStreamBuf(porStreamBuf *b) {
   b->line++;
   return prtlen;
 }
+#undef DEBUG
 
 /** Internal functions to read from a porStreamBuf **/
 
@@ -521,16 +530,16 @@ int readToSlashPorStream1(porStreamBuf *b, char *ans, int n){
     int i, maxlines = (n + b->pos)/80+1 ;
 #ifdef DEBUG
     Rprintf("\nmaxlines = %d",maxlines);
-#endif    
+#endif
     for(i = 0; i < maxlines; i++){
 #ifdef DEBUG
       Rprintf("\ncurrent = %s",ans);
-#endif    
+#endif
       fillPorStreamBuf(b);
       slashp = slashpos(b->buf,80);
 #ifdef DEBUG
       Rprintf("\nslashp = %d",slashp);
-#endif    
+#endif
       if(slashp){
         memcpy(ans+len,b->buf,slashp);
         b->pos = slashp;
@@ -548,8 +557,8 @@ int readToSlashPorStream1(porStreamBuf *b, char *ans, int n){
 // #ifdef DEBUG
     Rprintf("\nWARNING: slash not found");
     Rprintf("\nans = %s",ans);
-// #endif    
-    return -1; 
+// #endif
+    return -1;
   }
 }
 
@@ -606,7 +615,7 @@ double readDoublePorStream1 (porStreamBuf *b){
     Rprintf("\nans=|%s|",ans);
 #endif
 
-    /*if(ans[strlen(ans)-1] == '*') return NA_REAL;*/ 
+    /*if(ans[strlen(ans)-1] == '*') return NA_REAL;*/
     ans[strlen(ans)-1] = '\0'; /* chop off '/'*/
     int len = strlen(ans);
 
@@ -811,7 +820,7 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
 #endif
   porStreamBuf *b = get_porStreamBuf(porStream);
   int n = asInteger(s_n);
-    
+
 #ifdef DEBUG
   Rprintf("\nRequired number of cases: %d",n);
   Rprintf("\nBuffer contents: |%s|",b->buf);
@@ -837,11 +846,11 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
       }
   }
   charbuf = R_alloc(charbuflen+1,sizeof(char));
-  
+
 #ifdef DEBUG
 //   PrintValue(data);
 #endif
-    
+
   for(i = 0; i < n; i++){
     if(atEndPorStream(b) || (b->pos < 80 && b->buf[b->pos] == 'Z')){
 #ifdef DEBUG
@@ -880,7 +889,7 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
     x = VECTOR_ELT(what,j);
     y = VECTOR_ELT(data,j);
     copyMostAttrib(x,y);
-  }  
+  }
   UNPROTECT(2);
   return data;
 }
@@ -892,7 +901,7 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
   Rprintf("\n############################");
 #endif
   porStreamBuf *b = get_porStreamBuf(porStream);
-    
+
 #ifdef DEBUG
   Rprintf("\nBuffer contents: |%s|",b->buf);
   Rprintf("\nLine: %d",b->line);
@@ -903,8 +912,8 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
   int nvar = LENGTH(s_types);
   int *types = INTEGER(s_types);
 
-    
-  int i, j, k;  
+
+  int i, j, k;
   char *charbuf;
   int charbuflen = 0;
   for(j = 0; j < nvar; j++){
@@ -912,7 +921,7 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
       k++;
   }
   charbuf = R_alloc(charbuflen+1,sizeof(char));
-  
+
   for(i = 0; ; i++){
 #ifdef DEBUG
     Rprintf("\n===================");
@@ -969,7 +978,7 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
   int ii,i,j,k, m=0, n = 0;
   for(j = 0; j < nvar; j++) m+=LOGICAL(s_vars)[j];
   for(i = 0; i < ncases; i++) n+=LOGICAL(s_cases)[i];
-  
+
   SEXP x, y, data;
   char *charbuf;
   int charbuflen = 0;
@@ -1047,7 +1056,7 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
       k++;
     }
   }
-  
+
   UNPROTECT(4);
   return data;
 }
