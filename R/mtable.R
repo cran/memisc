@@ -1,61 +1,35 @@
-# source("applyTemplate.R")
-# source("trimws.R")
+str.has <- function(text,has,not=NULL,how=c("all","any")){
+    how <- match.fun(match.arg(how))
+    
+    hasit <- sapply(has,function(pat)regexpr(pat,text,fixed=TRUE) > 0)
+    if(is.matrix(hasit))
+        hasit <- apply(hasit,1,how)
+    else
+        hasit <- all(hasit)
 
-# stars.template <- function(x) UseMethod("stars.template")
-# ci.template <- function(x) UseMethod("ci.template")
-# sumstat.template <- function(x) UseMethod("sumstat.template")
 
-.SummaryTemplates <- list()
-.CoefTemplates <- list()
+    if(!length(not)) return(hasit)
+    # else
+    hasnot <- sapply(not,function(pat)regexpr(pat,text,fixed=TRUE) > 0)
+    if(is.matrix(hasnot))
+        hasnot <- apply(hasnot,1,how)
+    else
+        hasnot <- all(hasnot)
 
-
-.CoefTemplates$default <- c(est="($est:#)($p:*)",
-                                          se="(($se:#))")
-.CoefTemplates$stat <- c(est="($est:#)($p:*)",
-                                      stat="(($stat:#))")
-.CoefTemplates$all <- c(est="($est:#)($p:*)",
-                                      se="(($se:#))",
-                                      stat="(($stat:#))",
-                                      p="(($p:#))"
-                                      )
-.CoefTemplates$all.nostar <- c(est="($est:#)",
-                                      se="(($se:#))",
-                                      stat="(($stat:#))",
-                                      p="(($p:#))"
-                                      )
-
-.CoefTemplates$horizontal <- t(c(est="($est:#)($p:*)",
-                                          se="(($se:#))"))
-
-.CoefTemplates$ci <- c(est="($est:3)",
-                                      se="(($se:#))",
-                                      ci="[($lwr:#);($upr:#)]")
-
-.CoefTemplates$ci.vertical <- c(est="($est:#)",
-                                        se="(($se:#))",
-                                        lwr="[($lwr:#)",
-                                        upr="($upr:#)]"
-                                        )
-
-.CoefTemplates$ci.horizontal<- matrix(c(est="($est:#)",
-                                        se="(($se:#))",
-                                        lwr="[($lwr:#)",
-                                        upr="($upr:#)]"
-                                        ),ncol=2,nrow=2,byrow=TRUE,
-                                        dimnames=list(
-                                          c("est","ci"),
-                                          c("est","se")
-                                          ))
+    hasit & !hasnot
+}
 
 
 
 setCoefTemplate <- function(...){
   args <- list(...)
   argnames <- names(args)
-  OldCoefTemplates <- .CoefTemplates
-  for(coef.style in argnames){
-      .CoefTemplates[[coef.style]] <<- args[[coef.style]]
+  CoefTemplates <- get("CoefTemplates", env=.memiscEnv)
+  OldCoefTemplates <- CoefTemplates
+    for(coef.style in argnames){
+      CoefTemplates[[coef.style]] <- args[[coef.style]]
   }
+  assign("CoefTemplates",CoefTemplates, env=.memiscEnv)
   return(invisible(OldCoefTemplates))
 }
 
@@ -67,15 +41,17 @@ getFirstMatch <- function(x,n){
 }
 
 getCoefTemplate <- function(style){
-  if(missing(style)) return(.CoefTemplates)
-  else return(.CoefTemplates[[style]])
+  CoefTemplates <- get("CoefTemplates", env=.memiscEnv)
+  if(missing(style)) return(CoefTemplates)
+  else return(CoefTemplates[[style]])
 }
 
 
-getSummary <- function(obj,alpha=.05) UseMethod("getSummary")
+getSummary <- function(obj,alpha=.05,...) UseMethod("getSummary")
 
 getSummary.lm <- function(obj,
-            alpha=.05
+            alpha=.05,
+            ...
             ){
   smry <- summary(obj)
   coef <- smry$coef
@@ -117,12 +93,13 @@ getSummary.lm <- function(obj,
   #coef <- apply(coef,1,applyTemplate,template=coef.template)
   
   #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat)
+  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
 }
 
 
 getSummary.glm <- function(obj,
-            alpha=.05){
+            alpha=.05,
+            ...){
   
   smry <- summary(obj)
   N <- if(length(weights(obj))) sum(weights(obj))
@@ -182,62 +159,110 @@ getSummary.glm <- function(obj,
   #coef <- apply(coef,1,applyTemplate,template=coef.template)
   
   #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
-  list(coef=coef,sumstat=sumstat)
+  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
 }
 
-
-.SummaryTemplates$lm <- 
-  c(
-          "R-squared"     = "($r.squared:f#)",
-          "adj. R-squared" = "($adj.r.squared:f#)",
-          sigma         = "($sigma:#)",
-          F             = "($F:f1#)",
-          p             = "($p:#)",
-          "Log-likelihood"  = "($logLik:f1#)",
-          Deviance      = "($deviance:f1#)",
-          AIC           = "($AIC:f1#)",
-          BIC           = "($BIC:f1#)",
-          N             = "($N:d)"
-  )
-
-.SummaryTemplates$glm <-
-  c(
-          "McFadden R-sq." = "($McFadden:f#)",
-          "Cox-Snell R-sq." = "($Cox.Snell:f#)",
-          "Nagelkerke R-sq."  = "($Nagelkerke:f#)",
-          phi         = "($phi:#)",
-          "Likelihood-ratio" = "($LR:f1#)",
-          p             = "($p:#)",
-          "Log-likelihood" = "($logLik:f1#)",
-          Deviance      = "($deviance:f1#)",
-          AIC           = "($AIC:f1#)",
-          BIC           = "($BIC:f1#)",
-          N             = "($N:d)"
-  )
-
 getSummaryTemplate <- function(x){
-  if(missing(x)) return(.SummaryTemplates)
+  SummaryTemplates <- get("SummaryTemplates", env=.memiscEnv)
+  if(missing(x)) return(SummaryTemplates)
   if(is.character(x)) cls <- x
   else cls <- class(x)
-  return(getFirstMatch(.SummaryTemplates,cls))
+  return(getFirstMatch(SummaryTemplates,cls))
 }
 
 setSummaryTemplate <- function(...){
   args <- list(...)
   argnames <- names(args)
-  OldSummaryTemplates <- .SummaryTemplates
+  OldSummaryTemplates <- SummaryTemplates <- get("SummaryTemplates", env=.memiscEnv)
   for(cls in argnames){
-      .SummaryTemplates[[cls]] <<- args[[cls]]
+      SummaryTemplates[[cls]] <- args[[cls]]
   }
+  assign("SummaryTemplates",SummaryTemplates,env=.memiscEnv)
   return(invisible(OldSummaryTemplates))
 }
 
-options(coef.style="default")
-options(baselevel.sep="-")
-options(factor.style="($f): ($l)")
-options(float.style="f")
+prettyNames <- function(coefnames,
+                        contrasts,
+                        xlevels,
+                        factor.style=getOption("factor.style"),
+                        baselevel.sep=getOption("baselevel.sep")
+                        ){
+    termorders <- sapply(strsplit(coefnames,":",fixed=TRUE),length)
+    ordergroups <- split(coefnames,termorders)
+    ordergroups <- lapply(ordergroups,prettyNames1,
+                        contrasts=contrasts,
+                        xlevels=xlevels,
+                        factor.style=factor.style,
+                        baselevel.sep=baselevel.sep)
+    unsplit(ordergroups,termorders)
+}
 
-prettyNames <- function(str,
+prettyNames1 <- function(str,
+                        contrasts,
+                        xlevels,
+                        factor.style=getOption("factor.style"),
+                        baselevel.sep=getOption("baselevel.sep")
+                        ){
+   str <- gsub(":"," x ",str,fixed=TRUE)
+   for(f in names(contrasts)){
+      contrast.f <- contrasts[[f]]
+      levels <- xlevels[[f]]
+      #if(!length(levels)) levels <- c("FALSE","TRUE")
+      if(!length(levels)) {
+        str <- gsub(paste(f,"TRUE",sep=""),f,str,fixed=TRUE)
+        next
+      }
+      if(is.character(contrast.f))
+        contrast.matrix <- do.call(contrast.f,list(n=levels))
+      else if(is.matrix(contrast.f))
+        contrast.matrix <- contrast.f
+      levels.present <- sapply(levels,function(level)
+            any(str.has(str,c(f,level)))
+            )
+      if(all(levels.present))
+        oldlabels <- newlabels <- levels
+      else if(!length(colnames(contrast.matrix))){
+        oldlabels <- newlabels <- as.character(1:ncol(contrast.matrix))
+        }
+      else if(is.character(contrast.f) &&
+          contrast.f %in% c(
+              "contr.treatment",
+              "contr.SAS"
+              )){
+         baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
+         newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         oldlabels <- colnames(contrast.matrix)
+      }
+      else if(is.character(contrast.f) &&
+          contrast.f %in% c(
+              "contr.sum",
+              "contr.helmert"
+              )){
+         newlabels <- apply(contrast.matrix,2,
+                                          function(x)rownames(contrast.matrix)[x>=1])
+         oldlabels <- colnames(contrast.matrix)
+      }
+      else if(
+        all(colnames(contrast.matrix) %in% rownames(contrast.matrix))
+        ){
+         baselevel <- setdiff(rownames(contrast.matrix),colnames(contrast.matrix))
+         newlabels <- paste(colnames(contrast.matrix),baselevel,sep=baselevel.sep)
+         oldlabels <- colnames(contrast.matrix)
+      }
+      else {
+        oldlabels <- newlabels <- colnames(contrast.matrix)
+      }
+      from <- paste(f,oldlabels,sep="")
+      to <- sapply(newlabels,
+        function(l)applyTemplate(c(f=f,l=l),template=factor.style))
+      for(i in 1:length(from))
+        str <- gsub(from[i],to[i],str,fixed=TRUE)
+   }
+   str
+}
+
+
+prettyNames.old <- function(str,
                         contrasts,
                         xlevels,
                         factor.style=getOption("factor.style"),
@@ -284,50 +309,68 @@ prettyNames <- function(str,
    str
 }
 
+bind_arrays <- function(args,along=1){
+  along.dn <- unlist(lapply(args,function(x)dimnames(x)[[along]]))
+  groups <- sapply(args,function(x)dim(x)[along])
+  dn <- dimnames(args[[1]])
+  keep.dn <- dn[-along]
+  dim1 <- dim(args[[1]])
+  keep.dim <- dim1[-along]
+  ldim <- length(dim1)
+  dimseq <- seq_len(ldim)
+  perm.to <- dimseq
+  perm.to[ldim] <- along
+  perm.to[along] <- ldim
+  res <- lapply(args,function(x){
+    x <- aperm(x,perm.to)
+    dim(x) <- c(prod(dim(x)[-ldim]),dim(x)[ldim])
+    x
+    })
+  res <- do.call(cbind,res)
+  dim(res) <- c(keep.dim,ncol(res))
+  dimnames(res) <- c(keep.dn,list(along.dn))
+  structure(aperm(res,perm.to),groups=groups)
+}
+
 mtable <- function(...,
                     coef.style=getOption("coef.style"),
                     summary.stats=TRUE,
                     factor.style=getOption("factor.style"),
                     getSummary=function(obj,...)UseMethod("getSummary"),
                     float.style=getOption("float.style"),
-                    digits=min(3,getOption("digits"))
+                    digits=min(3,getOption("digits")),
+                    drop=TRUE
                     ){
   args <- list(...)
   if(length(args)==1 && inherits(args[[1]],"by"))
     args <- args[[1]]
   argnames <- names(args)
   if(!length(argnames)) {
-    m<-match.call()
-    m$coef.style <- NULL
-    m$summary.stats <- NULL
-    argnames <- sapply(m[-1],as.character)
+    m<-match.call(expand.dots=FALSE)
+    argnames <- sapply(m$...,paste)
   }
   n.args <- length(args)
   #coef.template <- eval(coef.template,parent.frame())
   #sumstat.template <- eval(sumstat.template,parent.frame())
   arg.classes <- lapply(args,class)
-  if(any(sapply(arg.classes,length))==0) stop("don't know how to handle these arguments")
+  if(any(sapply(arg.classes,length))==0) stop("don\'t know how to handle these arguments")
   summaries <- lapply(args,getSummary)
   stemplates <- lapply(args,getSummaryTemplate)
   sumstats <- lapply(seq(n.args),function(i){
         drop(applyTemplate(summaries[[i]]$sumstat,
             template=stemplates[[i]],digits=digits))
       })
-  ctemplate <- getCoefTemplate(coef.style)
+  ctemplate <- as.matrix(getCoefTemplate(coef.style))
   ctdims <- dim(ctemplate)
   lctdims <- length(ctdims)
-  if(lctdims>2) stop("can't handle templates with dim>2")
-  as.row <- if(lctdims) c(1,3) else as.row <- 1:2
-  coef.dim <- if(lctdims) 3 else coef.dim <- 2
-  coefs <- lapply(seq(n.args),function(i){
-        coef.i <- summaries[[i]]$coef
-        contrasts.i <- args[[i]]$contrasts
-        xlevels.i <- args[[i]]$xlevels
-        rownames(coef.i) <- prettyNames(rownames(coef.i),
-                        contrast=contrasts.i,
-                        xlevels=xlevels.i,
+  if(lctdims>2) stop("can\'t handle templates with dim>2")
+  getCoef1 <- function(coef,contrasts,xlevels){
+        dimnames(coef)[[1]] <- prettyNames(dimnames(coef)[[1]],
+                        contrast=contrasts,
+                        xlevels=xlevels,
                         factor.style=factor.style)
-        ans <- apply(coef.i,1,function(x)applyTemplate(x,
+        adims <- if(length(dim(coef))==2) 1 else c(1,3)
+        ans <- apply(coef,adims,function(x)applyTemplate(x,
             template=ctemplate,float.style=float.style,digits=digits))
         if(length(dim(ctemplate))){
           newdims <- c(dim(ctemplate),dim(ans)[-1])
@@ -339,28 +382,106 @@ mtable <- function(...,
           dim(ans) <- newdims
           dimnames(ans) <- newdimnames
         } else rownames(ans) <- names(ctemplate)
+        ans[ans=="()"] <- ""
         return(ans)
-      })
-  coefs <- comb.arrays(coefs)
-  n.dims <- length(dim(coefs))
-  as.col <- setdiff(1:n.dims,as.row)
-  if(all(lctdims)) kill.header <- length(as.col)
-  else kill.header <- 0
-  kill.col <- 2
-  #if(n.dims>4) stop("getSummary should return an array of at most dimension 3")
+  }
+  getCoef <- function(i){
+        coef.i <- summaries[[i]]$coef
+        contrasts.i <- summaries[[i]]$contrasts
+        xlevels.i <- summaries[[i]]$xlevels
+        if(is.list(coef.i))
+          lapply(coef.i,getCoef1,contrasts=contrasts.i,xlevels=xlevels.i)
+        else
+          getCoef1(coef.i,contrasts=contrasts.i,xlevels=xlevels.i)
+      }
   
+  coefs <- lapply(seq(n.args),getCoef)
+  isList <- sapply(coefs,is.list)
+  if(any(isList)){
+    all.names <- unique(unlist(lapply(coefs,names)))
+    coefs <- lapply(coefs,function(x){
+      if(is.list(x)) x else structure(list(x),names=all.names[1])
+    })
+    coefs.tmp <- vector(length=length(all.names),mode="list")
+    names(coefs.tmp) <- all.names
+    for(n in all.names){
+      tmp <- lapply(coefs,.subset2,n)
+      isNULL <- sapply(tmp,is.null)
+      if(any(isNULL)){
+        firstNonNULL <- tmp[[min(which(!isNULL))]]
+        dummy <- array(NA,dim=dim(firstNonNULL),dimnames=dimnames(firstNonNULL))
+        tmp[isNULL] <- list(dummy)
+      }
+      tmp <- clct.arrays(tmp)
+      n.dims <- length(dim(tmp))
+      dimnames(tmp)[[n.dims]] <- argnames
+      tmp[is.na(tmp)] <- ""
+      coefs.tmp[[n]] <- tmp
+    }
+    coefs <- bind_arrays(coefs.tmp,3)
+  }
+  else{
+    coefs <- clct.arrays(coefs)
+    n.dims <- length(dim(coefs))
+    dimnames(coefs)[[n.dims]] <- argnames
+    coefs[is.na(coefs)] <- ""
+  }
+  groups <- attr(coefs,"groups")
+
+  n.dims <- length(dim(coefs))
+  #as.col <- setdiff(1:n.dims,as.row)
+  #if(all(lctdims)) kill.header <- length(as.col)
+  #else kill.header <- 0
+  #kill.col <- 2
+  #if(n.dims>4) stop("getSummary should return an array of at most dimension 3")
+
   dimnames(coefs)[[n.dims]] <- argnames
   
-  sumstats <- comb.vectors(sumstats)
+  sumstats <- clct.vectors(sumstats)
   colnames(sumstats) <- argnames
+  if(is.character(summary.stats) && !all(summary.stats %in% rownames(sumstats))){
+    undefnd <- summary.stats[!(summary.stats %in% rownames(sumstats))]
+    undefnd <- paste(sQuote(undefnd),sep=", ")
+    if(length(undefnd)==1)
+      stop("summary statistic ",undefnd," is undefined")
+    else
+      stop("summary statistics ",undefnd," are undefined")
+  }
   sumstats <- sumstats[summary.stats,,drop=FALSE]
   coefs[is.na(coefs)] <- ""
 
-  calls <- lapply(args,function(x)x$call)
+  calls <- lapply(summaries,function(x)x$call)
   names(calls) <- argnames
   
   sumstats[is.na(sumstats)] <- ""
-  structure(list(coefficients=as.table(coefs),summaries=as.table(sumstats),
+
+  if(drop && length(dim(coefs))>3 ){
+    cdims <- dim(coefs)
+    ckeep <- cdims > 1 | 1:length(dim(coefs)) <= 3
+    dn <- dimnames(coefs)
+    dim(coefs) <- dim(coefs)[ckeep]
+    dimnames(coefs) <- dn[ckeep]
+    dims <- sum(ckeep)
+    
+#     coefs <- drop(coefs)
+#     
+#     newdims <- rep(NA,length(cdims))
+#     newdims[ckeep] <- seq(length(which(ckeep)))
+#     as.col <- newdims[as.col]
+#     as.row <- newdims[as.row]
+#     as.col <- as.col[is.finite(as.col)]
+#     as.row <- as.row[is.finite(as.row)]
+  }
+  as.row <- c(1,3)
+  as.col <- which(!(seq(length(dim(coefs))) %in% as.row))
+  kill.col <- 2
+  kill.header <- length(as.col)
+  coef.dim <- 3
+
+  structure(list(
+    coefficients=as.table(coefs),
+    groups=groups,
+    summaries=as.table(sumstats),
     calls=calls,
     as.row=as.row,
     as.col=as.col,
@@ -373,45 +494,6 @@ mtable <- function(...,
 
 
 
-comb.arrays <- function(args){
-  dims <- sapply(args,dim)
-  n.args <- length(args)
-  if(is.list(dims)) stop("Dimensions do not match")
-
-  cdimnames <- vector(mode="list",length=nrow(dims))
-  for(i in 1:nrow(dims)){
-    for(j in 1:n.args){
-      if(j==1) cdimnames[[i]] <- dimnames(args[[1]])[[i]]
-      else cdimnames[[i]] <- union(cdimnames[[i]], dimnames(args[[j]])[[i]])
-    }
-  }
-  cdims <- sapply(cdimnames,length)
-  cdims <- c(cdims,n.args)
-  res <- array(NA,dim=cdims,dimnames=c(cdimnames,list(NULL)))
-#   str(res)
-  for(j in 1:n.args){
-    rhs <- list(as.symbol("["),as.call(list(as.symbol("[["),as.symbol("args"),j)))
-    rhs <- as.call(rhs)
-    lhs <- c(as.symbol("[<-"),as.symbol("res"),dimnames(args[[j]]),list(j))
-    ex <- as.call(c(lhs,rhs))
-    res <- eval(ex)
-  }
-  res
-}
-
-comb.vectors <- function(args){
-  n.args <- length(args)
-  for(j in 1:n.args){
-    if(j==1) cnames <- names(args[[1]])
-    else cnames <- union(cnames,names(args[[j]]))
-    }
-  res <- matrix(NA,nrow=length(cnames),ncol=n.args)
-  rownames(res) <- cnames
-  for(j in 1:n.args){
-    res[names(args[[j]]),j] <- args[[j]]
-    }
-  res
-}
 
 
 centerAt <- function(x,at=getOption("OutDec"),integers=c("dot","right","left"),skip=0){
@@ -461,11 +543,13 @@ centerAt <- function(x,at=getOption("OutDec"),integers=c("dot","right","left"),s
     centered <- paste(left,right,sep=".")
     x[has.dot] <- centered
   }
-  if(any(skip))
+  if(any(as.logical(skip)))
     x[skip] <- format(x[skip],width=maxcentered,justify="centre")
 
   return(x)
 }
+
+
 
 
 format.mtable <- function(x,
@@ -481,202 +565,325 @@ format.mtable <- function(x,
           topsep="",
           bottomsep="",
           sectionsep="",
+          compact=TRUE,
           forLaTeX=FALSE,
           useDcolumn=TRUE,
           colspec=if(useDcolumn) paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") else "r",
           LaTeXdec=".",
-          ddigits="-1",
+          ddigits=getOption("digits"),
           useBooktabs=TRUE,
           toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
           midrule=if(useBooktabs) "\\midrule" else "\\hline",
+          cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
           bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
           interaction.sep = if(forLaTeX) " $\\times$ " else " x ",
+          center.summaries=FALSE,
           ...
           ){
+  if(forLaTeX) compact <- FALSE
 
-  if(forLaTeX){
-    if(missing(trimleft)) trimleft <- FALSE
-    if(missing(trimright)) trimright <- FALSE
-    if(missing(center.at)) center.at <- getOption("OutDec")
-  }
-          
   coldims <- dim(x$coefficients)[x$as.col]
   nhrows <- length(coldims)
 
   coefnames <- dimnames(x$coefficients)[[x$coef.dim]]
-  coefnames <- gsub(" x ",interaction.sep,coefnames,fixed=TRUE)
+  if(interaction.sep !=" x ")
+    coefnames <- gsub(" x ",interaction.sep,coefnames,fixed=TRUE)
   dimnames(x$coefficients)[[x$coef.dim]] <- coefnames
   coefs <- ftable(as.table(x$coefficients),row.vars=rev(x$as.row),
     col.vars=rev(x$as.col)
     )
-#   browser()  
-  fcoefs <- format(coefs,quote=FALSE)
-#  fcoefs <- trimws(fcoefs,left=trimleft,right=trimright)
-
-  ckill.col <- c(x$kill.col,max(x$kill.col)+1)
-  header <- fcoefs[seq(nhrows),-ckill.col,drop=FALSE]
-  if(x$kill.header)
-    header <- header[-x$kill.header,,drop=FALSE]
-  fcoefs <- fcoefs[-seq(nhrows+1),-ckill.col,drop=FALSE]
-#   cat(t(coefs),sep=c(rep(colsep,ncol(coefs)-1),rowsep))
-  headrows <- 1:nrow(header)
-  
-  if(length(x$summaries)){
-    sdim <- dim(x$summaries)
-    summaries <- array("",c(sdim[1],dim(x$coefficients)[x$as.col]))
-    targetix <- c(list(TRUE),rep(list(1),length(dim(summaries))-2),list(TRUE))
-    ex <- as.call(c(as.symbol("[<-"),as.symbol("summaries"),targetix,list(x$summaries)))
-    summaries <- eval(ex)
-    dimnames(summaries) <- c(dimnames(x$summaries)[1],dimnames(x$coefficients)[x$as.col])
-    summaries <- ftable(as.table(summaries),row.vars=1,col.vars=rev(2:length(dim(summaries))))
-#      browser()
-    fsummaries <- format(summaries,quote=FALSE)
-
-    fsummaries <- fsummaries[-seq(nhrows+1),-x$kill.col,drop=FALSE]
-
-    fcoefs <- rbind(
-        t(as.matrix(c(coef.title,rep("",ncol(coefs))))),
-        fcoefs
-        )
-    fsummaries <- rbind(
-        t(as.matrix(c(summary.title,rep("",ncol(coefs))))),
-        fsummaries
-        )
-    
-#    fsummaries <- trimws(fsummaries,left=trimleft,right=trimright)
-    res <- rbind(header,fcoefs,fsummaries)
-    coefrows <- nrow(header) + seq(nrow(fcoefs))
-    summrows <- max(coefrows) + seq(nrow(fsummaries))
-  }
-  else{
-    res <- rbind(header,fcoefs)
-    coefrows <- nrow(header) + seq(nrow(fcoefs))
-    summrows <- 0
+  infos <- attributes(coefs)
+  summaries <- x$summaries
+  if(compact){
+#      fcoefs <- format(coefs,quote=FALSE)
+#      ckill.col <- c(x$kill.col,max(x$kill.col)+1)
+#      fcoefs <- fcoefs[,-ckill.col,drop=FALSE]
+#      if(x$kill.header)
+#         fcoefs <- fcoefs[-x$kill.header,,drop=FALSE]
+#      fcoefs <- trimws(fcoefs)
+#      ans <- sapply(seq(nrow(fcoefs)),function(i) paste(fcoefs[i,],collapse=colsep))
+#      ans <- paste(paste(ans,collapse=rowsep),rowsep,sep="")
+#      return(ans)
+    ans <- trimws(coefs)
+    col.vars <- rev(infos$col.vars)
+    ans <- coefs
+    for(i in 1:length(col.vars)){
+      header <- character(NCOL(ans))
+      cv <- col.vars[[i]]
+      lcv <- length(cv)
+      header[] <- cv
+      ans <- rbind(header,ans)
+      if(i == length(col.vars)){
+        if(ncol(ans)>ncol(summaries)){
+            tmp <- summaries
+            summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
+            summaries[,1] <- tmp
+            rownames(summaries) <- rownames(tmp)
+        }
+        ans <- rbind(ans,summaries)
+      }
+      dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
+      ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=colsep)))
     }
-
-  if(forLaTeX){
-    #res[coefrows,-1] <- sub("(\\*+)","\^\{\\1\}",res[coefrows,-1])
-    #res[coefrows,-1] <- sub("([eE])([-+]?[0-9]+)","\\\\textrm\{\\1\}\\2",res[coefrows,-1])
-    res[coefrows,-1] <- sub("(\\*+)","^{\\1}",res[coefrows,-1])
-    res[coefrows,-1] <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",res[coefrows,-1])
+    row.vars <- infos$row.vars[-x$kill.col]
+    leaders <- character(NROW(ans))
+    for(i in 1:length(row.vars)){
+      tmp <- matrix("",nrow=length(row.vars[[i]]),
+                        ncol=nrow(coefs)/length(row.vars[[i]]))
+      tmp[,1] <- row.vars[[i]]
+      tmp <- c(rep("",length(col.vars)),t(tmp))
+      if(i == 1) tmp <- c(tmp,rownames(summaries))
+      else tmp <- c(tmp,rep("",nrow(summaries)))
+      if(i == length(row.vars))
+        leaders <- as.matrix(paste(leaders,tmp,sep=""))
+      else
+        leaders <- as.matrix(paste(leaders,tmp,colsep,sep=""))
+    }
+    ans <- paste(leaders,ans,sep=colsep)
+    ans <- ans[-x$kill.header]
+    ans <- paste(ans,rowsep,sep="")
+    return(ans)
   }
-  
-  res <- format(res)
-    
-  if(length(center.at)){
+  else if(!forLaTeX){
+    if(length(center.at)){
+      align.integers <- match.arg(align.integers)
+      coefs <- apply(coefs,2,centerAt,
+                            at=center.at,
+                            integers=align.integers)
+      summaries <- apply(summaries,2,centerAt,
+                            at=center.at,
+                            integers=align.integers)
+      dim(summaries) <- dim(x$summaries)
+      dimnames(summaries) <- dimnames(x$summaries)
+    }
+    else
+      coefs <- trimws(coefs,left=trimleft,right=trimright)
+    col.vars <- rev(infos$col.vars)
+    ans <- coefs
+    for(i in 1:length(col.vars)){
+      header <- character(NCOL(ans))
+      cv <- col.vars[[i]]
+      lcv <- length(cv)
+      header[] <- cv
+      ans <- rbind(header,ans)
+      if(i == length(col.vars)){
+        if(ncol(ans)>ncol(summaries)){
+            tmp <- summaries
+            summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
+            summaries[,1] <- tmp
+            rownames(summaries) <- rownames(tmp)
+        }
+        ans <- rbind(ans,summaries)
+      }
+      ans <- format(ans,justify="centre")
+      dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
+      ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=colsep)))
+    }
+    row.vars <- infos$row.vars[-x$kill.col]
+    leaders <- character(NROW(ans))
+    for(i in 1:length(row.vars)){
+      tmp <- matrix("",nrow=length(row.vars[[i]]),
+                        ncol=nrow(coefs)/length(row.vars[[i]]))
+      tmp[,1] <- row.vars[[i]]
+      tmp <- c(rep("",length(col.vars)),t(tmp))
+      if(i == 1) tmp <- c(tmp,rownames(summaries))
+      else tmp <- c(tmp,rep("",nrow(summaries)))
+      tmp <- format(tmp,justify="left")
+      leaders <- as.matrix(paste(leaders,tmp,colsep,sep=""))
+    }
+    ans <- paste(leaders,ans,sep=colsep)
+    headlines <- seq(length(col.vars))
+    if(x$kill.header){
+        ans <- ans[-x$kill.header]
+        headlines <- headlines[-x$kill.header]
+    }
+    coeflines <- (if(length(headlines)) max(headlines) else 0)+ seq(nrow(coefs))
+    sumrylines <- max(coeflines) + seq(nrow(summaries))
+    if((any(nchar(topsep)))){
+      toprule <- rep(topsep,nchar(ans[1]))
+      toprule <- paste(toprule,collapse="")
+    } else
+    toprule <- NULL
+    if((any(nchar(sectionsep)))){
+      secrule <- rep(sectionsep,nchar(ans[1]))
+      secrule <- paste(secrule,collapse="")
+    } else
+    secrule <- NULL
+    if((any(nchar(bottomsep)))){
+      botrule <- rep(bottomsep,nchar(ans[1]))
+      botrule <- paste(botrule,collapse="")
+    } else
+    botrule <- NULL
+    ans <- c(
+            toprule,
+            if(length(headlines)) ans[headlines],
+            if(length(headlines)) secrule,
+            ans[coeflines],
+            secrule,
+            ans[sumrylines],
+            botrule
+            )
+    ans <- paste(paste(ans,collapse=rowsep),rowsep,sep="")
+    return(ans)
+  }
+  else { ## forLaTeX
+    if(missing(trimleft)) trimleft <- FALSE
+    if(missing(trimright)) trimright <- FALSE
+    if(missing(center.at)) center.at <- getOption("OutDec")
     align.integers <- match.arg(align.integers)
-    res[,-1] <- apply(res[,-1,drop=FALSE],2,centerAt,
-                                      at=center.at,
-                                      integers=align.integers,
-                                      skip=1:nhrows)
-  }
-  else
-    res <- trimws(res,left=trimleft,right=trimright)
+    col.vars <- rev(infos$col.vars)
+    row.vars <- infos$row.vars[-x$kill.col]
+    coefs <- apply(coefs,2,centerAt,
+                          at=center.at,
+                          integers=align.integers)
+    coefs <- sub("(\\*+)","^{\\1}",coefs)
+    coefs <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",coefs)
+    summaries <- apply(summaries,2,centerAt,
+                          at=center.at,
+                          integers=align.integers)
+    tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
+    if(center.summaries)
+        sumpos <- (dim(tmp.sumry)[2]+1)%/%2
+    else
+        sumpos <- 1
+    tmp.sumry[,sumpos,] <- summaries
+    dim(tmp.sumry) <- c(nrow(summaries),ncol(coefs))
+    ans <- rbind(coefs,tmp.sumry)
+    header <- character(1:length(col.vars))
+    for(i in 1:length(col.vars)){
+      tmp.header <- character(NCOL(ans))
+      cv <- col.vars[[i]]
+      lcv <- length(cv)
+      tmp.header[] <- cv
+      mcols <- ncol(coefs)/length(tmp.header)
+      tmp.header <- paste("\\multicolumn{",mcols,"}{c}{",trimws(tmp.header),"}",sep="")
+      if(i == length(col.vars) && length(col.vars) > 1)
+        tmp.header <- paste(tmp.header,collapse=" && ")
+      else
+        tmp.header <- paste(tmp.header,collapse=" & ")
+      if(length(col.vars)>1)
+        tmp.header <- c(rep("",length(row.vars)+1),t(tmp.header))
+      else
+        tmp.header <- c(rep("",length(row.vars)),t(tmp.header))
+      tmp.header <- paste(tmp.header,collapse="&")
+      header[i] <- tmp.header
+#       if(i == length(col.vars)){
+#         tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
+#         if(center.summaries)
+#             sumpos <- (dim(tmp.sumry)[2]+1)%/%2
+#         else
+#             sumpos <- 1
+#         tmp.sumry[,sumpos,] <- summaries
+#         if(ncol(summaries)>1)
+#          tmp.sumry <- apply(tmp.sumry,c(1,3),function(x)paste(x,collapse=" & "))
+#         else tmp.sumry <- drop(tmp.sumry)
+#         ans <- rbind(ans,tmp.sumry)
+#       }
+      ans <- format(ans,justify="centre")
+      dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
+      if(i == length(col.vars) && length(col.vars) > 1)
+        ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=" && ")))
+      else
+        ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=" & ")))
+    }
+    leaders <- character(NROW(coefs)+nrow(summaries))
+    for(i in 1:length(row.vars)){
+      tmp <- matrix("",nrow=length(row.vars[[i]]),
+                        ncol=nrow(coefs)/length(row.vars[[i]]))
+      tmp[,1] <- row.vars[[i]]
+      tmp <- c(t(tmp))
+      if(i == 1) tmp <- c(tmp,rownames(summaries))
+      else tmp <- c(tmp,rep("",nrow(summaries)))
+      tmp <- format(tmp,justify="left")
+      if(i < length(row.vars) || length(col.vars) > 1)
+        leaders <- as.matrix(paste(leaders,tmp," & " ,sep=""))
+      else
+        leaders <- as.matrix(paste(leaders,tmp,sep=""))
+    }
+    ans <- paste(leaders,ans,sep=" & ")
+    header <- paste(header,"\\\\",sep="")
 
-  if(forLaTeX){
-    ans <- "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    ans <- c(ans,"%")
-    ans <- c(ans,"% Calls:")
+    if(length(cmidrule) && length(col.vars)>1){
+        ccol.vars <- rev(col.vars[-1])
+      n.grps <- length(ccol.vars[[1]])
+      len.grps <- ncol(coefs)/n.grps + 1
+      strt.grps <- length(row.vars)+1 + (seq(n.grps)-1)*len.grps+1
+      cmidrules <- character(length(header))
+      for(i in 1:length(ccol.vars)){
+        n.cmrl <- length(ccol.vars[[i]])
+        len.cmrl <- ncol(coefs)/n.cmrl
+        per.grp <- n.cmrl/n.grps
+        strt.igrp <- (seq(per.grp)-1)*len.cmrl
+        end.igrp <- seq(per.grp)*len.cmrl - 1
+        strt.cmrl <- c(outer(strt.igrp,strt.grps,"+"))
+        end.cmrl <- c(outer(end.igrp,strt.grps,"+"))
+        ccmidrule <- paste(cmidrule,"{",strt.cmrl,"-",end.cmrl,"}",sep="")
+        cmidrules[i] <- paste(ccmidrule,collapse="")
+      }
+      header <- cbind(rev(header),rev(cmidrules))
+      if(x$kill.header)
+        header <- header[-x$kill.header,,drop=FALSE]
+      header <- c(t(header))
+      header <- header[-length(header)]
+    }
+    else{
+      header <- rev(header)
+      if(x$kill.header)
+        header <- header[-x$kill.header]
+      }
+    ans <- paste(ans,"\\\\",sep="")
+    coeflines <- seq(nrow(coefs))
+    sumrylines <- max(coeflines) + seq(nrow(summaries))
+    ans <- c(
+            toprule,
+            if(length(header))header,
+            if(length(header))midrule,
+            ans[coeflines],
+            midrule,
+            ans[sumrylines],
+            bottomrule
+            )
+
+    leader.spec <- paste(rep("l",length(row.vars)),collapse="")
+    coef.spec <- character(ncol(coefs)/length(rev(col.vars)[[1]]))
+    coef.spec[] <- colspec
+    coef.spec <- paste(coef.spec,collapse="")
+    tabspec <- c(leader.spec,rep(coef.spec,length(rev(col.vars)[[1]])))
+    if(length(col.vars) > 1)
+        tabspec <- paste(tabspec,collapse="c")
+    else
+        tabspec <- paste(tabspec,collapse="")
+    tabbegin <- paste("\\begin{tabular}{",tabspec,"}",sep="")
+    tabend <- "\\end{tabular}"
+
+    splash <- c("%")
+    splash <- c(splash,"% Calls:")
     calls <- x$calls
     for(i in seq(calls)){
         tmp <- paste("% ",names(calls)[i],": ",sep="")
         tmp <- paste(tmp,paste(trimws(deparse(calls[[i]])),collapse=" "),"")
-        ans <- c(ans,tmp)
+        splash <- c(splash,tmp)
       }
-    ans <- c(ans,"%")
-    ans <- c(ans,"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    tabspec <- rep("l",ncol(res))
-    tabspec[-1] <- colspec
-    tabbegin <- paste("\\begin{tabular}{",paste(tabspec,collapse=""),"}",sep="")
-    tabend <- "\\end{tabular}"
-    ans <- c(ans,tabbegin)
-    if(length(toprule)){
-      ans <- c(ans,toprule)
-    }
-    pcoldims <- cumprod(coldims)
-    for(i in headrows){
-      if(i < headrows){
-        mcols <- rev(cumprod)[i+1]
-      }
-        else mcols <- 1
-
-      for(j in 2:ncol(res))
-        ans <- c(ans,paste(" & \\multicolumn{",mcols,"}{c}{",trimws(res[i,j]),"}",sep=""))
-      ans <- c(ans,"\\\\")
-    }
+    splash <- c(splash,"%")
+    splashrule <- rep("%",max(sapply(splash,nchar),sapply(ans,nchar)))
+    splashrule <- paste(splashrule,collapse="")
+    splash <- c(splashrule,splash,splashrule)
+    #splash <- paste(paste(splash,"\n",sep=""),collapse="")
     
-    if(length(midrule)){
-      ans <- c(ans,midrule)
-    }
-    for(i in coefrows){
-      cr <- paste(paste(res[i,],collapse=" & "),"\\\\")
-      ans <- c(ans,cr)
-    }
+    #ans <- paste(paste(ans,collapse="\n"),"\n",sep="")
     
-    if(any(summrows)){
-      if(length(midrule)){
-      ans <- c(ans,midrule)
-      }
-      for(i in summrows){
-        sr <- paste(paste(res[i,],collapse=" & "),"\\\\")
-        ans <- c(ans,sr)
-      }
-    }
-
-    
-    if(length(bottomrule)){
-      ans <- c(ans,bottomrule)
-    }
-    ans <- c(ans,tabend)
+    #return(paste(splash,tabbegin,ans,tabend,sep=""))
+    c(splash,tabbegin,ans,tabend)
   }
-  else {
-      ans <- c()
-      colwidths <- sapply(seq(ncol(res)),function(i)max(nchar(res[,i])))
-      if(any(nchar(topsep))){
-        top <- sapply(seq(ncol(res)),function(i)
-            paste(rep(topsep,colwidths[i]),collapse=""))
-        top <- paste(top,collapse=rep(topsep,nchar(colsep)))
-        ans <- c(ans,top)
-      }
-      #ans <- paste(ans,t(res),sep=c(rep(colsep,ncol(res)-1),rowsep))
-      for(i in headrows){
-        hr <- paste(res[i,],collapse=colsep)
-        ans <- c(ans,hr)
-        }
-        
-      if(any(nchar(sectionsep))){
-        secrule <- sapply(seq(ncol(res)),function(i)
-            paste(rep(sectionsep,colwidths[i]),collapse=""))
-        secrule <- paste(secrule,collapse=rep(sectionsep,nchar(colsep)))
-        ans <- c(ans,secrule)
-      }
-
-      for(i in coefrows){
-        cr <- paste(res[i,],collapse=colsep)
-        ans <- c(ans,cr)
-        }
-      
-      if(any(summrows)){
-        if(any(nchar(sectionsep))){
-          ans <- c(ans,secrule)
-        }
-        for(i in summrows){
-          sr <- paste(res[i,],collapse=colsep)
-          ans <- c(ans,sr)
-          }
-      }
-
-      
-      if(any(nchar(bottomsep))){
-        bottom <- sapply(seq(ncol(res)),function(i)
-            paste(rep(bottomsep,colwidths[i]),collapse=""))
-        bottom <- paste(bottom,collapse=rep(bottomsep,nchar(colsep)))
-        ans <- c(ans,bottom)
-      }
-      ans <- paste(paste(ans,collapse=rowsep),rowsep,sep="")
-  }
-  return(ans)
 }
+
+
+
+
+
+
+
+
 
 print.mtable <- function(x,trim=FALSE,center.at=getOption("OutDec"),
       colsep=" ",
@@ -689,7 +896,9 @@ print.mtable <- function(x,trim=FALSE,center.at=getOption("OutDec"),
     }
   cat("\n")
   cat(format.mtable(x,trimleft=trim,trimright=trim,center.at=center.at,
-      colsep=colsep,topsep=topsep,bottomsep=bottomsep,sectionsep=sectionsep,...))
+      compact=FALSE,
+      colsep=colsep,topsep=topsep,bottomsep=bottomsep,sectionsep=sectionsep,...),
+      sep="")
 }
 
 toLatex.mtable <- function(object,...){
@@ -703,14 +912,30 @@ write.mtable <- function(object,file="",...){
 }
 
 
-relabel.mtable <- function(x,...){
- n.cdims <- length(dim(x$coefficients))
- n.sdims <- length(dim(x$summaries))
- for(i in 1:n.cdims){
-  x$coefficients <- dimrename(x$coefficients,dim=i,...)
-  }
- for(i in 1:n.sdims){
-  x$summaries <- dimrename(x$summaries,dim=i,...)
-  }
+
+drop.mtable <- function(x,...){
+  cdims <- dim(x$coefficients)
+  ckeep <- cdims > 1
+  x$coefficients <- drop(x$coefficients)
+  
+  newdims <- rep(NA,length(cdims))
+  newdims[ckeep] <- seq(length(which(ckeep)))
+  as.col <- newdims[x$as.col]
+  as.row <- newdims[x$as.row]
+  x$as.col <- as.col[is.finite(as.col)]
+  x$as.row <- as.row[is.finite(as.row)]
+  x
+}
+
+relabel.mtable <- function(x,...,gsub=FALSE,fixed=!gsub,warn=FALSE){
+ relabelTab <- function(tab){
+  n.dims <- length(dim(tab))
+  for(i in 1:n.dims){
+    tab <- dimrename(tab,dim=i,...,gsub=gsub,fixed=fixed,warn=warn)
+    }
+  tab
+ }
+ x$coefficients <- relabelTab(x$coefficients)
+ x$summaries <- relabelTab(x$summaries)
  return(x)
 }

@@ -2,18 +2,20 @@
 \alias{getSummary}
 \alias{getSummary.lm}
 \alias{getSummary.glm}
-\title{Get model summaries for use with "mtable"}
+
+\title{Get Model Summaries for Use with "mtable"}
 \description{A generic function and methods to collect coefficients
-  and summary statistics from a model object.
+  and summary statistics from a model object. It is used in \code{\link{mtable}}
   }
 \usage{
-  \method{getSummary}{lm}(obj, alpha=.05)
-  \method{getSummary}{glm}(obj, alpha=.05)
+  \method{getSummary}{lm}(obj, alpha=.05,\dots)
+  \method{getSummary}{glm}(obj, alpha=.05,\dots)
 }
 \arguments{
   \item{obj}{a model object, e.g. of class \code{lm} or \code{glm}}
   \item{alpha}{level of the confidence intervals; their coverage should
     be 1-alpha/2 }
+  \item{\dots}{further arguments; ignored.}
 }
 \details{
   The generic function \code{getSummary} is called by \code{\link{mtable}}
@@ -36,11 +38,20 @@
     \code{stat}\tab  \tab t- or Wald-z statistics,\cr
     \code{p}   \tab  \tab significance levels of the statistics,\cr
     \code{lwr} \tab  \tab lower confidence limits, \cr
-    \code{upr} \tab  \tab upper confidence limits. \cr 
+    \code{upr} \tab  \tab upper confidence limits. \cr
     }
+%     \describe{
+%       \item{\code{est}}{the coefficient estimates,}
+%       \item{\code{se}}{the estimated standard errors,}
+%       \item{\code{stat}}{t- or Wald-z statistics,}
+%       \item{\code{p}}{significance levels of the statistics,}
+%       \item{\code{lwr}}{lower confidence limits,}
+%       \item{\code{upr}}{upper confidence limits.}
+%     }
     The higher dimensions of the array correspond to
     the individual coefficients and, in multi-equation models,
     to the model equations.
+    
     }
   \item{sumstat}{a vector containing the model summary statistics;
     the components may have arbitrary names.}

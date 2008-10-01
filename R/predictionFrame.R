@@ -1,15 +1,20 @@
-add.residuals <- function(Y,object,variables){
-  r <- residuals(object,type="working")
+add.residuals <- function(Y,object,variables,residuals=c("deviance","pearson","working")){
+  residuals <- match.arg(residuals)
+  r <- residuals(object,type=residuals)
   sapply(variables,function(v){
       Y[,paste(v,"fit",sep=".")] + r
       })
 }
 
-prediction.frame <- function(object,newdata=NULL,...,residuals=NULL)
+prediction.frame <- function(object,newdata=NULL,...,residuals=c("none","deviance","pearson","working",
+  "standardized","studentized"))
   UseMethod("prediction.frame")
 
-prediction.frame.default <- function(object,newdata=NULL,...,residuals=NULL){
-  if(missing(newdata)){
+prediction.frame.default <- function(object,newdata=NULL,...,residuals=c("none","deviance","pearson","working",
+  "standardized","studentized")){
+  residuals <- match.arg(residuals)
+  if(missing(newdata))
+   {
     envir <- attr(formula(object),".Environment")
     vars <- all.vars(formula(object))
     X <- eval(object$call$data, envir)
@@ -20,9 +25,12 @@ prediction.frame.default <- function(object,newdata=NULL,...,residuals=NULL){
       names(X) <- vars
     }
     else
-      X <- X[vars]
+      X <- as.data.frame(X)[vars]
+    na.action <- object$na.action
+    if(length(na.action))
+      X <- X[-na.action,,drop=FALSE]
   }
-  #  X <- model.frame(object)
+    #X <- model.frame(object)
   else
     X <- newdata
   termLabels <- attr(terms(object),"term.labels")
@@ -33,6 +41,8 @@ prediction.frame.default <- function(object,newdata=NULL,...,residuals=NULL){
   tvLabels <- if(type.is.variables) variables else termLabels
   
   Y <- predict(object,newdata=newdata,...)
+#   X <- X[variables]
+  
   if(length(Y))
   Ynames <- names(Y)
   if(is.atomic(Y)){
@@ -73,16 +83,21 @@ prediction.frame.default <- function(object,newdata=NULL,...,residuals=NULL){
     #browser()
     Y <- do.call("cbind",Y)
   }
-  if(missing(residuals))
+  if(residuals=="none")
     return(cbind(X,Y))
   else {
     if(!missing(newdata)) stop("residuals not possible for new data")
-    if(is.atomic(residuals)) residuals <- list(type=residuals)
-
-    if(type.is.variables && residuals$type == "partial")
-      R <- add.residuals(Y,object,variables)
-    else
-      R <- do.call("residuals",c(list(object),residuals))
+    if(type.is.variables){
+      if(residuals %in% c("standardized","studentized"))
+        stop("partial residuals of type ",sQuote(residuals)," not supported")
+      R <- add.residuals(Y,object,variables,residuals)
+      }
+    else if(residuals %in% c("working","pearson","deviance"))
+      R <- do.call("residuals",c(list(object),type=residuals))
+    else if(residuals == "standardized")
+      R <- do.call("rstandard",list(object))
+    else if(residuals == "studentized")
+      R <- do.call("rstudent",list(object))
     if(!is.array(R))
       R <- data.frame(resid=R)
     else{
@@ -99,34 +114,3 @@ prediction.frame.default <- function(object,newdata=NULL,...,residuals=NULL){
     else return(X)
   }
 }
-# debug(prediction.frame)
-
-# 
-# source("aggregateFormula.R")
-# 
-#   berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
-#   berk0 <- glm(cbind(Admitted,Rejected)~1,data=berkeley,family="binomial")
-#   berk1 <- glm(cbind(Admitted,Rejected)~Gender,data=berkeley,family="binomial")
-#   berk2 <- glm(cbind(Admitted,Rejected)~Gender+Dept,data=berkeley,family="binomial")
-# 
-# require(splines)
-#   x <- 1:100
-#   z <- factor(rep(LETTERS[1:4],25))
-#   y <- rnorm(100,sin(x/10)+as.numeric(z))
-#   yxz.ns <- glm(y ~ ns(x,6) + z)
-#   yxz.poly <- glm(y ~ poly(x,6) + z)
-#   yxz.sincos <- glm(y ~ sin(x/10) + cos(x/10) + z)
-#   
-# 
-# prediction.frame(berk2,type="variables")
-# 
-# prediction.frame(yxz.ns,type="terms")
-# prediction.frame(yxz.ns,type="variables")
-# 
-# prediction.frame(yxz.ns,type="variables",residuals="partial",se.fit=TRUE,intervals="confidence")
-# prediction.frame(yxz.ns,type="terms",residuals="partial",se.fit=TRUE,intervals="confidence")
-# 
-# #predict(yxz.ns,type="variables",residuals="partial",se.fit=TRUE,intervals="confidence")
-# #predict(yxz.ns,type="terms",residuals="partial",se.fit=TRUE,intervals="confidence")
-# 
-# prediction.frame(yxz.sincos,type="terms",residuals="partial",se.fit=TRUE,intervals="confidence")

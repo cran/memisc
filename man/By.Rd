@@ -25,7 +25,7 @@ By(formula,expr,data=parent.frame())
 }
 \examples{
 
-berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 By(~Dept,glm(cbind(Admitted,Rejected)~Gender,family="binomial"),data=berkeley)
 
 attach(berkeley)
@@ -34,3 +34,4 @@ detach(berkeley)
 
 }
 \keyword{manip}
+\keyword{univar}

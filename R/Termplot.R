@@ -108,12 +108,16 @@ Termplot.default <- function(object,
         col.term = 2,
         lty.term = 1,
         lwd.term = 1.5,
+        se = TRUE,
         col.se = "orange",
         lty.se = 2,
         lwd.se = 1,
         col.res = "gray",
+        residuals = c("deviance","none","pearson","working"),
         cex = 1,
-        pch = par("pch"),
+        pch = 1,
+        jitter.resid=FALSE,
+        smooth = TRUE,
         col.smth = "darkred",
         lty.smth = 2,
         lwd.smth = 1,
@@ -123,8 +127,10 @@ Termplot.default <- function(object,
         ylab=NULL,
         main=paste(deparse(object$call),collapse="\n"),
         models=c("rows","columns"),
+        xrot = 0,
         layout=NULL
   ){
+  residuals <- match.arg(residuals)
   if(!require(lattice)) stop("Termplot needs the lattice package")
   if(!missing(object) && !length(object$terms) && length(object[[1]]$terms)){
     m0 <- m <- match.call()
@@ -158,8 +164,7 @@ Termplot.default <- function(object,
   Predictions <- prediction.frame(object,
                     se.fit=TRUE,
                     type="variables",
-                    residuals="partial")
-
+                    residuals=residuals)
   xannot <- sapply(variables,function(v){
             x <- Predictions[[v]]
             if(is.factor(x)){
@@ -188,35 +193,120 @@ Termplot.default <- function(object,
   x.at <- xannot["at",][levels(varFactor)]
   x.labels <- xannot["labels",][levels(varFactor)]
   x.limits <- xannot["limits",][levels(varFactor)]
-  Predictions <-lapply(variables,function(v){
-                  select <- paste(v,c("fit","se.fit","resid"),sep=".")
-                  P <- Predictions[select]
-                  names(P) <- c("fit","se.fit","resid")
-                  x <- as.numeric(Predictions[[v]])
-                  P <- P[order(x),]
-                  P$x <- x[order(x)]
-                  P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
-                  P$upper <- P$fit+2*P$se.fit
-                  P$lower <- P$fit-2*P$se.fit
-                  P$var <- rep(varFactor[varFactor==v],nrow(P))
+  Predictions <- lapply(variables,function(v){
+                  select <- c(v,paste(v,"fit",sep="."))
+                  if(se){
+                    select <- c(select,paste(v,"se.fit",sep="."))
+                  }
+                  if(residuals != "none")
+                    select <- c(select,paste(v,"resid",sep="."))
+                  
+                  if(length(intersect(select,names(Predictions)))){
+                    P <- Predictions[select]
+                    names(P) <- gsub(paste(v,".",sep=""),"",names(P),fixed=TRUE)
+                    names(P) <- gsub(v,"x",names(P),fixed=TRUE)
+                    P$x.is.factor <- rep(is.factor(P$x),length(P$x))
+                    P$x <- as.numeric(P$x)
+                    P <- P[order(P$x),,drop=FALSE]
+                    if(se){
+                      P$upper <- P$fit+2*P$se.fit
+                      P$lower <- P$fit-2*P$se.fit
+                    }
+                    if(smooth && length(P$resid))
+                      P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
+                    P$var <- rep(varFactor[varFactor==v],nrow(P))
+                    }
+                  else {
+                    P <- data.frame(fit=numeric(0),x=numeric(0),x.is.factor=logical(0))
+                    if(se)
+                      P <- cbind(P,data.frame(
+                        se.fit=numeric(0),
+                        upper=numeric(0),
+                        lower=numeric(0)
+                        ))
+                    if(residuals != "none")
+                      P <- cbind(P,data.frame(
+                            resid=numeric(0)
+                            ))
+                    if(smooth && length(P$resid))
+                      P <- cbind(P,data.frame(
+                            smooth=numeric(0)
+                            ))
+                    P <- cbind(P,data.frame(
+                            var=numeric(0)
+                            ))
+                  }
                   P
                   })
   Predictions <- do.call("rbind",Predictions)
-  #browser()
-  xyplot(resid+smooth+upper+lower+fit~x|var,data=Predictions,
-          type=c("l","p"),
-          lwd=c(0,lwd.smth,lwd.se,lwd.se,lwd.term),
-          lty=c(0,lty.smth,lty.se,lty.se,lty.term),
-          col=c(col.res,col.smth,col.se,col.se,col.term),
-          pch=rep(pch,5),
-          cex=c(cex,0,0,0,0),
+  if(length(jitter.resid)==1) jitter.resid <- c(jitter.resid,FALSE)
+  if(residuals!="none") myformula <- resid~x|var
+  else if(se) myformula <- upper+lower~x|var
+  else myformula <- fit~x|var
+
+  y.limits <- range(Predictions$fit)
+  if(se) y.limits <- range(y.limits,range(Predictions$upper,Predictions$lower))
+  if(residuals!="none") y.limits <- range(y.limits,range(Predictions$resid))
+
+  y.limits <- 1.1*(y.limits-mean(y.limits)) + mean(y.limits)
+  
+  xyplot(myformula,data=Predictions,
+          #drop.unused.levels=FALSE,
+          as.table=TRUE,
+          layout=layout,
+          type=c("n"),
           scales=list(x=list(relation="free",
-              at=x.at,
-              labels=x.labels,
-              limits=x.limits
-            )),
+                        at=x.at,
+                        labels=x.labels,
+                        limits=x.limits,
+                        rot = xrot
+                      ),
+                      y=list(limits=y.limits)
+            ),
           aspect=aspect,
           xlab=xlab,ylab=ylab,
+          ylim=y.limits,
+          panel=function(x,y,subscripts){
+            
+            if(length(subscripts)){
+              x.is.factor <- all(Predictions$x.is.factor[subscripts],na.rm=TRUE)
+              if(residuals!="none"){
+                if(jitter.resid[1]) res.x <- jitter(as.numeric(x))
+                else res.x <- as.numeric(x)
+                if(jitter.resid[2]) y <- jitter(y)
+                lpoints(res.x,y,col=col.res,pch=pch)
+              }
+              if(smooth && !x.is.factor){
+                llines(x,Predictions$smooth[subscripts],col=col.smth,lty=lty.smth,lwd=lwd.smth)
+              }
+              if(x.is.factor){
+                x0 <- x - .3
+                x1 <- x + .3
+                y0 <- y1 <- Predictions$fit[subscripts]
+                lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.term,lty=lty.term,lwd=lwd.term)
+              }
+              else {
+                y1 <- Predictions$fit[subscripts]
+                llines(x,y1,col=col.term,lty=lty.term,lwd=lwd.term)
+              }
+              if(se){
+                if(x.is.factor){
+                  x0 <- x - .3
+                  x1 <- x + .3
+                  y0 <- y1 <- Predictions$upper[subscripts]
+                  lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                  y0 <- y1 <- Predictions$lower[subscripts]
+                  lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                }
+                else {
+                  y1 <- Predictions$upper[subscripts]
+                  llines(x,y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                  y1 <- Predictions$lower[subscripts]
+                  llines(x,y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                }
+              }
+            }
+          },
           main=main)
           
 }
@@ -227,12 +317,15 @@ Termplot.lmList <- function(object ,...,
         col.term = 2,
         lty.term = 1,
         lwd.term = 1.5,
+        se = TRUE,
         col.se = "orange",
         lty.se = 2,
         lwd.se = 1,
         col.res = "gray",
         cex = 1,
-        pch = par("pch"),
+        pch = 1,
+        residuals = c("deviance","none","pearson","working"),
+        smooth = TRUE,
         col.smth = "darkred",
         lty.smth = 2,
         lwd.smth = 1,
@@ -242,8 +335,11 @@ Termplot.lmList <- function(object ,...,
         ylab=NULL,
         main=NULL,
         models=c("rows","columns"),
+        xrot = 0,
+        jitter.resid=FALSE,
         layout=NULL){
     m <- match.call()
+    residuals <- match.arg(residuals)
     are.lm <- sapply(object,function(obj)inherits(obj,"lm"))
     if(!all(are.lm)) stop("can only handle objects that inherit from lm")
     #str(object)
@@ -263,7 +359,7 @@ Termplot.lmList <- function(object ,...,
     Predictions <- lapply(object,prediction.frame,
                     se.fit=TRUE,
                     type="variables",
-                    residuals="partial")
+                    residuals=residuals)
     xannot <- lapply(Predictions,function(Predictions){
                 xannot <- sapply(variables,function(v){
                     x <- Predictions[[v]]
@@ -310,32 +406,50 @@ Termplot.lmList <- function(object ,...,
       #x.limits <- x.limits[row.not.empty,,drop=FALSE]
       #x.limits <- x.limits[,col.not.empty,drop=FALSE]
     }
-    #browser()
     Predictions <- lapply(Predictions,function(Predictions){
                 Predictions <- lapply(variables,function(v){
-                  select <- paste(v,c("fit","se.fit","resid"),sep=".")
-                  if(!length(intersect(select,names(Predictions)))){
-                        #cat("##\n")
-                        return(data.frame(
-                            fit=numeric(0),
-                            se.fit=numeric(0),
-                            resid=numeric(0),
-                            x=numeric(0),
-                            smooth=numeric(0),
-                            upper=numeric(0),
-                            term=numeric(0)
-                        ))
+                  select <- c(v,paste(v,"fit",sep="."))
+                  if(se){
+                    select <- c(select,paste(v,"se.fit",sep="."))
+                  }
+                  if(residuals != "none")
+                    select <- c(select,paste(v,"resid",sep="."))
+                  
+                  if(length(intersect(select,names(Predictions)))){
+                    P <- Predictions[select]
+                    names(P) <- gsub(paste(v,".",sep=""),"",names(P),fixed=TRUE)
+                    names(P) <- gsub(v,"x",names(P),fixed=TRUE)
+                    P$x.is.factor <- rep(is.factor(P$x),length(P$x))
+                    P$x <- as.numeric(P$x)
+                    P <- P[order(P$x),,drop=FALSE]
+                    if(se){
+                      P$upper <- P$fit+2*P$se.fit
+                      P$lower <- P$fit-2*P$se.fit
                     }
-                  P <- Predictions[select]
-                  names(P) <- c("fit","se.fit","resid")
-                  x <- as.numeric(Predictions[[v]])
-                  #browser()
-                  P <- P[order(x),]
-                  P$x <- x[order(x)]
-                  P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
-                  P$upper <- P$fit+2*P$se.fit
-                  P$lower <- P$fit-2*P$se.fit
-                  P$var <- rep(varFactor[varFactor==v],nrow(P))
+                    if(smooth && length(P$resid))
+                      P$smooth <- lowess(P$x,P$resid,f=span.smth)$y
+                    P$var <- rep(varFactor[varFactor==v],nrow(P))
+                    }
+                  else {
+                    P <- data.frame(fit=numeric(0),x=numeric(0),x.is.factor=logical(0))
+                    if(se)
+                      P <- cbind(P,data.frame(
+                        se.fit=numeric(0),
+                        upper=numeric(0),
+                        lower=numeric(0)
+                        ))
+                    if(residuals != "none")
+                      P <- cbind(P,data.frame(
+                            resid=numeric(0)
+                            ))
+                    if(smooth && length(P$resid))
+                      P <- cbind(P,data.frame(
+                            smooth=numeric(0)
+                            ))
+                    P <- cbind(P,data.frame(
+                            var=numeric(0)
+                            ))
+                  }
                   P
                   })
                   do.call("rbind",Predictions[sapply(Predictions,NROW)>0])
@@ -344,13 +458,10 @@ Termplot.lmList <- function(object ,...,
     i <- sapply(Predictions,NROW)
     #modelFactor <- rep(modelFactor,i)
     #x.limits <- x.limits[sapply(Predictions,NROW)>0]
-    #browser()
     Predictions <- do.call("rbind",Predictions[sapply(Predictions,NROW)>0])
-    Predictions <- transform(Predictions,
-                    model=rep(modelFactor,i))
+    Predictions$model <- rep(modelFactor,i)
     #levels(Predictions$term) <- paste("Term:",levels(Predictions$var))
     x.limits <- x.limits[table(Predictions$var,Predictions$model)>0]
-    
   models <- match.arg(models)
   if(models=="rows") perm.cond <- c(1,2)
   if(models=="columns") perm.cond <- c(2,1)
@@ -391,25 +502,74 @@ Termplot.lmList <- function(object ,...,
   new.dims <- sapply(data.has.it,function(x)length(unique(x)))
   stripTexts <- stripTexts[as.matrix(data.has.it)]
   dim(stripTexts) <- new.dims
+  if(length(jitter.resid)==1) jitter.resid <- c(jitter.resid,FALSE)
+  if(residuals!="none") myformula <- resid~x|var*model
+  else if(se) myformula <- upper+lower~x|var*model
+  else myformula <- fit~x|var*model
   
-  xyplot(resid+smooth+upper+lower+fit~x|var*model,data=Predictions,
+  y.limits <- range(Predictions$fit)
+  if(se) y.limits <- range(y.limits,range(Predictions$upper,Predictions$lower))
+  if(residuals!="none") y.limits <- range(y.limits,range(Predictions$resid))
+
+  y.limits <- 1.1*(y.limits-mean(y.limits)) + mean(y.limits)
+
+  xyplot(myformula,data=Predictions,
           #drop.unused.levels=FALSE,
           as.table=TRUE,
           layout=layout,
           perm.cond=perm.cond,
-          type=c("l","p"),
-          lwd=c(0,lwd.smth,lwd.se,lwd.se,lwd.term),
-          lty=c(0,lty.smth,lty.se,lty.se,lty.term),
-          col=c(col.res,col.smth,col.se,col.se,col.term),
-          pch=rep(pch,5),
-          cex=c(cex,0,0,0,0),
+          type=c("n"),
           scales=list(x=list(relation="free",
-              at=x.at,
-              labels=x.labels,
-              limits=x.limits
-            )),
+                        at=x.at,
+                        labels=x.labels,
+                        limits=x.limits,
+                        rot = xrot
+                        ),
+                      y=list(limits=y.limits)
+            ),
           aspect=aspect,
           strip=function(...) strip.Termplot(...,stripTexts=stripTexts),
           xlab=xlab,ylab=ylab,
+          panel=function(x,y,subscripts){
+            
+            if(length(subscripts)){
+              x.is.factor <- all(Predictions$x.is.factor[subscripts],na.rm=TRUE)
+              if(residuals!="none"){
+                if(jitter.resid[1]) res.x <- jitter(as.numeric(x))
+                else res.x <- as.numeric(x)
+                if(jitter.resid[2]) y <- jitter(y)
+                lpoints(res.x,y,col=col.res,pch=pch)
+              }
+              if(smooth && !x.is.factor){
+                llines(x,Predictions$smooth[subscripts],col=col.smth,lty=lty.smth,lwd=lwd.smth)
+              }
+              if(x.is.factor){
+                x0 <- x - .3
+                x1 <- x + .3
+                y0 <- y1 <- Predictions$fit[subscripts]
+                lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.term,lty=lty.term,lwd=lwd.term)
+              }
+              else {
+                y1 <- Predictions$fit[subscripts]
+                llines(x,y1,col=col.term,lty=lty.term,lwd=lwd.term)
+              }
+              if(se){
+                if(x.is.factor){
+                  x0 <- x - .3
+                  x1 <- x + .3
+                  y0 <- y1 <- Predictions$upper[subscripts]
+                  lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                  y0 <- y1 <- Predictions$lower[subscripts]
+                  lsegments(x0=x0,x1=x1,y0=y0,y1=y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                }
+                else {
+                  y1 <- Predictions$upper[subscripts]
+                  llines(x,y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                  y1 <- Predictions$lower[subscripts]
+                  llines(x,y1,col=col.se,lty=lty.se,lwd=lwd.se)
+                }
+              }
+            }
+          },
           main=main)
 }

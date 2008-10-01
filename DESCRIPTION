@@ -1,17 +1,20 @@
 Package: memisc
 Type: Package
-Title: Convenience Tools for Data Management,
-    Simulation, and Presentation of Estimates
-Version: 0.11-11
-Date: 2008-04-17
+Title: Tools for Management of Survey Data, Graphics, Programming, Statistics, and Simulation
+Version: 0.95-1
+Date: 2008-10-1
 Author: Martin Elff
 Maintainer: Martin Elff <elff@uni-mannheim.de>
-Depends: R (>= 2.5.0), stats, lattice, grid
-Suggests: DBI, RSQLite
-Description: A couple of tools
-  for preparing (especially social science) survey data,
-  conducting simulation studies, and presentation
-  of results of statistical analyses.
-License: GPL Version 2 or later.
-LazyLoad: No
-Packaged: Mon Aug  4 16:43:36 2008; elff
+Description: One of the aims of this package is to make life easier for useRs
+  who deal with survey data sets. It provides an infrastructure for the management of
+  survey data including value labels, definable missing values, recoding of variables,
+  production of code books, and import of (subsets of) SPSS and Stata files.
+  Further, it provides functionality to produce tables and data frames of
+  arbitrary descriptive statistics and (almost) publication-ready tables
+  of regression model estimates. Also some convenience tools for
+  graphics, programming, and simulation are provided.
+License: GPL-2
+LazyLoad: Yes
+Depends: lattice, grid, stats, methods, utils, MASS
+URL: http://webrum.uni-mannheim.de/sowi/elff/content.php/EnglishVersion/MartinsRPackages
+Packaged: Wed Oct  1 16:37:46 2008; elff

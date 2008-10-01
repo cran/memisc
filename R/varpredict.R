@@ -125,11 +125,11 @@ predict.lm <- function (object, newdata, se.fit = FALSE, scale = NULL, df = Inf,
                 iipiv <- vii[[i]]
                 ii <- unpiv[iipiv]
                 iipiv[ii == 0] <- 0
-                predictor[, i] <- if (any(iipiv) > 0)
+                predictor[, i] <- if (any(iipiv > 0))
                   X[, iipiv, drop = FALSE] %*% beta[iipiv]
                 else 0
                 if (se.fit || interval != "none")
-                  ip[, i] <- if (any(iipiv) > 0)
+                  ip[, i] <- if (any(iipiv > 0))
                     as.matrix(X[, iipiv, drop = FALSE] %*% Rinv[ii,, drop = FALSE])^2 %*% rep.int(res.var, p)
                   else 0
             }

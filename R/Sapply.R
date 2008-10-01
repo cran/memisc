@@ -29,55 +29,25 @@ SapplyOLD <- function (X, FUN, ..., test.dim=FALSE, simplify = TRUE, USE.NAMES =
   }
 }
 
-
-
-
-numericIfPossible <- function(x){
-    if(is.atomic(x)) return(.numericIfPossible(x))
-    else {
-        res <- lapply(x,.numericIfPossible)
-        attributes(res) <- attributes(x)
-        return(res)
-    }
-}
-
-.numericIfPossible <- function(x){
-    if(is.numeric(x)) return(x) 
-    else if(is.character(x)) return(.Call("numeric_if_possible", as.character(x)))
-    else if(is.factor(x)) {
-        levels <- .Call("numeric_if_possible",levels(x),PACKAGE="memisc")
-        if(is.numeric(levels)){
-            return(levels[as.numeric(x)])
-        } else return(x)
-    }
-    else return(x)
-}
-
-
-
-
-
-
-
 Sapply <- function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE){
     FUN <- match.fun(FUN)
     if(length(dim(X))){
         d.ans <- dim(X)
-        dn.ans <- if(length(dimnames(X))) dimnames(X) else NULL
+        dn.ans <- if(length(dimnames(X))) dimnames(X) else list(NULL) 
     } else {
         d.ans <- length(X)
-        dn.ans <- if(USE.NAMES) NULL else names(X)
+        dn.ans <- if(USE.NAMES) list(names(X)) else list(NULL) 
     }
     if (!is.vector(X) || is.object(X))
         X <- as.list(X)
-    answer <- .Internal(lapply(X,FUN))
+    answer <- lapply(X,FUN,...)
     if (USE.NAMES && is.character(X) && length(d.ans) == 1 && is.null(names(answer))) 
             dn.ans <- X
     if(simplify){
         dd.ans <- NULL
         ddn.ans <- list(NULL)
-        DIMS <- .Internal(lapply(answer,dim))
-        ulDIMS <- unique(unlist(.Internal(lapply(DIMS,length))))
+        DIMS <- lapply(answer,dim)
+        ulDIMS <- unique(unlist(lapply(DIMS,length)))
         if(length(ulDIMS)==1 && ulDIMS > 0){
             DIMS <- array(unlist(DIMS),dim=c(ulDIMS,length(X)))
             common.dims <- rep(NA,ulDIMS)
@@ -93,67 +63,62 @@ Sapply <- function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE){
             }
         }
         else {
-            LEN <- unique(unlist(.Internal(lapply(answer,length))))
-            if(length(LEN)==1){
+            LEN <- unique(unlist(lapply(answer,length)))
+            if(length(LEN)==1 && LEN > 1){
                 dd.ans <- LEN
-                ddn.ans <- list(names(answer[[1]])) 
+                ddn.ans <- list(names(answer[[1]]))
                 }
         }
-        if(!is.null(dd.ans))
+        if(!is.null(dd.ans)){
+            if(is.null(ddn.ans)) ddn.ans <- rep(list(NULL),length(dd.ans))
             return(array(unlist(answer,recursive=FALSE),dim=c(dd.ans,d.ans),dimnames=c(ddn.ans,dn.ans)))
+        }
+        else
+            return(array(unlist(answer,recursive=FALSE),dim=c(d.ans),dimnames=c(dn.ans)))
     }
     return(array(answer,dim=d.ans,dimnames=dn.ans))
 }
 
 
-# Lapply <- function(X, FUN, ...)
-#     Sapply(X, FUN, ..., test.dim=FALSE, simplify = FALSE, USE.NAMES = FALSE)
+Lapply <- function(X, FUN, ...)
+     Sapply(X, FUN, ..., simplify = FALSE, USE.NAMES = FALSE)
 
-Lapply <- function(X,FUN,...){
-    FUN <- match.fun(FUN)
-    if(length(dim(X))){
-        d.ans <- dim(X)
-        dn.ans <- if(length(dimnames(X))) dimnames(X) else NULL
-        if (!is.vector(X) || is.object(X))
-        X <- as.list(X)
-        return(array(
-            .Internal(lapply(X,FUN)),
-            dim=d.ans,dimnames=dn.ans))
-    }
+# Lapply <- function(X,FUN,...){
+#     FUN <- match.fun(FUN)
+#     if(length(dim(X))){
+#         d.ans <- dim(X)
+#         dn.ans <- if(length(dimnames(X))) dimnames(X) else NULL
+#         if (!is.vector(X) || is.object(X))
+#         X <- as.list(X)
+#         return(array(
+#             .Internal(lapply(X,FUN)),
+#             dim=d.ans,dimnames=dn.ans))
+#     }
+#     else {
+#         if (!is.vector(X) || is.object(X))
+#         X <- as.list(X)
+#         return(.Internal(lapply(X,FUN)))
+#     }
+# }
+
+numericIfPossible <- function(x){
+    if(is.atomic(x)) return(.numericIfPossible(x))
     else {
-        if (!is.vector(X) || is.object(X))
-        X <- as.list(X)
-        return(.Internal(lapply(X,FUN)))
+        res <- lapply(x,.numericIfPossible)
+        attributes(res) <- attributes(x)
+        return(res)
     }
 }
 
-to.data.frame <- function(X,as.vars=1){
-  if(is.atomic(X)){
-    ncols <- dim(X)[as.vars]
-    nrows <- prod(dim(X)[-as.vars])
-    coln <- dimnames(X)[[as.vars]]
-    Z <- dimnames(X)[-as.vars]
-    Z <- numericIfPossible(expand.grid(Z))
-    ii <- seq(length(dim(X)))
-    X <- aperm(X,c(ii[-as.vars],ii[as.vars]))
-    dim(X) <- c(nrows,ncols)
-    X <- as.data.frame.matrix(X)
-    rownames(X) <- rownames(Z) <- 1:nrows
-    names(X) <- coln
-   }
-  else {
-    nrows <- prod(dim(X))
-    Z <- dimnames(X)
-    X <- lapply(X,as.data.frame)
-    Z <- expand.grid(Z)
-    lnrows <- sapply(X,nrow)
-    lncols <- sapply(X,ncol)
-    if(!allequal(lncols)) stop("array elements do not match")
-    ncols <- lncols[1]
-    X <- do.call("rbind",X)
-    i <- rep(1:nrows,lnrows)
-    Z <- Z[i,,drop=FALSE]
-    rownames(X) <- rownames(Z) <- 1:nrow(X)
+.numericIfPossible <- function(x){
+    if(is.numeric(x)) return(x) 
+    else if(is.character(x)) return(.Call("numeric_if_possible", as.character(x)))
+    else if(is.factor(x)) {
+        levels <- .Call("numeric_if_possible",levels(x))
+        if(is.numeric(levels)){
+            return(levels[as.numeric(x)])
+        } else return(x)
     }
-  cbind(Z,X)
+    else return(x)
 }
+

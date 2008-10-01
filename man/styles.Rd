@@ -5,10 +5,10 @@
 \alias{getCoefTemplate}
 \alias{getSummaryTemplate}
 \alias{setSummaryTemplate}
-\title{Formatting styles for coefficients and factor contrasts for use with "mtable"}
+\title{Formatting Styles for Coefficients and Factor Contrasts}
 \description{
   Methods for setting and getting templates for formatting
-  model coefficients and summaries.
+  model coefficients and summaries for use in \code{\link{mtable}}.
 }
 \usage{
 setCoefTemplate(...)
@@ -19,11 +19,11 @@ setSummaryTemplate(...)
 \arguments{
   \item{...}{sevaral tagged arguments; in case of \code{setCoefTemplate} the
     tags specify the \code{coef.style}s, in case of \code{setSummaryTemplate}
-    they specify model classes
-    the associated values are \link{template}s.}
+    they specify model classes.
+    The associated values are \link{template}s.}
   \item{style}{a character string with the name of a coefficient style,
       if left empty, all coefficient templates are returned.  }
-  \item{x}{a model or a name of a model class, e.g. \code{"lm"} or \code{"glm"};
+  \item{x}{a model or a name of a model class, for example \code{"lm"} or \code{"glm"};
     if left empty, all summary templates are returned.}
 }
 \details{
