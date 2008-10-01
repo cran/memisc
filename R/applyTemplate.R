@@ -48,11 +48,6 @@ get.oneSubstr <- function(pattern,text){
   substr(text,start=start,stop=stop)
 }
 
-options(signif.symbols=c(
-      "***"=.001,
-      "**"=.01,
-      "*"=.05
-  ))
 
 formatSigSymbols <- function(x,signif.symbols=getOption("signif.symbols")){
   if(length(x)>1) {

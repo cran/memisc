@@ -1,13 +1,15 @@
 \name{prediction.frame}
 \alias{prediction.frame}
 \alias{prediction.frame.default}
-\title{Data frame of model predictions and independent variables}
+\title{Produce a Data Frame of Predictions and Independent Variables}
 \description{
-  \code{prediction.frame} is a convenience function that produces a data frame 
-  of independent variables and predictions of a fitted model.
+  \code{prediction.frame} produces a data frame that contains
+  the independent variables of a model together with model generated predictions.
   }
 \usage{
-  \method{prediction.frame}{default}(object,newdata=NULL,...,residuals=NULL)
+  \method{prediction.frame}{default}(object,newdata=NULL,...,
+          residuals=c("none", "deviance", "pearson", "working",
+                      "standardized", "studentized"))
 }
 \arguments{
 \item{object}{a model object from which predictions are generated.}
@@ -39,19 +41,19 @@ str(prediction.frame(lm1,
 str(prediction.frame(lm1,
                   se.fit=TRUE,
                   type="terms",
-                  residuals="partial"))
+                  residuals="deviance"))
 
 str(prediction.frame(lm2,
                   se.fit=TRUE,
                   type="terms",
-                  residuals="partial"))
+                  residuals="standardized"))
 
-berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 berk2 <- glm(cbind(Admitted,Rejected)~Gender+Dept,data=berkeley,family="binomial")
 
 str(prediction.frame(berk2,
                   se.fit=TRUE,
                   type="terms",
-                  residuals="partial"))
+                  residuals="studentized"))
 }
 \keyword{datagen}

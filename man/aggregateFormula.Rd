@@ -1,49 +1,77 @@
-\name{aggregate.formula}
+\name{aggragate.formula}
 \alias{aggregate.formula}
 \alias{genTable}
-\title{Convenient and flexible aggregation of data frames}
+\alias{fapply}
+\alias{fapply.default}
+\title{Data Frames and Tables of Descriptive Statistics}
 \description{
   \code{aggregate.formula} constructs a data frame of summaries conditional on
   given values of independent variables given by a formula. It is a method
   of the generic function \code{aggregate} applied to \code{formula} objects.
   
   \code{genTable} does the same, but produces a \code{table}.
+
+  \code{fapply} is a generic function that dispatches on its \code{data}
+  argument. It is called internally by \code{aggregate.formula} and \code{genTable}.
+  Methods for this function can be used to adapt \code{aggregate.formula} and
+  \code{genTable} to data sources other than data frames.
   }
 \usage{
-\method{aggregate}{formula}(x, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, NaN),
-      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,...)
+\method{aggregate}{formula}(x, data=parent.frame(), subset=NULL,
+      na.action=getOption("na.action"), sort = FALSE, exclude = c(NA, NaN),
+      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE, as.vars=1,
+      drop.constants=TRUE,\dots)
 
-genTable(formula, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, NaN),
-      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE)
+genTable(formula, data=parent.frame(), subset=NULL,
+      na.action=getOption("na.action"),exclude = c(NA, NaN),
+      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,\dots)
+
+fapply(formula,data,\dots) # calls UseMethod("fapply",data)
+\method{fapply}{default}(formula, data, subset=NULL,
+      na.action=getOption("na.action"),exclude = c(NA, NaN),
+      drop.unused.levels = FALSE, names=NULL, addFreq=TRUE,\dots)
 }
 \arguments{
-  \item{x, formula}{a formula object with
-    an expression yielding a numeric result on the left hand side and
-    the conditioning variables,
-    separated by \code{+}, on the right hand side. Interactions are
-    ignored. The left hand side of the formula is optional, see details below.}
+  \item{x, formula}{a formula.
+    The right hand side specifies the grouping variables,
+    separated by \code{+}, on the right hand side.
+    The left hand side gives an expression evaluated for each
+    combination of unique values of the grouping variables.
+    The left hand side of the formula is optional, see details below.}
   \item{data}{an environment or data frame or an object coercable into a data frame.}
   \item{subset}{an optional vector specifying a subset of observations
     to be used.}
   \item{na.action}{a function which indicates what should happen when
     the data contain \code{NA}s.}
-  \item{exclude}{a vector of values to be excluded when forming the
-    set of levels of the classifying factors.}
+  \item{sort}{a logical value; determines the order in which the aggregated
+    data appear in the data frame returned by \code{aggregate.formula}.
+    If \code{sort} is TRUE, then the returned data frame is sorted by
+    the values of the grouping variables, if \code{sort} is FALSE,
+    the order of resulting data frame corresponds to the order in which
+    the values of the grouping variables appear in the original data
+    frame. }
+  \item{exclude}{a vector of values to be excluded from the grouping variables.}
   \item{drop.unused.levels}{a logical indicating whether to drop unused
-    levels in the classifying factors.}
+    levels if factors are among the grouping variables.}
   \item{names}{an optional character vector giving names to the
     result(s) yielded by the expression on the left hand side of \code{formula}.
-    This argument may be redundant if the left hand results in is a named vector.
+    This argument may be redundant if the left hand side results in is a named vector.
     (See the example below.)}
   \item{addFreq}{a logical value. If TRUE and
       \code{data} is a table or a data frame with a variable
       named "Freq", a call to
-      \code{table}, \code{\link{wtable}}, or \code{\link{percent}}
+      \code{table}, \code{\link{Table}}, \code{\link{percent}}, or \code{\link{nvalid}}
       is supplied by an additional argument \code{Freq}
       and a call to \code{table} is translated into
-      a call to \code{wtable}.
+      a call to \code{Table}.
     }
-  \item{...}{further arguments, ignored.}
+  \item{as.vars}{an integer; relevant only if the left hand side of the formula returns
+    an array or a matrix - which dimension (rows, columns, or layers etc.) will transformed to
+    variables? Defaults to columns in case of matrices and to the highest dimensional extend
+    in case of arrays.}
+  \item{drop.constants}{logical; variables that are constant across levels dropped from the
+    result?}
+  \item{\dots}{further arguments, passed to methods or ignored.}
 }
 \details{
     If an expression is given as left hand side of the formula, its
@@ -62,11 +90,7 @@ genTable(formula, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, N
     
     If a single numeric variable is on the left hand side, frequency
     counts weighted by this variable are computed. In these cases,
-    \code{aggregate.formula} is equivalent to \code{as.data.frame(xtabs(...))},
-    but far less memory intensive if the data set or
-    the number of different combinations of the conditioning variables
-    is very large. Another difference is that conditioning variables are not
-    coerced into factors.
+    \code{aggregate.formula} is equivalent to \code{as.data.frame(xtabs(\dots))}.
 }
 \value{
     \code{aggregate.formula}
@@ -78,7 +102,11 @@ genTable(formula, data=parent.frame(), subset=NULL, na.action, exclude = c(NA, N
 \seealso{\link{aggregate.data.frame}, \link{xtabs}}
 \examples{
 ex.data <- expand.grid(mean=c(0,100),sd=c(1,10))[rep(1:4,rep(100,4)),]
-ex.data <- transform(ex.data,x=rnorm(n=nrow(ex.data),mean=ex.data$mean,sd=ex.data$sd))
+ex.data <- within(ex.data,{
+                  x<-rnorm(n=nrow(ex.data))
+                  mean<-ex.data$mean
+                  sd <- ex.data$sd
+                })
 
 aggregate(~mean+sd,data=ex.data)
 aggregate(mean(x)~mean+sd,data=ex.data)
@@ -89,8 +117,11 @@ genTable(c(Mean=mean(x),StDev=sd(x),N=length(x))~mean+sd,data=ex.data)
 attach(ex.data)
 aggregate(c(Mean=mean(x),StDev=sd(x))~mean+sd)
 genTable(c(Mean=mean(x),StDev=sd(x))~mean+sd)
+aggregate(c(mean(x),sd(x))~mean+sd)
+genTable(c(mean(x),sd(x))~mean+sd)
 detach(ex.data)
-aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+aggregate(table(Admit)~.,data=UCBAdmissions)
+aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 aggregate(Admit~.,data=UCBAdmissions)
 aggregate(percent(Admit)~.,data=UCBAdmissions)
 aggregate(percent(Admit)~Gender,data=UCBAdmissions)

@@ -1,20 +1,27 @@
 \name{to.data.frame}
 \alias{to.data.frame}
-\title{Flexible conversion of arrays into data frames}
+\title{Convert an Array into a Data Frame}
 \description{
   \code{to.data.frame} converts an array into a data frame, in such a way
-  that a chosen dimensional extent forms the variables in the data frame.
+  that a chosen dimensional extent forms variables in the data frame.
   The elements of the array must be either atomic, data frames
   with matching variables, or coercable into such data frames.
 }
 \usage{
-to.data.frame(X,as.vars=1)
+to.data.frame(X,as.vars=1,name="Freq")
 }
 \arguments{
   \item{X}{an array.}
   \item{as.vars}{a numeric value; indicates the dimensional extend
     which defines the variables. Takes effect only if \code{X} is 
-    an atomic array.}
+    an atomic array. If \code{as.vars} equals zero, a new variable
+    is created that contains the values of the array, that is,
+    \code{to.data.frame} acts on the array \code{X}
+    like \code{as.data.frame(as.table(X))}
+    }
+  \item{name}{a character string; the name of the variable
+    created if \code{X} is an atomic array and \code{as.vars} equals zero.
+    }
 }
 
 \value{
@@ -22,7 +29,7 @@ to.data.frame(X,as.vars=1)
 }
 
 \examples{
-berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 berktest1 <- By(~Dept+Gender,
                 glm(cbind(Admitted,Rejected)~1,family="binomial"),
                 data=berkeley)

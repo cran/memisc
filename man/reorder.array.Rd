@@ -2,10 +2,9 @@
 \alias{reorder}
 \alias{reorder.array}
 \alias{reorder.matrix}
-\title{Reorder an array or matrix}
+\title{Reorder an Array or Matrix}
 \description{
-  A \code{reorder} method for arrays and matrices. It reorders an array
-  or a matrix along a specified
+  \code{reorder.array} reorders an array along a specified
   dimension according given names, indices or results of
   a function applied.
 }
@@ -46,7 +45,9 @@
 \value{
   The reordered object \code{x}.
 }
-
+\seealso{
+  The default method of \code{\link[stats]{reorder}} in package \code{stats}.
+}
 \examples{
   (M <- matrix(rnorm(n=25),5,5,dimnames=list(LETTERS[1:5],letters[1:5])))
   reorder(M,dim=1,names=c("E","A"))

@@ -1,7 +1,7 @@
 \name{Sapply}
 \alias{Lapply}
 \alias{Sapply}
-\title{A dimension preserving variant of "sapply"}
+\title{A Dimension Preserving Variant of "sapply" and "lapply"}
 \description{
   \code{Sapply} is equivalent to \code{\link{sapply}}, except
   that it preserves the dimension and dimension names of the
@@ -27,11 +27,11 @@ Lapply(X, FUN, ...)
 \value{
   If \code{FUN} returns a scalar, then the result has the same dimension
   as \code{X}, otherwise the dimension of the result is enhanced relative
-  to \code{X}, in accordance to \code{test.dim}.
+  to \code{X}.
 }
 
 \examples{
-berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 berktest1 <- By(~Dept+Gender,
                 glm(cbind(Admitted,Rejected)~1,family="binomial"),
                 data=berkeley)

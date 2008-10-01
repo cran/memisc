@@ -1,58 +1,63 @@
 \name{mtable}
 \alias{mtable}
+\alias{relabel.mtable}
 \alias{format.mtable}
 \alias{print.mtable}
 \alias{toLatex.mtable}
 \alias{write.mtable}
-\alias{relabel.mtable}
-\title{Publication-ready tables of model estimates}
+\title{Comparative Table of Model Estimates}
 \description{
-  \code{mtable} produces a table of estimates for several models
-  in a format typically required for social science publications.
+  \code{mtable} produces a table of estimates for several models.
   }
 \usage{
 mtable(...,coef.style=getOption("coef.style"),
-           summary.stats=TRUE,
-           factor.style=getOption("factor.style"),
-           getSummary=function(obj,...)UseMethod("getSummary"),
-           float.style=getOption("float.style"),
-           digits=min(3,getOption("digits")))
+    summary.stats=TRUE,
+    factor.style=getOption("factor.style"),
+    getSummary=function(obj,...)UseMethod("getSummary"),
+    float.style=getOption("float.style"),
+    digits=min(3,getOption("digits")),
+    drop=TRUE
+  )
+\method{relabel}{mtable}(x, \dots, gsub = FALSE, fixed = !gsub, warn = FALSE)
 
 \method{format}{mtable}(x,
-          coef.title="Coefficients",
-          summary.title="Summaries",
-          colsep="\t",
-          rowsep="\n",
-          trim=TRUE,
-          trimleft=trim,
-          trimright=trim,
-          center.at=NULL,
-          align.integers=c("dot","right","left"),
-          topsep="",
-          bottomsep="",
-          sectionsep="",
-          forLaTeX=FALSE,
-          useDcolumn=TRUE,
-          colspec=if(useDcolumn) paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") else "r",
-          LaTeXdec=".",
-          ddigits="-1",
-          useBooktabs=TRUE,
-          toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
-          midrule=if(useBooktabs) "\\midrule" else "\\hline",
-          bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
-          interaction.sep = if(forLaTeX) " $\\times$ " else " x ",
-          ...
-          )
+    coef.title="Coefficients",
+    summary.title="Summaries",
+    colsep="\t",
+    rowsep="\n",
+    trim=TRUE,
+    trimleft=trim,
+    trimright=trim,
+    center.at=NULL,
+    align.integers=c("dot","right","left"),
+    topsep="",
+    bottomsep="",
+    sectionsep="",
+    compact=TRUE,
+    forLaTeX=FALSE,
+    useDcolumn=TRUE,
+    colspec=if (useDcolumn)
+        paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="")
+        else "r",
+    LaTeXdec=".",
+    ddigits=getOption("digits"),
+    useBooktabs=TRUE,
+    toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
+    midrule=if(useBooktabs) "\\midrule" else "\\hline",
+    cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
+    bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
+    interaction.sep = if(forLaTeX) " $\\times$ " else " x ",
+    center.summaries=FALSE,
+    ...
+    )
 
 \method{print}{mtable}(x,trim=FALSE,center.at=getOption("OutDec"),
-      colsep=" ",
-      topsep="=",bottomsep="=",sectionsep="-",...)
+    colsep=" ",
+    topsep="=",bottomsep="=",sectionsep="-",...)
 
 \method{toLatex}{mtable}(object,...)
 
 write.mtable(object,file="",...)
-
-\method{relabel}{mtable}(x,...)
 }
 \arguments{
      \item{...}{as argument to \code{mtable}: several model objects, e.g. of class \code{\link{lm}}; as argument to \code{print.mtable},
@@ -71,7 +76,7 @@ write.mtable(object,file="",...)
         This argument may also contain a character vector with
         the names of the summary statistics to report}
      \item{factor.style}{a character string that specifies the style in
-        which factor contrasts are labled. See \link{factor.style}.}
+        which factor contrasts are labled. See \code{\link{factor.style}}.}
      \item{getSummary}{a function that computes model-related statistics that
         appear in the table. See \code{\link{getSummary}}.}
      \item{float.style}{default format for floating point numbers if
@@ -81,7 +86,10 @@ write.mtable(object,file="",...)
         the template returned from \code{\link{getCoefTemplate}}
         \code{\link{getSummaryTemplate}}
         }
+     \item{drop}{logical value; should redundant column headings
+        dropped if only one model is given as argument?}
      \item{x, object}{an object of class \code{mtable}}
+     \item{gsub, warn, fixed}{logical values, see \code{\link{relabel}}}
      \item{coef.title}{a character vector, the title for the reported coefficients.}
      \item{summary.title}{a character vector, the title for the reported model summaries.}
      \item{colsep}{a character string which seperates the columns in the output.}
@@ -97,6 +105,8 @@ write.mtable(object,file="",...)
      \item{bottomsep}{a character string that is recycled to a bottom rule.}
      \item{sectionsep}{a character string that is recycled to seperate coefficients
         from summary statistics.}
+     \item{compact}{logical value; if TRUE, entries in the table are
+      not aligned in any way, giving the table the most compact form.}
      \item{forLaTeX}{should LaTeX code be produced?}
      \item{useDcolumn}{should the \code{dcolumn} LaTeX package be used?}
      \item{colspec}{LaTeX table column format specifyer(s).}
@@ -106,9 +116,13 @@ write.mtable(object,file="",...)
      \item{toprule}{appearance of the top border of the LaTeX \code{tabular} environment.}
      \item{midrule}{how are coefficients and summary statistics
         separated in the LaTeX \code{tabular} environment.}
+     \item{cmidrule}{appearance of rules under section headings.}
      \item{bottomrule}{appearance of the bottom border of the LaTeX \code{tabular} environment.}
      \item{interaction.sep}{a character string that separates factors that are involved
         in an interaction effect}
+     \item{center.summaries}{logical value; if TRUE, summaries for
+      each model are centered below the columns that correspond to
+      the respective model coefficients. }
      \item{file}{a file where to write to; defaults to console output.}
 }
 \details{
@@ -123,19 +137,22 @@ write.mtable(object,file="",...)
     \item{coefficients}{an array that contains the model coefficients.}
     \item{summaries}{a matrix that contains the model summaries.}
 
-    In addition the \code{mtable} object has attributes \code{as.row},
-    \code{as.col}, \code{kill.col}, \code{kill.header},
-    and \code{coef.dim} necessary for formatting.
 }
 \examples{
 lm0 <- lm(sr ~ pop15 + pop75,              data = LifeCycleSavings)
 lm1 <- lm(sr ~                 dpi + ddpi, data = LifeCycleSavings)
 lm2 <- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
 
-(mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2))
+mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
+    summary.stats=c("sigma","R-squared","F","p","N"))
 
-
-# Some other output formats
+(mtable123 <- relabel(mtable123,
+  "(Intercept)" = "Constant",
+          pop15 = "Percentage of population under 15",
+          pop75 = "Percentage of population over 75",
+            dpi = "Real per-capita disposable income",
+           ddpi = "Growth rate of real per-capita disp. income"
+  ))
 
 write.mtable(mtable123)
 \dontrun{file123 <- "mtable123.txt"
@@ -146,27 +163,51 @@ file.show(file123)}
 cat(toLatex(mtable123),sep="\\n",file=texfile123)
 file.show(texfile123)}
 
-berkeley <- aggregate(wtable(Admit,Freq)~.,data=UCBAdmissions)
+berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
 
 berk0 <- glm(cbind(Admitted,Rejected)~1,data=berkeley,family="binomial")
 berk1 <- glm(cbind(Admitted,Rejected)~Gender,data=berkeley,family="binomial")
 berk2 <- glm(cbind(Admitted,Rejected)~Gender+Dept,data=berkeley,family="binomial")
 
-mtable(berk0,berk1,berk2)
+mtable(berk0,summary.stats=c("Deviance","N"))
+mtable(berk0,drop=FALSE,summary.stats=c("Deviance","N"))
+mtable(berk1,summary.stats=c("Deviance","N"))
+mtable(berk1,drop=FALSE,summary.stats=c("Deviance","N"))
 
 
-mtable(berk0,berk1,berk2,coef.style="stat")
-mtable(berk0,berk1,berk2,coef.style="ci")
-mtable(berk0,berk1,berk2,coef.style="ci.vertical")
-mtable(berk0,berk1,berk2,coef.style="ci.horizontal")
-mtable(berk0,berk1,berk2,coef.style="all")
-mtable(berk0,berk1,berk2,coef.style="all.nostar")
+mtable(berk0,berk1,berk2,summary.stats=c("Deviance","N"))
 
-mtable(by(berkeley,berkeley$Dept,function(x)glm(cbind(Admitted,Rejected)~Gender,data=x,family="binomial")))
+mtable(berk0,berk1,berk2,
+          coef.style="stat",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="ci",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="ci.vertical",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="ci.horizontal",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="all",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="all.nostar",
+          summary.stats=c("Deviance","AIC","N"))
+
+mtable(by(berkeley,berkeley$Dept,function(x)glm(cbind(Admitted,Rejected)~Gender,
+        data=x,family="binomial")),
+      summary.stats=c("Likelihood-ratio","N"))
 
 
+mtable(By(~Gender,glm(cbind(Admitted,Rejected)~Dept,family="binomial"),
+        data=berkeley),
+      summary.stats=c("Likelihood-ratio","N"))
 
-mtable(By(~Gender,glm(cbind(Admitted,Rejected)~Dept,family="binomial"),data=berkeley))
+berkfull <- glm(cbind(Admitted,Rejected)~Dept/Gender - 1,
+                      data=berkeley,family="binomial")
+relabel(mtable(berkfull),Dept="Department",gsub=TRUE)
 
 }
 \keyword{misc}
