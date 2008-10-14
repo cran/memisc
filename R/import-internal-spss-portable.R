@@ -220,7 +220,7 @@ parseHeaderPorStream <- function(stream){
           }
     if(tag.code=="E") {
              #cat("\nFound document tag")
-             p$document <- paste(readDocumentPorStream(stream),collapse="\n")
+             document <- paste(readDocumentPorStream(stream),collapse="\n")
            }
 
   }
@@ -232,6 +232,7 @@ parseHeaderPorStream <- function(stream){
   p$dictionary <- dictionary
   p$value.labels <- value.labels
   p$types <- types
+  p$document <- document
   if(tag.code == "F"){
     #message("Found data tag, good ...\n")
     p$start.data <- tellPorStream(stream)
