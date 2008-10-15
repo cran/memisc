@@ -6,6 +6,7 @@
 #include <Rinternals.h>
 #include "memisc.h"
 
+
 /** Code translation **/ /*From pspp documentation*/
 static const unsigned char latin1_tab[255] = {
  0,0,0,0,0,  0,0,0,0,0, /* 0-9: control and reserved codes */
@@ -237,6 +238,7 @@ typedef struct {
   int pos;
   int line;
   unsigned char translate[256];
+  Rboolean at_end;
 } porStreamBuf;
 
 void initPorStreamBuf(porStreamBuf *b){
@@ -248,12 +250,13 @@ void initPorStreamBuf(porStreamBuf *b){
   for(i = 0; i < 256; i++) b->translate[i] = i;
   b->pos = 0;
   b->line = 0;
+  b->at_end = FALSE;
 }
 
 /*
   in: codes as in the file
 */
-// #define DEBUG
+
 void por_make_trans(porStreamBuf *b, const char *in){
   unsigned char i;
   unsigned char j;
@@ -282,6 +285,11 @@ int fillPorStreamBuf(porStreamBuf *b) {
 #ifdef DEBUG
   Rprintf("\nfile = %d",b->f);
 #endif
+  if(feof(b->f)){
+    b->pos = 0;
+    b->at_end = TRUE;
+    return 0;
+  }
   fgets((char *)b->buf,BUFSIZE,b->f);
 #ifdef DEBUG
   Rprintf("\nbuffer = |%s|",b->buf);
@@ -311,9 +319,6 @@ int fillPorStreamBuf(porStreamBuf *b) {
 
 /** Internal functions to read from a porStreamBuf **/
 
-int checkPorStream(porStreamBuf *b){
-    return feof(b->f);
-}
 
 void printPorStreamBuf(porStreamBuf *b){
     Rprintf("\nbuffer = |%s|",b->buf);
@@ -334,7 +339,6 @@ char readOnePushbackPorStream1(porStreamBuf *b) {
     }
   else {
     fillPorStreamBuf(b);
-    b->pos = 0;
 #ifdef DEBUG
     Rprintf("\nans=%c",b->buf[0]);
 #endif
@@ -363,6 +367,12 @@ char readOnePorStream1(porStreamBuf *b) {
 #endif
   return ans;
 }
+
+Rboolean atEndPorStream(porStreamBuf *b){
+    char test = readOnePushbackPorStream1(b);
+    return b->at_end || test == 'Z';
+}
+
 
 #define HardMaxRead 5*80
 
@@ -447,45 +457,6 @@ int readPorStreamTo(porStreamBuf *b, char *target, int n) {
 #endif
   return n;
 }
-
-
-void dummyReadPorStream1(porStreamBuf *b, int n) {
-#ifdef DEBUG
-  Rprintf("\ndummyReadPorStream1");
-  Rprintf("\nb = %d",b);
-  Rprintf("\nb->buf = %d",b->buf);
-  Rprintf("\nbuffer = |%s|",b->buf);
-  Rprintf("\nn = %d",n);
-#endif
-  if(n > HardMaxRead) n = HardMaxRead;
-  if(b->pos == 80) fillPorStreamBuf(b);
-  if(b->pos + n <= 80){
-    b->pos += n;
-#ifdef DEBUG
-    Rprintf("\nEND dummyReadPorStream1");
-#endif
-    return ;
-  }
-  /* else */
-  int nread;
-  if(80 - b->pos > 0){
-    nread = 80 - b->pos;
-    n -= nread;
-    b->pos = 0;
-    fillPorStreamBuf(b);
-  }
-  int i, nlines = n/80, remainder = n%80;
-  for(i = 0; i < nlines; i++){
-    fillPorStreamBuf(b);
-  }
-  b->pos = remainder;
-#ifdef DEBUG
-  Rprintf("\nEND dummyReadPorStream1");
-#endif
-  return ;
-}
-
-
 
 int seekPorStream1(porStreamBuf *b, int pos) {
   fseek(b->f,0,SEEK_SET);
@@ -582,50 +553,6 @@ int readToSlashPorStream1(porStreamBuf *b, char *ans, int n){
   }
 }
 
-void dummyReadToSlashPorStream1(porStreamBuf *b, int n){
-#ifdef DEBUG
-  Rprintf("\ndummyReadToSlashPorStream1");
-  Rprintf("\nbuffer = |%s|",b->buf);
-  Rprintf("\nb->pos = %d",b->pos);
-  Rprintf("\nn = %d",n);
-#endif
-  if(n > HardMaxRead) n = HardMaxRead;
-  if(b->pos == 80) fillPorStreamBuf(b);
-  int len, slashp = slashpos(b->buf+b->pos,80 - b->pos);
-  if(slashp){
-    b->pos += slashp;
-#ifdef DEBUG
-    Rprintf("\nb->pos = %d",b->pos);
-#endif
-    return;
-  }
-  else {
-    len = 80 - b->pos;
-    int i, maxlines = (n + b->pos)/80+1 ;
-#ifdef DEBUG
-    Rprintf("\nmaxlines = %d",maxlines);
-#endif    
-    for(i = 0; i < maxlines; i++){
-      fillPorStreamBuf(b);
-      slashp = slashpos(b->buf,80);
-#ifdef DEBUG
-      Rprintf("\nslashp = %d",slashp);
-#endif    
-      if(slashp){
-        b->pos = slashp;
-        return;
-      } else {
-        len+=80;
-        if(len > n) break;
-      }
-    }
-// #ifdef DEBUG
-    Rprintf("\nWARNING: slash not found");
-// #endif    
-    return ; 
-  }
-}
-
 int readIntPorStream1 (porStreamBuf *b){
 #ifdef DEBUG
   Rprintf("\nreadIntPorStream1");
@@ -689,25 +616,6 @@ double readDoublePorStream1 (porStreamBuf *b){
     return Por2double(len,ans);
 }
 
-void dummyReadNumPorStream1 (porStreamBuf *b){
-#ifdef DEBUG
-  Rprintf("\ndummyReadNumPorStream1");
-  Rprintf("\nb = %d",b);
-  Rprintf("\nb->buf = %d",b->buf);
-  Rprintf("\nbuffer = |%s|",b->buf);
-#endif
-    /* Check for missing value */
-    if(readOnePushbackPorStream1(b) == '*'){
-        readOnePorStream1(b);
-        if(readOnePorStream1(b) != '.') warning("malformed sysmis entry");
-        return ;
-    }
-
-    dummyReadToSlashPorStream1 (b,80);
-
-    return ;
-}
-
 
 char* readStringPorStream1(porStreamBuf *b){
 #ifdef DEBUG
@@ -727,24 +635,6 @@ char* readStringPorStream1(porStreamBuf *b){
     return ans;
 }
 
-void dummyReadStringPorStream1(porStreamBuf *b){
-#ifdef DEBUG
-  Rprintf("\ndummyReadStringPorStream");
-  Rprintf("\nb = %d",b);
-  Rprintf("\nb->buf = %d",b->buf);
-  Rprintf("\nbuffer = |%s|",b->buf);
-#endif
-    int len = readIntPorStream1 (b);
-#ifdef DEBUG
-    Rprintf("\nLength: %d",len);
-#endif
-    dummyReadPorStream1(b,len);
-}
-
-/*void setTranslation1(porStreamBuf *b, char *trans, int pos, int len){
-    len = (pos + len > 256 ? 256 - pos : len);
-    memcpy(b->translate + pos,trans,len);
-}*/ 
 
 
 
@@ -812,7 +702,7 @@ SEXP closePorStream (SEXP porStream){
   porStreamBuf *b = R_ExternalPtrAddr(porStream);
   if (b != NULL) {
       fclose(b->f);
-      Rprintf("\n'portable' file closed\n");
+      /*Rprintf("\n'portable' file closed\n");*/
       R_ClearExternalPtr(porStream);
   }
   return R_NilValue;
@@ -882,17 +772,18 @@ SEXP readDoublePorStream(SEXP porStream){
   return ScalarReal(readDoublePorStream1(b));
 }
 
-SEXP readCHARXPPorStream(porStreamBuf *b,char *buf,int len){
+char* readCHARPorStream(porStreamBuf *b,char *buf,int len){
+    memset(buf,0,len);
     int n = readIntPorStream1 (b);
+    if(atEndPorStream(b)) return buf;
     if(n > len) error("string has length %d but should have maximal length %d",n,len);
     /*SEXP ans;
     PROTECT(ans = allocString(n));
     char *cans = CHAR(ans);*/
-    memset(buf,0,len);
     readPorStreamTo(b,buf,n);
     buf[n] = 0;
-    /*UNPROTECT(1);*/ 
-    return mkChar(buf);
+    /*UNPROTECT(1);*/
+    return buf;
 }
 
 SEXP readStringPorStream(SEXP porStream){
@@ -919,7 +810,6 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
   Rprintf("\n############################");
 #endif
   porStreamBuf *b = get_porStreamBuf(porStream);
-  int is_eof = 0;
   int n = asInteger(s_n);
     
 #ifdef DEBUG
@@ -953,12 +843,7 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
 #endif
     
   for(i = 0; i < n; i++){
-    is_eof = checkPorStream(b);
-    char test = readOnePushbackPorStream1(b);
-#ifdef DEBUG
-    Rprintf("\nTest value: %c",test);
-#endif
-    if(test == 'Z' || is_eof){
+    if(atEndPorStream(b)){
 #ifdef DEBUG
       Rprintf("\nReached end of cases at i=%d",i);
 #endif
@@ -974,17 +859,17 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
     Rprintf("\nCase number: %d\n",i);
 #endif
     for(j = 0; j < nvar; j++){
-      is_eof = checkPorStream(b);
-      if(is_eof) {
+      if(atEndPorStream(b)) {
           printPorStreamBuf(b);
-          error("\nPremature end of data");
+          warning("\nPremature end of data");
+          break;
       }
 #ifdef DEBUG
       PrintValue(VECTOR_ELT(data,j));
 #endif
       if(types[j]==0) REAL(VECTOR_ELT(data,j))[i] = readDoublePorStream1(b);
       else SET_STRING_ELT(VECTOR_ELT(data,j), i,
-                          readCHARXPPorStream(b,charbuf,types[j]));
+                          mkChar(readCHARPorStream(b,charbuf,types[j])));
 #ifdef DEBUG
       if(i<3 && types[j]>0)
       PrintValue(STRING_ELT(VECTOR_ELT(data,j),i));
@@ -1000,7 +885,6 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
   return data;
 }
 
-
 SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
 #ifdef DEBUG
   Rprintf("\n############################");
@@ -1008,8 +892,6 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
   Rprintf("\n############################");
 #endif
   porStreamBuf *b = get_porStreamBuf(porStream);
-  int is_eof = 0;
-  int protectcounter = 0;
     
 #ifdef DEBUG
   Rprintf("\nBuffer contents: |%s|",b->buf);
@@ -1019,46 +901,60 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
 #endif
   PROTECT(s_types = AS_INTEGER(s_types));
   int nvar = LENGTH(s_types);
-  protectcounter++;
   int *types = INTEGER(s_types);
 
     
-#ifdef DEBUG
-//   PrintValue(data);
-#endif
-  int i, j;  
+  int i, j, k;  
+  char *charbuf;
+  int charbuflen = 0;
+  for(j = 0; j < nvar; j++){
+      if(types[j]!=0 && types[j] > charbuflen) charbuflen = types[j];
+      k++;
+  }
+  charbuf = R_alloc(charbuflen+1,sizeof(char));
+  
   for(i = 0; ; i++){
-    is_eof = checkPorStream(b);
-    char test = readOnePushbackPorStream1(b);
 #ifdef DEBUG
-    Rprintf("\nTest value: %c",test);
+    Rprintf("\nBuffer contents: |%s|",b->buf);
+    Rprintf("\nLine: %d",b->line);
+    Rprintf("\nPosition: %d",b->pos);
+    Rprintf("\nBuffer remainder: %s",b->buf + b->pos);
 #endif
-    if(test == 'Z' || is_eof){
+    if(atEndPorStream(b)){
 #ifdef DEBUG
       Rprintf("\nReached end of cases at i=%d",i);
 #endif
       break;
     }
 #ifdef DEBUG
-    Rprintf("\nCase number: %d\n",i);
+    Rprintf("\nCase number: %d  nvar = %d\n",i,nvar);
 #endif
     for(j = 0; j < nvar; j++){
-      is_eof = checkPorStream(b);
-      if(is_eof) {
+      if(atEndPorStream(b)) {
           printPorStreamBuf(b);
-          error("\nPremature end of data");
+          warning("\nPremature end of data");
+          break;
       }
-      if(types[j]==0) dummyReadNumPorStream1(b);
-      else dummyReadStringPorStream1(b);
+#ifdef DEBUG1
+      Rprintf("\n(j = %d)",j);
+      if(types[j]==0) Rprintf(" %f",readDoublePorStream1(b));
+      else Rprintf(" '%s'",readCHARPorStream(b,charbuf,types[j]));
+#else
+      if(types[j]==0) readDoublePorStream1(b);
+      else readCHARPorStream(b,charbuf,types[j]);
+#endif
       }
+#ifdef DEBUG
+    Rprintf("\n");
+#endif
     }
-  UNPROTECT(protectcounter);
+  UNPROTECT(1);
   return ScalarInteger(i);
 }
+#undef DEBUG
 
 SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, SEXP s_types){
   porStreamBuf *b = get_porStreamBuf(porStream);
-  int is_eof = 0;
   PROTECT(s_vars = coerceVector(s_vars,LGLSXP));
   PROTECT(s_cases = coerceVector(s_cases,LGLSXP));
   PROTECT(s_types = coerceVector(s_types,INTSXP));
@@ -1077,12 +973,12 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
   PROTECT(data = allocVector(VECSXP,m));
   k = 0;
   for(j = 0; j < nvar; j++){
+    if(types[j] > charbuflen) charbuflen = types[j];
     if(LOGICAL(s_vars)[j]){
       if(types[j]==0)
         SET_VECTOR_ELT(data,k,allocVector(REALSXP,n));
       else {
         SET_VECTOR_ELT(data,k,allocVector(STRSXP,n));
-        if(types[j] > charbuflen) charbuflen = types[j];
         }
       k++;
     }
@@ -1090,9 +986,7 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
   charbuf = R_alloc(charbuflen+1,sizeof(char));
   ii = 0;
   for(i = 0; i < ncases; i++){
-    is_eof = checkPorStream(b);
-    char test = readOnePushbackPorStream1(b);
-    if(test == 'Z' || is_eof){
+    if(atEndPorStream(b)){
       int new_length = ii;
       for(j = 0; j < m; j++){
         x = VECTOR_ELT(data,j);
@@ -1104,10 +998,9 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
     if(LOGICAL(s_cases)[i]){
       k = 0;
       for(j = 0; j < nvar; j++){
-        is_eof = checkPorStream(b);
-        if(is_eof) {
+        if(atEndPorStream(b)) {
             printPorStreamBuf(b);
-            error("\nPremature end of data");
+            warning("\nPremature end of data");
         }
         if(types[j]==0){
           if(LOGICAL(s_vars)[j]){
@@ -1115,17 +1008,17 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
             k++;
           }
           else {
-            dummyReadNumPorStream1(b);
+            readDoublePorStream1(b);
           }
         }
         else {
           if(LOGICAL(s_vars)[j]){
             SET_STRING_ELT(VECTOR_ELT(data,k), ii,
-                              readCHARXPPorStream(b,charbuf,types[j]));
+                              mkChar(readCHARPorStream(b,charbuf,types[j])));
             k++;
           }
           else {
-            dummyReadStringPorStream1(b);
+            readCHARPorStream(b,charbuf,types[j]);
           }
         }
       }
@@ -1133,13 +1026,12 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
     }
     else {
       for(j = 0; j < nvar; j++){
-        is_eof = checkPorStream(b);
-        if(is_eof) {
+        if(atEndPorStream(b)) {
             printPorStreamBuf(b);
             error("\nPremature end of data");
         }
-        if(types[j]==0) dummyReadNumPorStream1(b);
-        else dummyReadStringPorStream1(b);
+        if(types[j]==0) readDoublePorStream1(b);
+        else readCHARPorStream(b,charbuf,types[j]);
       }
     }
   }
