@@ -218,11 +218,11 @@ updatecodebookStatsCateg <- function(cbe,x){
   stats <- cbe@stats
   stats$tab <- if(length(stats$tab)){ 
                                     if(nrow(stats$tab) > nrow(tab)) {
-                                      ii <- match(rownames(tab),rownames(stats$tab))
+                                      ii <- match(trimws(rownames(tab)),trimws(rownames(stats$tab)))
                                       stats$tab[ii,] <- stats$tab[ii,] + tab
                                       }
                                     else if(nrow(stats$tab) < nrow(tab)){
-                                      ii <- match(rownames(stats$tab),rownames(tab))
+                                      ii <- match(trimws(rownames(stats$tab)),trimws(rownames(tab)))
                                       tab[ii,] <- stats$tab + tab[ii,]
                                       tab
                                       }
@@ -240,11 +240,11 @@ updatecodebookStatsMetric <- function(cbe,x){
     tab <- Table(x,style="codebook")
     stats$tab <- if(length(stats$tab)){ 
                                     if(nrow(stats$tab) > nrow(tab)) {
-                                      ii <- match(rownames(tab),rownames(stats$tab))
+                                      ii <- match(trimws(rownames(tab)),trimws(rownames(stats$tab)))
                                       stats$tab[ii,] <- stats$tab[ii,] + tab
                                       }
                                     else if(nrow(stats$tab) < nrow(tab)){
-                                      ii <- match(rownames(stats$tab),rownames(tab))
+                                      ii <- match(trimws(rownames(stats$tab)),trimws(rownames(tab)))
                                       tab[ii,] <- stats$tab + tab[ii,]
                                       tab
                                       }
@@ -258,21 +258,23 @@ updatecodebookStatsMetric <- function(cbe,x){
   x <- x@.Data[!miss & !NAs]
   NAs <- sum(NAs)
   miss <- sum(miss,na.rm=TRUE)
-  moments <- Moments(x)
-  stats$moments <- if(length(stats$moments)) {
-                    N1 <- stats$moments[5]
-                    N2 <- moments[5]
-                    N <- N1 + N2
-                    w1 <- N1/N
-                    w2 <- N2/N
-                    c(
-                      w1*stats$moments[-5] + w2*moments[-5],
-                      N = N
-                      )
-                    }
-                 else moments
-  stats$range <- if(length(stats$range)) range(stats$range,range(x))
-               else range(x)
+  if(length(x)){
+    moments <- Moments(x)
+    stats$moments <- if(length(stats$moments)) {
+                      N1 <- stats$moments[5]
+                      N2 <- moments[5]
+                      N <- N1 + N2
+                      w1 <- N1/N
+                      w2 <- N2/N
+                      c(
+                        w1*stats$moments[-5] + w2*moments[-5],
+                        N = N
+                        )
+                      }
+                  else moments
+    stats$range <- if(length(stats$range)) range(stats$range,range(x))
+                else range(x)
+  }
   stats$missings <- if(length(stats$missings)) stats$missings + c(miss,NAs)
                     else c(miss,NAs)
   cbe@stats <- stats
@@ -292,8 +294,10 @@ updatecodebookStatsChar <- function(cbe,x){
   x <- x@.Data[!miss & !NAs]
   NAs <- sum(NAs)
   miss <- sum(miss,na.rm=TRUE)
-  stats$range <- if(length(stats$range)) range(stats$range,range(x))
-               else range(x)
+  if(length(x)){
+    stats$range <- if(length(stats$range)) range(stats$range,range(x))
+                    else range(x)
+  }
   stats$missings <- if(length(stats$missings)) stats$missings + c(miss,NAs)
                     else c(miss,NAs)
   cbe@stats <- stats

@@ -369,8 +369,8 @@ char readOnePorStream1(porStreamBuf *b) {
 }
 
 Rboolean atEndPorStream(porStreamBuf *b){
-    char test = readOnePushbackPorStream1(b);
-    return b->at_end || test == 'Z';
+    /*char test =*/ readOnePushbackPorStream1(b);
+    return b->at_end/* || test == 'Z'*/;
 }
 
 
@@ -843,7 +843,7 @@ SEXP readDataPorStream(SEXP porStream, SEXP what, SEXP s_n, SEXP s_types){
 #endif
     
   for(i = 0; i < n; i++){
-    if(atEndPorStream(b)){
+    if(atEndPorStream(b) || (b->pos < 80 && b->buf[b->pos] == 'Z')){
 #ifdef DEBUG
       Rprintf("\nReached end of cases at i=%d",i);
 #endif
@@ -915,12 +915,15 @@ SEXP countCasesPorStream(SEXP porStream, SEXP s_types){
   
   for(i = 0; ; i++){
 #ifdef DEBUG
+    Rprintf("\n===================");
+    Rprintf("\nCase nr. %d",i);
     Rprintf("\nBuffer contents: |%s|",b->buf);
     Rprintf("\nLine: %d",b->line);
     Rprintf("\nPosition: %d",b->pos);
+    Rprintf("\nCurrent char: '%c'",b->buf[b->pos]);
     Rprintf("\nBuffer remainder: %s",b->buf + b->pos);
 #endif
-    if(atEndPorStream(b)){
+    if(atEndPorStream(b) || (b->pos < 80 && b->buf[b->pos] == 'Z')){
 #ifdef DEBUG
       Rprintf("\nReached end of cases at i=%d",i);
 #endif
@@ -986,7 +989,7 @@ SEXP readSubsetPorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, S
   charbuf = R_alloc(charbuflen+1,sizeof(char));
   ii = 0;
   for(i = 0; i < ncases; i++){
-    if(atEndPorStream(b)){
+    if(atEndPorStream(b) || (b->pos < 80 && b->buf[b->pos] == 'Z')){
       int new_length = ii;
       for(j = 0; j < m; j++){
         x = VECTOR_ELT(data,j);
