@@ -6,10 +6,12 @@ spss.fixed.file <- function(
     missval.file=NULL,
     count.cases=TRUE
     ){
+    file <- force(file)
+    columns.file <- force(columns.file)
     file <- path.expand(file)
+    columns.file <- path.expand(columns.file)
     check.file(file,error=TRUE)
     fptr <- rofile(file)
-    columns.file <- path.expand(columns.file)
     check.file(columns.file,error=TRUE)
     data.spec <- spss.parse.data.spec(columns.file)
     types <- data.spec$types
@@ -38,7 +40,7 @@ spss.fixed.file <- function(
 #       if(length(mval))
 #         missing.values(v) <- mval
 #     }
-    
+
     nlines <- if(count.cases) {
         maxlenline <- data.spec$stop[length(data.spec$stop)]
         rofseek(fptr,pos=0)
@@ -59,6 +61,7 @@ spss.fixed.file <- function(
 setMethod("initialize","spss.fixed.importer",function(.Object,
                                                           variables,
                                                           ptr,
+                                                          columns.file=character(),
                                                           varlab.file=character(),
                                                           codes.file=character(),
                                                           missval.file=character(),
@@ -67,6 +70,7 @@ setMethod("initialize","spss.fixed.importer",function(.Object,
                                                           ){
      .Object@.Data <- variables
      .Object@ptr <- ptr
+     .Object@columns.file <- as.character(columns.file)
      .Object@varlab.file <- as.character(varlab.file)
      .Object@codes.file <- as.character(codes.file)
      .Object@missval.file <- as.character(missval.file)
