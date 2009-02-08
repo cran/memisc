@@ -23,10 +23,10 @@
     LaTeXdec=".",
     ddigits=digits,
     useBooktabs=TRUE,
-    toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
-    midrule=if(useBooktabs) "\\midrule" else "\\hline\n",
-    cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
-    bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
+    toprule=if(useBooktabs) "\\\\toprule" else "\\\\hline\\\\hline",
+    midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline\n",
+    cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
+    bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
     extrarowsep = NULL,
     \dots)
 \method{toLatex}{matrix}(object,
@@ -40,10 +40,10 @@
     LaTeXdec=".",
     ddigits=digits,
     useBooktabs=TRUE,
-    toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
-    midrule=if(useBooktabs) "\\midrule" else "\\hline",
-    cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
-    bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
+    toprule=if(useBooktabs) "\\\\toprule" else "\\\\hline\\\\hline",
+    midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline",
+    cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
+    bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
     \dots)
 }
 \arguments{

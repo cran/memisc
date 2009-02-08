@@ -56,9 +56,9 @@ collect(\dots,names=NULL,inclusive=TRUE)
   for each given dimension.
 
   If \code{x} and all \dots arguments are tables then the result will be a table.
-  The result 
+  The result
 
-  If code{x} and all \dots arguments are data frames or data sets, the
+  If \code{x} and all \dots arguments are data frames or data sets, the
   result is a data frame or data set.
   The number of variables of the resulting data frame or data set depends on
   the \code{inclusive} argument. If it is true, the number of variables

@@ -1,6 +1,6 @@
 options(width=72)
 options(digits=3)
-nes1948.por <- unzip("anes/NES1948.ZIP","NES1948.POR",package="memisc")
+nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",package="memisc")
 nes1948 <- spss.portable.file(nes1948.por)
 print(nes1948)
 

@@ -44,7 +44,7 @@ at \url{http://www.electionstudies.org/studypages/1948prepost/1948prepost.htm}).
 
 With 662 cases and 65 variables, the 1948 ANES data set is relatively
 small as compared to current social science data sets. Such larger data
-sets can be processed along the same lines as in this vignette. 
+sets can be processed along the same lines as in this vignette.
 Unlike the 1948 ANES data,
 their size as well as, in some cases, legal restrictions prohibit the
 inclusion of such a data set into the package, however.
@@ -74,7 +74,7 @@ options(width=72)
 <<>>=
 library(memisc)
 options(digits=3)
-nes1948.por <- unzip("anes/NES1948.ZIP","NES1948.POR",package="memisc")
+nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",package="memisc")
 @
 Now the portable file is in a temporary directory and the path
 to the file is contained in the string variable \code{nes1948.por}.
@@ -409,7 +409,7 @@ vote.48 <- within(vote.48,{
   contrasts(total.income) <- contr("treatment",base = 4)
   })
 @
-We now fit some logistic regression models of the 
+We now fit some logistic regression models of the
 impact occupational class, income, and religious denomination
 on the vote choice supporting Truman. The contrasts of
 the occupational class and income factors are such that they
@@ -417,7 +417,7 @@ compare the choices of the members of the blue-collar class
 with all other classes and the middle income group (\$ 2000-2999)
 with the other income groups. The religious denomination factor
 compares Protestants with Catholics and those with other or
-no denominations. 
+no denominations.
 <<>>=
 model1 <- glm((vote3=="Truman")~occup4,data=vote.48,
               family="binomial")

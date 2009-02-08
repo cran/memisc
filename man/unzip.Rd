@@ -1,14 +1,14 @@
-\name{unzip}
-\alias{unzip}
+\name{UnZip}
+\alias{UnZip}
 \title{Extract Files from Zip Files}
 \description{
-  \code{unzip} extracts a file from a zip archive
+  \code{Unzip} extracts a file from a zip archive
   and puts them into a directory specified by
   the user or into the temporary directory of the
   current session.
 }
 \usage{
-unzip(zipfile,item,
+UnZip(zipfile,item,
   dir=tempdir(),package=NULL)
 }
 \arguments{
@@ -24,7 +24,7 @@ unzip(zipfile,item,
 # It is item "NES1948.POR" in zip file "anes/NES1948.ZIP"
 # where this path is relative to the packages'
 # root directory.
-nes1948.por <- unzip("anes/NES1948.ZIP","NES1948.POR",
+nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",
                      package="memisc")
 nes1948.por
 }
