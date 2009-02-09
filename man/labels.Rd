@@ -10,9 +10,9 @@
 \alias{Arith,value.labels,ANY-method}
 \alias{[,value.labels,numeric,missing,missing-method}
 \alias{[,value.labels,logical,missing,missing-method}
-\alias{coerce,vector,value.labels-method}
+\alias{coerce,numeric,value.labels-method}
 \alias{coerce,character,value.labels-method}
-\alias{coerce,value.labels,vector-method}
+\alias{coerce,value.labels,numeric-method}
 \alias{coerce,value.labels,character-method}
 \alias{as.vector,value.labels-method}
 \alias{show,value.labels-method}

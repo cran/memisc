@@ -67,10 +67,14 @@ setMethod("recode","item",function(x,...,otherwise=NA){
     y[torecode[,i]] <- as.vector(newcodes[i],mode=storage.mode(y))
   }
   if(!identical(otherwise,"copy")){
-    y[!(y %in% newcodes)] <- as.vector(otherwise,mode=storage.mode(y))
+    recoded <- as.logical(rowSums(torecode))
+    tmp <- as.vector(otherwise,mode=storage.mode(y))
+    length(otherwise) <- length(y)
+    otherwise[] <- tmp
+    y[!recoded] <- otherwise[!recoded]
   }
   newvlab <- newcodes[nzchar(names(newcodes))]
-  
+
   if(length(lab.y <- labels(x)) && identical(otherwise,"copy")){
     lab.y.val <- lab.y@values
     lab.oldcodes <- lapply(oldcodes,Substitute,list(x=lab.y.val))
@@ -88,15 +92,15 @@ setMethod("recode","item",function(x,...,otherwise=NA){
   else if(length(newvlab)){
     if(length(names(otherwise)))
       newvlab <- new("value.labels",names(newvlab),values=newvlab) + otherwise
-    labels(y) <- newvlab  
-  }  
+    labels(y) <- newvlab
+  }
 #   else if(length(newvlab)){
 #     if(identical(otherwise,"copy"))
 #       labels(y) <- labels(y) + newvlab
-#     else 
+#     else
 #       labels(y) <- newvlab
 #     }
-  
+
   return(y)
 })
 
@@ -117,7 +121,7 @@ setMethod("recode","vector",function(x,...,otherwise=NA){
   recodings <- recodings[nzchar(sapply(recodings,paste,collapse=""))]
   if(any(sapply(sapply(recodings,"[[",1),paste)!="<-"))
     stop("invalid recoding request")
-  
+
   if(!length(recodings)) return(x)
   newcodes <- lapply(recodings,"[[",2)
   oldcodes <- lapply(recodings,"[[",3)
@@ -151,10 +155,10 @@ setMethod("recode","vector",function(x,...,otherwise=NA){
                           function(x)
                           as.call(list(as.symbol("%in%"),as.symbol("x"),x))
                           )
-  oldcodes <- sapply(oldcodes,eval,envir=environment())
-  if(!is.matrix(oldcodes)) oldcodes <- t(oldcodes)
+  torecode <- sapply(oldcodes,eval,envir=environment())
+  if(!is.matrix(torecode)) torecode <- t(oldcodes)
   newcodes <- sapply(newcodes,eval,parent.frame())
-  nevtrue <- colSums(oldcodes) == 0
+  nevtrue <- colSums(torecode) == 0
   if(any(nevtrue)){
     nrecng <- paste(recodings[nevtrue])
     if(length(nrecng)>1)
@@ -162,17 +166,21 @@ setMethod("recode","vector",function(x,...,otherwise=NA){
     else
       warning("recoding ",nrecng," has no consequences")
   }
-  ambiguous <- rowSums(oldcodes) > 1
+  ambiguous <- rowSums(torecode) > 1
   if(any(ambiguous))
     stop("recoding request is ambiguous")
   y <- if(is.character(newcodes)) as.character(x) else x
   newcodes <- newcodes[!nevtrue]
-  oldcodes <- oldcodes[,!nevtrue,drop=FALSE]
+  torecode <- torecode[,!nevtrue,drop=FALSE]
   for(i in seq(along=newcodes)){
-    y[oldcodes[,i]] <- newcodes[i]
+    y[torecode[,i]] <- newcodes[i]
   }
   if(is.na(otherwise) || otherwise!="copy"){
-    y[!(y %in% newcodes)] <- as.vector(otherwise,mode=storage.mode(y))
+    recoded <- as.logical(rowSums(torecode))
+    tmp <- as.vector(otherwise,mode=storage.mode(y))
+    length(otherwise) <- length(y)
+    otherwise[] <- tmp
+    y[!recoded] <- otherwise[!recoded]
   }
   if(is.character(y)) y <- factor(y,levels=newcodes)
   return(y)
@@ -189,7 +197,7 @@ setMethod("recode","factor",function(x,...,otherwise=NA){
   recodings <- recodings[nzchar(sapply(recodings,paste,collapse=""))]
   if(any(sapply(sapply(recodings,"[[",1),paste)!="<-"))
     stop("invalid recoding request")
-  
+
   if(!length(recodings)) return(x)
   newcodes <- sapply(recodings,"[[",2)
   newcodes <- as.character(newcodes)

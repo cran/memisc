@@ -43,7 +43,7 @@ setClass("double",
 
 
 setClassUnion("numeric.item")
-setClassUnion("item.vector")
+setClassUnion("item.vector","numeric.item")
 
 setClass("integer.item",
   contains=c("item","numeric.item","item.vector","integer")
