@@ -108,9 +108,4 @@ as.data.frame.textfile_bucket <- function(x,...)
 as.matrix.textfile_bucket <- function(x,...)
   as.matrix(read.table(x$name,header=TRUE))
 
-fapply.bucket <- function(formula,data,...) {
-  data <- as.data.frame(data)
-  fapply.default(formula,data,...)
-}
-
 "[.bucket" <- function(x,i,...)as.data.frame(x)[i,]

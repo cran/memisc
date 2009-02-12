@@ -54,42 +54,40 @@ genTable <- function (formula,
                         addFreq=TRUE,
                         ...){
    m <- match.call()
-   mis.data <- missing(data)
-   formula <- try(as.formula(formula),silent=TRUE)
-   if(inherits(formula,"try-error")){
-      if(is.na(strsplit(formula,": ")[[1]][2]))
-        stop(formula)
-      else
-        stop(strsplit(formula,": ")[[1]][2])
+
+   if(is.table(data)) data <- as.data.frame(data)
+   else if(is.environment(data)){
+    tmp <- try(as.data.frame(data),silent=TRUE)
+    if(inherits(tmp,"try-error")) {
+        mf <- m
+        mf[[1]] <- as.name("model.frame.default")
+        mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
+        mf$... <- mf$exclude <- mf$drop.unused.levels <- mf$names <- mf$addFreq <- NULL
+        data <- eval(mf,parent.frame())
       }
-   #if(!is.environment(data) && !is.data.frame(data)) data <- as.data.frame(data)
-   if(!mis.data && is.table(data)) data <- as.data.frame(data)
-   
+    else
+      data <- tmp
+   }
+
    m[[1]] <- as.name("fapply")
    names(m)[2] <- "formula"
-   if(mis.data){
-     m$data <- parent.frame()
-     data <- parent.frame()
-   }
-#   res <- eval(m, parent.frame())
-   if(!missing(subset))
-    subset <- eval(substitute(subset),data,parent.frame())
+   m$data <- data
 
-   res <- fapply(formula=formula,data=data,
-                  subset=subset,
-                  na.action=na.action,
-                  exclude=exclude,
-                  drop.unused.levels=drop.unused.levels,
-                  names=names,
-                  addFreq=addFreq,
-                  ...)
+   if(!missing(subset))
+    m$subset <- eval(substitute(subset),data,parent.frame())
+
+#    res <- fapply(formula=formula,data=data,
+#                   subset=subset,
+#                   na.action=na.action,
+#                   exclude=exclude,
+#                   drop.unused.levels=drop.unused.levels,
+#                   names=names,
+#                   addFreq=addFreq,
+#                   ...)
+   res <- eval(m, parent.frame())
+
    by <- attr(res,"by")
 
-#    ii <- do.call("order",by)
-#    by <- by[ii,,drop=FALSE]
-#    res <- res[ii]
-
-   
    if(is.list(res)){
     isArr <- sapply(res,is.array)
     if(all(isArr))
@@ -103,8 +101,7 @@ genTable <- function (formula,
       }
    else
       fcall <- NULL
-   if(length(fcall) > 1 && as.character(fcall[[1]]) %in% c("table","Table","percent","nvalid"))
-        res[is.na(res)] <- 0
+
    if(length(dim(res)) == 2){
     if(is.null(rownames(res))){
       if(nrow(res)==1) rownames(res) <- deparse(fcall)
@@ -116,18 +113,27 @@ genTable <- function (formula,
       else
         rownames(res) <- seq_len(nrow(res))
     }
+    else if(!length(names(dimnames(res))[1]))
+      names(dimnames(res))[1] <- deparse(fcall)
    }
+
    by.dimnames <- lapply(by,function(x)as.character(sort(unique(x))))
    by.dims <- sapply(by.dimnames,length)
 
    res.dims <- dim(res)
    res.dimnames <- dimnames(res)
-   res.dims <- res.dims[-length(res.dims)]
-   res.dimnames <- res.dimnames[-length(res.dimnames)]
+
+   if(length(res.dims)){
+
+    res.dims <- res.dims[-length(res.dims)]
+    res.dimnames <- res.dimnames[-length(res.dimnames)]
 
 
-   ijk.res <- mk.ixes(res.dims)
-   ijk.res <- ijk.res[rep(seq(nrow(ijk.res)),nrow(by)),,drop=FALSE]
+    ijk.res <- mk.ixes(res.dims)
+    ijk.res <- ijk.res[rep(seq(nrow(ijk.res)),nrow(by)),,drop=FALSE]
+   }
+   else
+    ijk.res <- NULL
 
    ijk.by <- sapply(by,function(bby)
               rep(match(bby,sort(unique(bby))),
@@ -135,13 +141,13 @@ genTable <- function (formula,
                 )
               )
    ijk <- cbind(ijk.res,ijk.by)
-   
+
    tmp <- res
    res <- array(NA,c(res.dims,by.dims))
    res[ijk] <- tmp
-   
+
    if(!length(fcall)) res[is.na(res)] <- 0
-   
+
    dimnames(res) <- c(res.dimnames,by.dimnames)
 
    as.table(drop(res))
@@ -160,46 +166,40 @@ aggregate.formula <- function (x,
                         drop.constants=TRUE,
                         ...)
 {
-    formula <- x
-    #if(missing(data)) data <- environment(formula)
-    #if (any(attr(terms(formula, data = data), "order") > 1))
-    #    stop("interactions are not allowed")
-    #m <- match.call(expand.dots = FALSE)
-    
+   formula <- x
    m <- match.call()
-   mis.data <- missing(data)
-   formula <- try(as.formula(formula),silent=TRUE)
-   if(inherits(formula,"try-error")){
-      if(is.na(strsplit(formula,": ")[[1]][2]))
-        stop(formula)
-      else
-        stop(strsplit(formula,": ")[[1]][2])
-      }
-   #if(!missing(data) && !is.environment(data) && !is.data.frame(data)) data <- as.data.frame(data)
-   if(!mis.data && is.table(data)) data <- as.data.frame(data)
 
-   #cp <- code.plan(data)
+   if(is.table(data)) data <- as.data.frame(data)
+   else if(is.environment(data)){
+    tmp <- try(as.data.frame(data),silent=TRUE)
+    if(inherits(tmp,"try-error")) {
+        mf <- m
+        mf[[1]] <- as.name("model.frame.default")
+        mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
+        mf$... <- mf$exclude <- mf$drop.unused.levels <- mf$names <- mf$addFreq <- NULL
+        data <- eval(mf,parent.frame())
+      }
+    else
+      data <- tmp
+   }
+
    m[[1]] <- as.name("fapply")
    names(m)[2] <- "formula"
-   if(mis.data){
-     m$data <- parent.frame()
-     data <- parent.frame()
-   }
-   #if(!length(m$data)) m$data <- parent.frame()
-   #m$enclos <- parent.frame()
-#   res <- eval(m, parent.frame())
+   m$data <- data
+
    if(!missing(subset))
-    subset <- eval(substitute(subset),data,parent.frame())
-   res <- fapply(formula=formula,
-                  data=data,
-                  subset=subset,
-                  na.action=na.action,
-                  exclude=exclude,
-                  drop.unused.levels=drop.unused.levels,
-                  names=names,
-                  addFreq=addFreq,
-                  ...)
-  
+    m$subset <- eval(substitute(subset),data,parent.frame())
+
+#    res <- fapply(formula=formula,data=data,
+#                   subset=subset,
+#                   na.action=na.action,
+#                   exclude=exclude,
+#                   drop.unused.levels=drop.unused.levels,
+#                   names=names,
+#                   addFreq=addFreq,
+#                   ...)
+   res <- eval(m, parent.frame())
+
    by <- attr(res,"by")
    attr(res,"by") <- NULL
    isArr <- sapply(res,is.array)
@@ -208,7 +208,7 @@ aggregate.formula <- function (x,
     diml <- sapply(res,function(x)length(dim(x)))
     as.vars <- max(diml)
    }
-   
+
    if(has.response(formula,data)){
         fcall <- formula[[2]]
         formula <- formula[-2]
@@ -216,8 +216,6 @@ aggregate.formula <- function (x,
    else {
         ii <- order(attr(by,"row.names"))
         res <- cbind(as.data.frame(by),data.frame(Freq=res))[ii,,drop=FALSE]
-        #cp <- cp[names(res)]
-        #if(length(cp)) code.plan(res) <- cp
         return(res)
    }
    if(!length(as.vars)){
@@ -236,7 +234,7 @@ aggregate.formula <- function (x,
     }
     if(sort)
       ii <- do.call("order",rev(by))
-    else 
+    else
       ii <- order(attr(by,"row.names"))
     if(drop.constants){
         keep <- sapply(by,function(x)length(unique(x))>1)
@@ -247,7 +245,7 @@ aggregate.formula <- function (x,
    else {
     if(sort)
       ii <- do.call("order",by)
-    else 
+    else
       ii <- order(attr(by,"row.names"))
     res <- lapply(res[ii],to.data.frame,as.vars=as.vars)
     by <- by[ii,,drop=FALSE]
@@ -264,8 +262,6 @@ aggregate.formula <- function (x,
       }
     res <- cbind(as.data.frame(res),by)
    }
-   #cp <- cp[names(res)]
-   #if(length(cp)) code.plan(res) <- cp
    res
 }
 
