@@ -29,9 +29,6 @@ fapply <- function(formula,data,...) UseMethod("fapply",data)
 fapply.default <- function (formula,
                         data,
                         subset=NULL,
-                        na.action=getOption("na.action"),
-                        exclude = c(NA, NaN),
-                        drop.unused.levels = FALSE,
                         names=NULL,
                         addFreq=TRUE,
                         ...)
@@ -55,7 +52,7 @@ fapply.default <- function (formula,
     m[[1]] <- as.name("model.frame")
     if(!length(subset)) m$subset <- NULL
     else m$subset <- subset
-    m$na.action <- na.action
+    #m$na.action <- na.action
 
     m$data <- data
     by <- eval(m, parent.frame())

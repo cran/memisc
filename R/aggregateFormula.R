@@ -47,13 +47,11 @@ mk.ixes <- function(dims){
 genTable <- function (formula,
                         data=parent.frame(),
                         subset=NULL,
-                        na.action=getOption("na.action"),
-                        exclude = c(NA, NaN),
-                        drop.unused.levels = FALSE,
                         names=NULL,
                         addFreq=TRUE,
                         ...){
    m <- match.call()
+   parent <- parent.frame()
 
    if(is.table(data)) data <- as.data.frame(data)
    else if(is.environment(data)){
@@ -62,8 +60,8 @@ genTable <- function (formula,
         mf <- m
         mf[[1]] <- as.name("model.frame.default")
         mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
-        mf$... <- mf$exclude <- mf$drop.unused.levels <- mf$names <- mf$addFreq <- NULL
-        data <- eval(mf,parent.frame())
+        mf$... <- mf$exclude <- mf$names <- mf$addFreq <- NULL
+        data <- eval(mf,parent)
       }
     else
       data <- tmp
@@ -156,10 +154,7 @@ genTable <- function (formula,
 aggregate.formula <- function (x,
                         data = parent.frame(),
                         subset = NULL,
-                        na.action=getOption("na.action"),
-                        sort=FALSE,
-                        exclude = c(NA, NaN),
-                        drop.unused.levels = FALSE,
+                        sort=TRUE,
                         names=NULL,
                         addFreq=TRUE,
                         as.vars=1,
@@ -167,7 +162,9 @@ aggregate.formula <- function (x,
                         ...)
 {
    formula <- x
+   rm(x)
    m <- match.call()
+   parent <- parent.frame()
 
    if(is.table(data)) data <- as.data.frame(data)
    else if(is.environment(data)){
@@ -175,9 +172,10 @@ aggregate.formula <- function (x,
     if(inherits(tmp,"try-error")) {
         mf <- m
         mf[[1]] <- as.name("model.frame.default")
+        mf$x <- NULL
         mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
-        mf$... <- mf$exclude <- mf$drop.unused.levels <- mf$names <- mf$addFreq <- NULL
-        data <- eval(mf,parent.frame())
+        mf$... <- mf$names <- mf$addFreq <- mf$as.vars <- NULL
+        data <- eval(mf,parent)
       }
     else
       data <- tmp

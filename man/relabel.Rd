@@ -4,9 +4,9 @@
 \alias{relabel.factor}
 \alias{relabel4}
 \alias{relabel4,item-method}
-\title{Change labels of factors or of any labelled object}
+\title{Change labels of factors or labelled objects}
 \description{
-  Function \code{relabel} changes the labels of a factor of any object
+  Function \code{relabel} changes the labels of a factor or any object
   that has a \code{names}, \code{labels}, \code{value.labels}, or \code{variable.labels} attribute.
   Function \code{relabel4} is an (internal) generic which is called by \code{relabel}
   to handle S4 objects.
