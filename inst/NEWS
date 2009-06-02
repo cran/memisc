@@ -1,0 +1,4 @@
+Version 0.95-18:
+  - Fixed bug in sample.data.frame and sample.data.set methods: 
+    Samples were drawn only from the first m observations, where m is 
+    the number of variables in the data frame/data set. 
