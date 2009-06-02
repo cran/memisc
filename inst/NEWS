@@ -1,4 +1,6 @@
-Version 0.95-18:
-  - Fixed bug in sample.data.frame and sample.data.set methods: 
-    Samples were drawn only from the first m observations, where m is 
-    the number of variables in the data frame/data set. 
+2009-06-02:
+  - as.factor methods for item vectors adapted to new factor function
+    in R 2.10.0
+  - Fixed bug in sample.data.frame and sample.data.set methods:
+    Samples were drawn only from the first m observations, where m is
+    the number of variables in the data frame/data set.

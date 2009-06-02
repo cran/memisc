@@ -135,7 +135,7 @@ setMethod("as.item","character",function(x,
                         value.filter
                         }
   measurement <- if(length(measurement)) match.arg(measurement,c("nominal","ordinal"))
-                 else "nominal" 
+                 else "nominal"
   annotation <- new("annotation",structure(as.character(annotation),names=names(annotation)))
   new("character.item",x,
     value.labels=value.labels,
@@ -272,7 +272,7 @@ setMethod("as.ordered","item.vector",function(x){
     }
     filter <- x@value.filter
     use.levels <- if(length(filter)) is.valid2(values,filter) else TRUE
-    f <- suppressWarnings(ordered(x,levels=values[use.levels],labels=labels[use.levels]))
+    f <- suppressWarnings(ordered(x@.Data,levels=values[use.levels],labels=labels[use.levels]))
     if(length(attr(x,"contrasts")))
       attr(f,"contrasts") <- contrasts(x)
     f
@@ -289,7 +289,7 @@ setMethod("as.factor","item.vector",function(x){
     }
     filter <- x@value.filter
     use.levels <- if(length(filter)) is.valid2(values,filter) else TRUE
-    f <- suppressWarnings(factor(x,levels=values[use.levels],labels=labels[use.levels]))
+    f <- suppressWarnings(factor(x@.Data,levels=values[use.levels],labels=labels[use.levels]))
     if(length(attr(x,"contrasts")))
       contrasts(f) <- contrasts(x)
     f
@@ -309,7 +309,7 @@ setMethod("as.character","item.vector",function(x,use.labels=TRUE,...){
 ## utilities #############################################################################
 
 relabel.item <- function(x,...,gsub=FALSE,fixed=TRUE,warn=TRUE){
-  subst <- c(...)  
+  subst <- c(...)
   vl <- x@value.labels
   vll <- vl@.Data
   if(gsub){
@@ -435,7 +435,7 @@ print.item.vector <- function(x,
     use.labels=isTRUE(getOption("print.use.value.labels")),
     width=getOption("width"),
     compress=FALSE,...,print.gap=NULL){
-    if(length(x)){  
+    if(length(x)){
       mkdots <- function(n) paste(rep(".",n),collapse="")
       pg <- if(is.null(print.gap) || compress) 1 else print.gap
       l <- length(x)
@@ -460,7 +460,7 @@ print.item.vector <- function(x,
               format(x,use.labels=use.labels,...),
               quote=FALSE,print.gap=print.gap)
     }
-    else 
+    else
       print(as.vector(x),print.gap=print.gap)
 }
 
@@ -603,4 +603,4 @@ setMethod("%in%",signature(x="numeric.item",table="character"),function(x,table)
    vl <- labels(x)
    x <- vl@.Data[match(x,vl@values)]
    x %in% table
-}) 
+})
