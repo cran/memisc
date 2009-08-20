@@ -1,3 +1,9 @@
+2009-08-19:
+  - corrected documentation for mtable (\usepackage instead of usepackage)
+  - completed documentation for contrasts generic
+  - fixed bug in the internals for 'spss.portable.file':
+    'SPSS Por' to ascii and 'SPSS Por' to integer translation tables
+    were one item too short.
 2009-06-02:
   - as.factor methods for item vectors adapted to new factor function
     in R 2.10.0

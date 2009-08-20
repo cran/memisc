@@ -109,13 +109,13 @@ write.mtable(object,file="",...)
       not aligned in any way, giving the table the most compact form.}
      \item{forLaTeX}{should LaTeX code be produced?}
      \item{useDcolumn}{should the \code{dcolumn} LaTeX package be used?
-          If true, you will have to include \code{\usepackage{dcolumn}} in
+          If true, you will have to include \code{\\usepackage{dcolumn}} into
           the preamble of your LaTeX document.}
      \item{colspec}{LaTeX table column format specifyer(s).}
      \item{LaTeXdec}{the decimal point in the final LaTeX output.}
      \item{ddigits}{alignment specification or digits after the decimal point.}
      \item{useBooktabs}{should the \code{booktabs} LaTeX package be used?
-          If true, you will have to include \code{\usepackage{booktabs}} in
+          If true, you will have to include \code{\\usepackage{booktabs}} into
           the preamble of your LaTeX document.}
      \item{toprule}{appearance of the top border of the LaTeX \code{tabular} environment.}
      \item{midrule}{how are coefficients and summary statistics
