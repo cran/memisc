@@ -1,11 +1,11 @@
 allequal <- function(x) length(unique(x)) == 1
 
-get.substr <- function(pattern, text, extended = TRUE, perl = FALSE,
+get.substr <- function(pattern, text, perl = FALSE,
         fixed = FALSE, useBytes = FALSE){
         if(fixed)
           rr <- gregexpr(pattern,text,fixed=TRUE,perl=FALSE,useBytes=useBytes)
         else
-          rr <- gregexpr(pattern,text,extended=extended,perl=perl,useBytes=useBytes)
+          rr <- gregexpr(pattern,text,perl=perl,useBytes=useBytes)
         positions <- lapply(rr,function(rr){
           if(rr[1]<0) return(NULL)
           len <- attr(rr,"match.length")
@@ -24,18 +24,6 @@ get.substr <- function(pattern, text, extended = TRUE, perl = FALSE,
         })
         structure(ans,positions=positions)
         }
-
-# get.substr <- function(patterns, text, extended = TRUE, perl = FALSE,
-#         fixed = FALSE, useBytes = FALSE){
-#         res <- sapply(patterns,.get.substr,text=text,extended=extended,perl=perl,
-#               fixed=fixed,useBytes=useBytes)
-#         dims <- dim(res)
-#         dimn <- dimnames(res)
-#         res <- unlist(res,recursive=FALSE)
-#         dim(res) <- c(length(text),dims)
-#         dimnames(res) <- c(list(text),dimn)
-#         res
-#         }
 
 get.oneSubstr <- function(pattern,text){
   if(length(text)>1) {
@@ -110,7 +98,7 @@ formatVec <- function(x,formats,default="f",digits=min(3,getOption("digits"))){
 
 get.format <- function(x){
   if(!length(x)) return(NULL)
-  x <- strsplit(x,":",extended=FALSE)
+  x <- strsplit(x,":",fixed=TRUE)
   sapply(x,function(x)sub(")","",x[2],fixed=TRUE))
 }
 
