@@ -186,7 +186,7 @@ SEXP dta_read_version(SEXP s_dta_file){
   char ds_format;
   dta_file *dtaf = get_dta_file(s_dta_file);
   rewind(dtaf->f);
-  fread(&ds_format,1,1,dtaf->f);
+  int nread = fread(&ds_format,1,1,dtaf->f);
   return ScalarInteger(ds_format);
 }
 
@@ -204,9 +204,9 @@ SEXP dta_read_header(SEXP s_dta_file, SEXP s_lablen){
   SEXP ans, names;
   dta_file *dtaf = get_dta_file(s_dta_file);
   fseek(dtaf->f,1,SEEK_SET);
-  fread(&byteorder,1,1,dtaf->f);
+  int nread = fread(&byteorder,1,1,dtaf->f);
   if(byteorder != MY_DTA_ENDIAN) dtaf->swap = 1;
-  fread(&filetype,1,1,dtaf->f);
+  nread = fread(&filetype,1,1,dtaf->f);
   unused = dta_read_byte(dtaf);
   nvar = dta_read_short(dtaf);
   nobs = dta_read_int(dtaf);

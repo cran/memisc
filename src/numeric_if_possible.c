@@ -6,14 +6,14 @@
 #include <Rinternals.h>
 
 SEXP numeric_if_possible(SEXP x){
-    int real_works = 1, int_works = 1, i;
+    int real_works = 1, int_works = 1, i, nn;
     const char *elem;
     char *end;
     for(i = 0; i < LENGTH(x); i++){
         elem = CHAR(STRING_ELT(x,i));
-        strtol(elem,&end,10);
+        nn = strtol(elem,&end,10);
         if(strlen(end)>0) int_works = 0;
-        strtod(elem,&end);
+        nn = strtod(elem,&end);
         if(strlen(end)>0) {
             real_works=0;
             break;

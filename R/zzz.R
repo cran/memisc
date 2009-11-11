@@ -101,17 +101,9 @@ memisc_env <- environment()
   options(Simulation.chunk.size=1000)
   options(print.use.value.labels=TRUE)
   options(show.max.obs=25)
-  #require(methods )
-  #require(Matrix)
   require(utils)
   require(stats)
-#   assignInNamespace(".orig.in", base::`%in%`, ns = "base")
-#   assignInNamespace("%in%", `%in%`, ns = "base")
-#   assignInNamespace(".orig.as.factor", base::as.factor, ns = "base")
-#   assignInNamespace("as.factor", as.factor, ns = "base")
-#   assignInNamespace(".orig.codes", base::codes, ns = "base")
-#   assignInNamespace("codes", codes, ns = "base")
-  
+
   if(any(car_pkg == .packages(TRUE))){
     do.call("require",list(package=car_pkg))
     car_recode <- getFromNamespace("recode",ns=car_pkg)
@@ -129,87 +121,15 @@ memisc_env <- environment()
         "*"=.05
     ))
   options(labelled.factor.coerce.NA = FALSE)
-#   options(ls.str.pos=-1)
-#   formals(ls.str)$pos <- getOption("ls.str.pos")
   assignInNamespace(".sample.orig",base::sample , ns = "base")
   assignInNamespace("sample.default",sample.default , ns = "base")
   assignInNamespace("sample",sampleGeneric , ns = "base")
 }
 
 
-# addShowMethods <- function(pkg){
-#   showEnv <- environment(show)
-#   memisc4classes_show <- c(
-#                         "annotation",
-#                         "codebook",
-#                         "data.set",
-#                         "item.vector",
-#                         "spss.fixed.importer",
-#                         "spss.portable.importer",
-#                         "spss.system.importer",
-#                         "Stata.importer",
-#                         "value.filter",
-#                         "value.labels"
-#                         )
-#   showAllMethods <- showEnv$.AllMTable
-#   for(cl in memisc4classes_show){
-#     assign(cl,getMethod("show",cl,where=paste("package",pkg,sep=":")),envir=showAllMethods)
-#   }
-# }
-# 
-# 
-# 
-# showEnv <- environment(show)
-# showAllMethods <- showEnv$.AllMTable
-# myShowMethods <- sapply(c(
-#                         "annotation",
-#                         "codebook",
-#                         "data.set",
-#                         "item.vector",
-#                         "spss.fixed.importer",
-#                         "spss.portable.importer",
-#                         "spss.system.importer",
-#                         "Stata.importer",
-#                         "value.filter",
-#                         "value.labels"
-#                         ),
-#                       function(cl){
-#                         getMethod("show",cl)
-#                 })
-# 
-# 
-# 
-# .onAttach <- function(lib,pkg){
-#    rvers <- getRversion()[[1]]
-#    if(!all(rvers >= c(2,8,0))){
-#     ## Override method selection by 'show' if 'show'
-#     ## on one of the memisc objects
-#     ## was called before loading the package
-#     showEnv <- environment(show)
-#     allShowMethods <- showEnv$.AllMTable
-#     myShowMethods <- getFromNamespace("myShowMethods",pkg)
-#     suppressMessages(trace("show",
-#       tracer=function(...){
-#       message("updating 'show' messages")
-#       for(cl in names(myShowMethods))
-#         assign(cl,myShowMethods[[cl]],envir=allShowMethods)
-#       suppressMessages(untrace("show",signature="ANY"))
-#       },
-#       signature="ANY",print=FALSE,
-#       exit=function(...){
-#       message("updating 'show' messages")
-#       for(cl in names(myShowMethods))
-#         assign(cl,myShowMethods[[cl]],envir=allShowMethods)
-#       suppressWarnings(suppressMessages(untrace("show",signature="ANY")))
-#     }))
-#    }
-# }
-
 .onUnload <- function(libpath)
 {
-#     assignInNamespace("as.factor",  base::.orig.as.factor,  ns = "base")
-#     assignInNamespace("codes",  base::.orig.codes,  ns = "base")
-    assignInNamespace("%in%", base::`.orig.in`, ns = "base")
-    
+    assignInNamespace("sample",  base::.sample.orig,  ns = "base")
+   
     library.dynam.unload("memisc", libpath)
 }

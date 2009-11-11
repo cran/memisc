@@ -297,7 +297,7 @@ int fillPorStreamBuf(porStreamBuf *b) {
     b->at_end = TRUE;
     return 0;
   }
-  fgets((char *)b->buf,BUFSIZE,b->f);
+  char *dummy = fgets((char *)b->buf,BUFSIZE,b->f);
 
 #ifdef DEBUG
   Rprintf("\nbuffer = |%s|",b->buf);
