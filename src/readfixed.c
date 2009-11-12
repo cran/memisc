@@ -55,7 +55,7 @@ SEXP readfixed(SEXP s_file, SEXP what, SEXP s_nlines, SEXP s_start, SEXP s_stop)
 
   for(i = 0; i < n; i++){
     memset(buffer,0,max_lenline+3);
-    fgets(buffer,max_lenline+3,f);
+    buffer = fgets(buffer,max_lenline+3,f);
 #undef DEBUG
 #ifdef DEBUG
     Rprintf("Requested line length: %d\n",max_lenline);
@@ -163,7 +163,7 @@ SEXP readfixedsubset(SEXP s_file, SEXP what, SEXP s_vars, SEXP s_cases, SEXP s_s
   ii = 0;
   for(i = 0; i < ncases; i++){
     memset(buffer,0,max_lenline+3);
-    fgets(buffer,max_lenline+3,f);
+    buffer = fgets(buffer,max_lenline+3,f);
 #ifdef DEBUG
     Rprintf("Requested line length: %d\n",max_lenline);
     Rprintf("Actual line length: %d\n",strlen(buffer));
