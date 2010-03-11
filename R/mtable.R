@@ -1,6 +1,6 @@
 str.has <- function(text,has,not=NULL,how=c("all","any")){
     how <- match.fun(match.arg(how))
-    
+
     hasit <- sapply(has,function(pat)regexpr(pat,text,fixed=TRUE) > 0)
     if(is.matrix(hasit))
         hasit <- apply(hasit,1,how)
@@ -63,7 +63,7 @@ getSummary.lm <- function(obj,
   upper <- coef[,1] + coef[,2]*qt(p=1-alpha/2,df=dendf)
 
   coef <- cbind(coef,lower,upper)
-  
+
   colnames(coef) <- c("est","se","stat","p","lwr","upr")
   sigma <- smry$sigma
   r.squared <- smry$r.squared
@@ -91,7 +91,7 @@ getSummary.lm <- function(obj,
           )
 
   #coef <- apply(coef,1,applyTemplate,template=coef.template)
-  
+
   #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
   list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
 }
@@ -100,23 +100,23 @@ getSummary.lm <- function(obj,
 getSummary.glm <- function(obj,
             alpha=.05,
             ...){
-  
+
   smry <- summary(obj)
   N <- if(length(weights(obj))) sum(weights(obj))
     else sum(smry$df[1:2])
-  
+
   coef <- smry$coef
 
   lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
   upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
 
   coef <- cbind(coef,lower,upper)
-  
+
   colnames(coef) <- c("est","se","stat","p","lwr","upr")
   phi <- smry$dispersion
   LR <- smry$null.deviance - smry$deviance
   df <- smry$df.null - smry$df.residual
-  
+
   ll <- logLik(obj)
   deviance <- deviance(obj)
 
@@ -125,7 +125,7 @@ getSummary.glm <- function(obj,
     p <- pchisq(LR,df,lower.tail=FALSE)
     L0.pwr <- exp(-smry$null.deviance/N)
     #LM.pwr <- exp(-smry$deviance/N)
-    
+
     McFadden <- 1- smry$deviance/smry$null.deviance
     Cox.Snell <- 1 - exp(-LR/N)
     Nagelkerke <- Cox.Snell/(1-L0.pwr)
@@ -157,7 +157,7 @@ getSummary.glm <- function(obj,
           )
 
   #coef <- apply(coef,1,applyTemplate,template=coef.template)
-  
+
   #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
   list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=obj$xlevels,call=obj$call)
 }
@@ -350,16 +350,13 @@ mtable <- function(...,
     argnames <- sapply(m$...,paste)
   }
   n.args <- length(args)
-  #coef.template <- eval(coef.template,parent.frame())
-  #sumstat.template <- eval(sumstat.template,parent.frame())
+
   arg.classes <- lapply(args,class)
   if(any(sapply(arg.classes,length))==0) stop("don\'t know how to handle these arguments")
   summaries <- lapply(args,getSummary)
-  stemplates <- lapply(args,getSummaryTemplate)
-  sumstats <- lapply(seq(n.args),function(i){
-        drop(applyTemplate(summaries[[i]]$sumstat,
-            template=stemplates[[i]],digits=digits))
-      })
+  calls <- lapply(summaries,function(x)x$call)
+  names(calls) <- argnames
+
   ctemplate <- as.matrix(getCoefTemplate(coef.style))
   ctdims <- dim(ctemplate)
   lctdims <- length(ctdims)
@@ -394,7 +391,7 @@ mtable <- function(...,
         else
           getCoef1(coef.i,contrasts=contrasts.i,xlevels=xlevels.i)
       }
-  
+
   coefs <- lapply(seq(n.args),getCoef)
   isList <- sapply(coefs,is.list)
   if(any(isList)){
@@ -429,31 +426,8 @@ mtable <- function(...,
   groups <- attr(coefs,"groups")
 
   n.dims <- length(dim(coefs))
-  #as.col <- setdiff(1:n.dims,as.row)
-  #if(all(lctdims)) kill.header <- length(as.col)
-  #else kill.header <- 0
-  #kill.col <- 2
-  #if(n.dims>4) stop("getSummary should return an array of at most dimension 3")
 
   dimnames(coefs)[[n.dims]] <- argnames
-  
-  sumstats <- clct.vectors(sumstats)
-  colnames(sumstats) <- argnames
-  if(is.character(summary.stats) && !all(summary.stats %in% rownames(sumstats))){
-    undefnd <- summary.stats[!(summary.stats %in% rownames(sumstats))]
-    undefnd <- paste(sQuote(undefnd),sep=", ")
-    if(length(undefnd)==1)
-      stop("summary statistic ",undefnd," is undefined")
-    else
-      stop("summary statistics ",undefnd," are undefined")
-  }
-  sumstats <- sumstats[summary.stats,,drop=FALSE]
-  coefs[is.na(coefs)] <- ""
-
-  calls <- lapply(summaries,function(x)x$call)
-  names(calls) <- argnames
-  
-  sumstats[is.na(sumstats)] <- ""
 
   if(drop && length(dim(coefs))>3 ){
     cdims <- dim(coefs)
@@ -462,15 +436,6 @@ mtable <- function(...,
     dim(coefs) <- dim(coefs)[ckeep]
     dimnames(coefs) <- dn[ckeep]
     dims <- sum(ckeep)
-    
-#     coefs <- drop(coefs)
-#     
-#     newdims <- rep(NA,length(cdims))
-#     newdims[ckeep] <- seq(length(which(ckeep)))
-#     as.col <- newdims[as.col]
-#     as.row <- newdims[as.row]
-#     as.col <- as.col[is.finite(as.col)]
-#     as.row <- as.row[is.finite(as.row)]
   }
   as.row <- c(1,3)
   as.col <- which(!(seq(length(dim(coefs))) %in% as.row))
@@ -478,10 +443,32 @@ mtable <- function(...,
   kill.header <- length(as.col)
   coef.dim <- 3
 
+  if(isTRUE(summary.stats) || is.character(summary.stats) && length(summary.stats)) {
+    stemplates <- lapply(args,getSummaryTemplate)
+    sumstats <- lapply(seq(n.args),function(i){
+          drop(applyTemplate(summaries[[i]]$sumstat,
+              template=stemplates[[i]],digits=digits))
+        })
+    sumstats <- clct.vectors(sumstats)
+    colnames(sumstats) <- argnames
+    if(is.character(summary.stats) && !all(summary.stats %in% rownames(sumstats))){
+      undefnd <- summary.stats[!(summary.stats %in% rownames(sumstats))]
+      undefnd <- paste(sQuote(undefnd),sep=", ")
+      if(length(undefnd)==1)
+        stop("summary statistic ",undefnd," is undefined")
+      else
+        stop("summary statistics ",undefnd," are undefined")
+    }
+    sumstats <- sumstats[summary.stats,,drop=FALSE]
+    sumstats[is.na(sumstats)] <- ""
+    substats <- as.table(sumstats)
+  }
+  else sumstats <- NULL
+
   structure(list(
     coefficients=as.table(coefs),
     groups=groups,
-    summaries=as.table(sumstats),
+    summaries=sumstats,
     calls=calls,
     as.row=as.row,
     as.col=as.col,
@@ -595,15 +582,6 @@ format.mtable <- function(x,
   infos <- attributes(coefs)
   summaries <- x$summaries
   if(compact){
-#      fcoefs <- format(coefs,quote=FALSE)
-#      ckill.col <- c(x$kill.col,max(x$kill.col)+1)
-#      fcoefs <- fcoefs[,-ckill.col,drop=FALSE]
-#      if(x$kill.header)
-#         fcoefs <- fcoefs[-x$kill.header,,drop=FALSE]
-#      fcoefs <- trimws(fcoefs)
-#      ans <- sapply(seq(nrow(fcoefs)),function(i) paste(fcoefs[i,],collapse=colsep))
-#      ans <- paste(paste(ans,collapse=rowsep),rowsep,sep="")
-#      return(ans)
     ans <- trimws(coefs)
     col.vars <- rev(infos$col.vars)
     ans <- coefs
@@ -613,14 +591,16 @@ format.mtable <- function(x,
       lcv <- length(cv)
       header[] <- cv
       ans <- rbind(header,ans)
-      if(i == length(col.vars)){
-        if(ncol(ans)>ncol(summaries)){
-            tmp <- summaries
-            summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
-            summaries[,1] <- tmp
-            rownames(summaries) <- rownames(tmp)
+      if(length(summaries)){
+        if(i == length(col.vars)){
+          if(ncol(ans)>ncol(summaries)){
+              tmp <- summaries
+              summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
+              summaries[,1] <- tmp
+              rownames(summaries) <- rownames(tmp)
+          }
+          ans <- rbind(ans,summaries)
         }
-        ans <- rbind(ans,summaries)
       }
       dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
       ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=colsep)))
@@ -650,11 +630,13 @@ format.mtable <- function(x,
       coefs <- apply(coefs,2,centerAt,
                             at=center.at,
                             integers=align.integers)
-      summaries <- apply(summaries,2,centerAt,
-                            at=center.at,
-                            integers=align.integers)
-      dim(summaries) <- dim(x$summaries)
-      dimnames(summaries) <- dimnames(x$summaries)
+      if(length(summaries)){
+        summaries <- apply(summaries,2,centerAt,
+                              at=center.at,
+                              integers=align.integers)
+        dim(summaries) <- dim(x$summaries)
+        dimnames(summaries) <- dimnames(x$summaries)
+      }
     }
     else
       coefs <- trimws(coefs,left=trimleft,right=trimright)
@@ -666,14 +648,16 @@ format.mtable <- function(x,
       lcv <- length(cv)
       header[] <- cv
       ans <- rbind(header,ans)
-      if(i == length(col.vars)){
-        if(ncol(ans)>ncol(summaries)){
-            tmp <- summaries
-            summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
-            summaries[,1] <- tmp
-            rownames(summaries) <- rownames(tmp)
+      if(length(summaries)){
+        if(i == length(col.vars)){
+          if(ncol(ans)>ncol(summaries)){
+              tmp <- summaries
+              summaries <- matrix("",nrow=nrow(tmp),ncol=ncol(ans))
+              summaries[,1] <- tmp
+              rownames(summaries) <- rownames(tmp)
+          }
+          ans <- rbind(ans,summaries)
         }
-        ans <- rbind(ans,summaries)
       }
       ans <- format(ans,justify="centre")
       dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
@@ -686,8 +670,10 @@ format.mtable <- function(x,
                         ncol=nrow(coefs)/length(row.vars[[i]]))
       tmp[,1] <- row.vars[[i]]
       tmp <- c(rep("",length(col.vars)),t(tmp))
-      if(i == 1) tmp <- c(tmp,rownames(summaries))
-      else tmp <- c(tmp,rep("",nrow(summaries)))
+      if(length(summaries)){
+        if(i == 1) tmp <- c(tmp,rownames(summaries))
+        else tmp <- c(tmp,rep("",nrow(summaries)))
+      }
       tmp <- format(tmp,justify="left")
       leaders <- as.matrix(paste(leaders,tmp,colsep,sep=""))
     }
@@ -698,7 +684,8 @@ format.mtable <- function(x,
         headlines <- headlines[-x$kill.header]
     }
     coeflines <- (if(length(headlines)) max(headlines) else 0)+ seq(nrow(coefs))
-    sumrylines <- max(coeflines) + seq(nrow(summaries))
+    if(length(summaries))
+      sumrylines <- max(coeflines) + seq(nrow(summaries))
     if((any(nchar(topsep)))){
       toprule <- rep(topsep,nchar(ans[1]))
       toprule <- paste(toprule,collapse="")
@@ -719,8 +706,8 @@ format.mtable <- function(x,
             if(length(headlines)) ans[headlines],
             if(length(headlines)) secrule,
             ans[coeflines],
-            secrule,
-            ans[sumrylines],
+            if(length(summaries)) secrule,
+            if(length(summaries)) ans[sumrylines],
             botrule
             )
     ans <- paste(paste(ans,collapse=rowsep),rowsep,sep="")
@@ -738,17 +725,23 @@ format.mtable <- function(x,
                           integers=align.integers)
     coefs <- sub("(\\*+)","^{\\1}",coefs)
     coefs <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",coefs)
-    summaries <- apply(summaries,2,centerAt,
-                          at=center.at,
-                          integers=align.integers)
-    tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
-    if(center.summaries)
-        sumpos <- (dim(tmp.sumry)[2]+1)%/%2
-    else
-        sumpos <- 1
-    tmp.sumry[,sumpos,] <- summaries
-    dim(tmp.sumry) <- c(nrow(summaries),ncol(coefs))
-    ans <- rbind(coefs,tmp.sumry)
+
+    if(length(summaries)){
+      if(nrow(summaries)>1)
+          summaries <- apply(summaries,2,centerAt,
+                            at=center.at,
+                            integers=align.integers)
+      tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
+      if(center.summaries)
+          sumpos <- (dim(tmp.sumry)[2]+1)%/%2
+      else
+          sumpos <- 1
+      tmp.sumry[,sumpos,] <- summaries
+      dim(tmp.sumry) <- c(nrow(summaries),ncol(coefs))
+      ans <- rbind(coefs,tmp.sumry)
+    }
+    else ans <- coefs
+
     header <- character(1:length(col.vars))
     for(i in 1:length(col.vars)){
       tmp.header <- character(NCOL(ans))
@@ -767,18 +760,7 @@ format.mtable <- function(x,
         tmp.header <- c(rep("",length(row.vars)),t(tmp.header))
       tmp.header <- paste(tmp.header,collapse="&")
       header[i] <- tmp.header
-#       if(i == length(col.vars)){
-#         tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
-#         if(center.summaries)
-#             sumpos <- (dim(tmp.sumry)[2]+1)%/%2
-#         else
-#             sumpos <- 1
-#         tmp.sumry[,sumpos,] <- summaries
-#         if(ncol(summaries)>1)
-#          tmp.sumry <- apply(tmp.sumry,c(1,3),function(x)paste(x,collapse=" & "))
-#         else tmp.sumry <- drop(tmp.sumry)
-#         ans <- rbind(ans,tmp.sumry)
-#       }
+
       ans <- format(ans,justify="centre")
       dim(ans) <- c(nrow(ans),lcv,ncol(ans)/lcv)
       if(i == length(col.vars) && length(col.vars) > 1)
@@ -786,14 +768,16 @@ format.mtable <- function(x,
       else
         ans <- as.matrix(apply(ans,c(1,3),function(x)paste(x,collapse=" & ")))
     }
-    leaders <- character(NROW(coefs)+nrow(summaries))
+    leaders <- character(NROW(coefs)+if(length(summaries)) nrow(summaries) else 0)
     for(i in 1:length(row.vars)){
       tmp <- matrix("",nrow=length(row.vars[[i]]),
                         ncol=nrow(coefs)/length(row.vars[[i]]))
       tmp[,1] <- row.vars[[i]]
       tmp <- c(t(tmp))
-      if(i == 1) tmp <- c(tmp,rownames(summaries))
-      else tmp <- c(tmp,rep("",nrow(summaries)))
+      if(length(summaries)){
+        if(i == 1) tmp <- c(tmp,rownames(summaries))
+        else tmp <- c(tmp,rep("",nrow(summaries)))
+      }
       tmp <- format(tmp,justify="left")
       if(i < length(row.vars) || length(col.vars) > 1)
         leaders <- as.matrix(paste(leaders,tmp," & " ,sep=""))
@@ -833,14 +817,15 @@ format.mtable <- function(x,
       }
     ans <- paste(ans,"\\\\",sep="")
     coeflines <- seq(nrow(coefs))
-    sumrylines <- max(coeflines) + seq(nrow(summaries))
+    if(length(summaries))
+      sumrylines <- max(coeflines) + seq(nrow(summaries))
     ans <- c(
             toprule,
             if(length(header))header,
             if(length(header))midrule,
             ans[coeflines],
-            midrule,
-            ans[sumrylines],
+            if(length(summaries)) midrule,
+            if(length(summaries)) ans[sumrylines],
             bottomrule
             )
 
@@ -868,11 +853,6 @@ format.mtable <- function(x,
     splashrule <- rep("%",max(sapply(splash,nchar),sapply(ans,nchar)))
     splashrule <- paste(splashrule,collapse="")
     splash <- c(splashrule,splash,splashrule)
-    #splash <- paste(paste(splash,"\n",sep=""),collapse="")
-    
-    #ans <- paste(paste(ans,collapse="\n"),"\n",sep="")
-    
-    #return(paste(splash,tabbegin,ans,tabend,sep=""))
     c(splash,tabbegin,ans,tabend)
   }
 }
@@ -917,7 +897,7 @@ drop.mtable <- function(x,...){
   cdims <- dim(x$coefficients)
   ckeep <- cdims > 1
   x$coefficients <- drop(x$coefficients)
-  
+
   newdims <- rep(NA,length(cdims))
   newdims[ckeep] <- seq(length(which(ckeep)))
   as.col <- newdims[x$as.col]

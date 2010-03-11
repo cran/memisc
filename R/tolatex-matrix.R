@@ -1,6 +1,9 @@
 toLatex.matrix <- function(object,
           show.titles=TRUE,
-          digits=0,
+          show.vars=FALSE,
+          show.xvar=show.vars,
+          show.yvar=show.vars,
+          digits=if(is.table(object)) 0 else getOption("digits"),
           format="f",
           useDcolumn=TRUE,
           colspec=if(useDcolumn) paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") else "r",
@@ -15,7 +18,7 @@ toLatex.matrix <- function(object,
   n <- nrow(object)
   m <- ncol(object)
   d <- digits
-  digits <- integer(m) 
+  digits <- integer(m)
   digits[] <- d
   fo <- format
   format <- integer(m)
@@ -29,26 +32,57 @@ toLatex.matrix <- function(object,
     }
   ans <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
   if(show.titles){
+    if(length(rownames(object))){
+      ans <- cbind(rownames(object),ans)
+    }
     if(length(colnames(object))){
       header <- sapply(colnames(object),function(x)paste("\\multicolumn{1}{c}{",x,"}",sep=""))
-      ans <- rbind(
-          header,
-          ans
-          )
+      if(!show.yvar || !length(names(dimnames(object)))){
+        if(length(rownames(object))){
+          if(show.xvar && length(names(dimnames(object))))
+              header <- c(names(dimnames(object))[1],header)
+          else header <- c("",header)
+        }
+        header <- paste(header,collapse=" & ")
+        header <- paste(header,"\\\\")
+      }
+      else {
+        super.header <- paste("\\multicolumn{",m,"}{c}{",names(dimnames(object))[2],"}",sep="")
+        if(length(rownames(object))){
+          if(show.xvar && length(names(dimnames(object))))
+              super.header <- c(names(dimnames(object))[1],super.header)
+          else super.header <- c("",super.header)
+          header <- c("",header)
+          if(length(cmidrule))
+            cmidrule <- paste(cmidrule,"{",2,"-",m+1,"}",sep="")
+        }
+        else if(length(cmidrule))
+          cmidrule <- paste(cmidrule,"{",1,"-",m,"}",sep="")
+        header <- paste(header,collapse=" & ")
+        header <- paste(header,"\\\\")
+        super.header <- paste(super.header,collapse=" & ")
+        super.header <- paste(super.header,"\\\\")
+        header <- c(super.header,cmidrule,header)
+      }
     }
-    if(length(rownames(object)))
-      ans <- cbind(c("",rownames(object)),ans)
-    }
+  }
   ans <- apply(ans,1,paste,collapse=" & ")
   ans <- paste(ans,"\\\\")
   if(show.titles && length(colnames(object)))
     ans <- c(
         toprule,
-        ans[1],
+        header,
         midrule,
-        ans[-1],
+        ans,
         bottomrule
         )
+  else {
+    ans <- c(
+        toprule,
+        ans,
+        bottomrule
+        )
+  }
   body.spec <- character(ncol(object))
   body.spec[] <- colspec
   if(show.titles && length(rownames(object)))

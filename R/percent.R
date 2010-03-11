@@ -9,6 +9,9 @@ percent.default <- function(x,weights=NULL,total=!(se || ci),
   tabsum <- sum(tab)
   perc <- drop(100*tab/tabsum)
   #names(perc) <- rownames(tab)
+
+  if(total.name %in% names(perc)) total.name <- paste("_",total.name,"_",sep="")
+
   if(!se && !ci){
     if(total)
       perc <- c(perc,structure(tabsum,names=total.name))

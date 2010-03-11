@@ -1,3 +1,23 @@
+2010-03-11:
+  - fixed bugs in mtable and format.mtable. Short 'summary.stats'
+    arguments or 'summary.stats=FALSE' should work now.
+
+2010-03-06:
+  - fixed but in genTable/percentage: total counts disappeared if
+    a factor level had the same name as the name given to the total count
+  - changed the default value of the 'digits' option of the matrix method
+    of the toLatex generic to the more sensible getOption("digits")
+  - the matrix method of the toLatex generic gains new optional arguments
+    'show.vars', 'show.xvar', and 'show.yvar', which determine whether
+    the name of the row and/or the column variable should be shown if
+    the matrix is a 2-dimensional table.
+
+2010-03-02:
+  - fixed minor but in 'cases' function
+
+2009-11-11:
+  - correction bug in .unLoad function.
+
 2009-10-14:
   - removed 'extended' arguments from calls to 'regexpr' and 'sub' etc. (for compatibility
     with R 2.11)
@@ -8,6 +28,7 @@
   - fixed bug in the internals for 'spss.portable.file':
     'SPSS Por' to ascii and 'SPSS Por' to integer translation tables
     were one item too short.
+
 2009-06-02:
   - as.factor methods for item vectors adapted to new factor function
     in R 2.10.0

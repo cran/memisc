@@ -178,7 +178,7 @@ setReplaceMethod("dimnames","data.set",function(x,value) {
 setMethod("[",signature(x="data.set",i="atomic",j="atomic",drop="ANY"),
   function(x,i,j,...,drop=FALSE){
     frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
-    frame <- frame[i=i,j=j,drop=drop]
+    frame <- frame[i,j,drop=drop]
     if(is.data.frame(frame))
       new("data.set",
         unclass(frame),
@@ -194,7 +194,7 @@ setMethod("[",signature(x="data.set",i="atomic",j="missing",drop="ANY"),
     Narg <- nargs()-!missing(drop)
     frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
     if(Narg > 2){
-      frame <- frame[i=i,,drop=drop]
+      frame <- frame[i,,drop=drop]
       if(!is.data.frame(frame))
         frame
       else
@@ -204,7 +204,7 @@ setMethod("[",signature(x="data.set",i="atomic",j="missing",drop="ANY"),
           )
     }
     else {
-      frame <- frame[i=i]
+      frame <- frame[i]
       if(!is.data.frame(frame))
         frame
       else
@@ -219,7 +219,7 @@ setMethod("[",signature(x="data.set",i="missing",j="atomic",drop="ANY"),
   function(x,i,j,...,drop=FALSE){
 #     cat("\ndata.set,missing,atomic\n")
     frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
-    frame <- frame[,j=j,drop=drop]
+    frame <- frame[,j,drop=drop]
     if(is.data.frame(frame))
       new("data.set",
         unclass(frame),
