@@ -6,17 +6,17 @@ cases <- function(...,check.xor=FALSE){
   parent <- parent.frame()
   if(all(have.arrows)){
     cond.names <- names(subst)
-    
+
     conditions <- lapply(subst,"[[",3)
     values <- lapply(subst,"[[",2)
     conditions <- do.call(cbind,lapply(conditions,eval,envir=parent))
     if(!is.logical(conditions)) stop("all conditions have to be logical")
     #if(any(is.na(conditions))) stop("NA in logical condition")
     na.cond <- rowSums(is.na(conditions)) > 0
-    
+
     done <- rowSums(conditions)
     if(check.xor && any(done!=1)) stop("conditions are neither exclusive nor exhaustive")
-    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0 
+    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0
     if(any(never)){
       neverlab <- deflabels[never]
       if(length(neverlab)==1)
@@ -44,9 +44,9 @@ cases <- function(...,check.xor=FALSE){
     }
     res[na.cond] <- as.vector(NA,mode=storage.mode(values))
     if(length(cond.names) && all(nzchar(cond.names))){
-        uq.values <- unique(values)
+        uq.values <- drop(unique(values))
         if(length(uq.values)==length(cond.names))
-          labels(res) <- structure(unique(values),names=cond.names)
+          labels(res) <- structure(unique(uq.values),names=cond.names)
       }
     res
   }
@@ -56,16 +56,16 @@ cases <- function(...,check.xor=FALSE){
     if(!is.logical(conditions)) stop("all conditions have to be logical")
     #if(any(is.na(conditions))) stop("NA in logical condition")
     na.cond <- rowSums(is.na(conditions)) > 0
-    
+
     codes <- 1:ncol(conditions)
     labels <- colnames(conditions)
     if(length(labels))
       labels <- ifelse(nzchar(labels),labels,deflabels)
     else labels <- deflabels
-    
+
     done <- rowSums(conditions)
     if(check.xor && any(done!=1)) stop("conditions are neither exclusive nor exhaustive")
-    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0 
+    never <- colSums(conditions[!na.cond,,drop=FALSE]) == 0
     if(any(never)){
       neverlab <- deflabels[never]
       if(length(neverlab)==1)

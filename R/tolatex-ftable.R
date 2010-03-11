@@ -75,9 +75,9 @@ toLatex.ftable <- function(object,
         c.starts[[i]] <- length(row.vars) + 2 + (seq(lcv) - 1)*mcols[i]
       else
         c.starts[[i]] <- length(row.vars) + 2 + (seq(lcv) - 1)*(mcols[i]+1)
-    c.ends[[i]] <- c.starts[[i]] + (mcols[i]-1)
-    tmp.cln <- paste(cmidrule,"{",c.starts[[i]],"-",c.ends[[i]],"}",sep="")
-    clns[i] <- paste(tmp.cln,collapse="")
+      c.ends[[i]] <- c.starts[[i]] + (mcols[i]-1)
+      tmp.cln <- paste(cmidrule,"{",c.starts[[i]],"-",c.ends[[i]],"}",sep="")
+      clns[i] <- paste(tmp.cln,collapse="")
     }
   }
   for(i in 1:n.col.vars){
