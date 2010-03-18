@@ -1,9 +1,12 @@
+2010-03-18:
+  - patch to trimws to make it locale-neutral
+
 2010-03-11:
   - fixed bugs in mtable and format.mtable. Short 'summary.stats'
     arguments or 'summary.stats=FALSE' should work now.
 
 2010-03-06:
-  - fixed but in genTable/percentage: total counts disappeared if
+  - fixed bug in genTable/percentage: total counts disappeared if
     a factor level had the same name as the name given to the total count
   - changed the default value of the 'digits' option of the matrix method
     of the toLatex generic to the more sensible getOption("digits")
@@ -13,7 +16,7 @@
     the matrix is a 2-dimensional table.
 
 2010-03-02:
-  - fixed minor but in 'cases' function
+  - fixed minor bug in 'cases' function
 
 2009-11-11:
   - correction bug in .unLoad function.
