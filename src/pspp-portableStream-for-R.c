@@ -297,7 +297,14 @@ int fillPorStreamBuf(porStreamBuf *b) {
     b->at_end = TRUE;
     return 0;
   }
+  int fpos = ftell(b->f);
   char *dummy = fgets((char *)b->buf,BUFSIZE,b->f);
+  if(!dummy) {
+      fseek(b->f,fpos,SEEK_SET);
+      int idummy = fread((char *)b->buf,1,BUFSIZE,b->f);
+
+      error("cannot read from file at pos %d (fread result = <%s>)",fpos,b->buf);
+  }
 
 #ifdef DEBUG
   Rprintf("\nbuffer = |%s|",b->buf);

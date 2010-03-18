@@ -22,7 +22,7 @@ readPorStream <- function(pstream,n=1,start=NULL){
     .Call("readPorStream",pstream,n)
   }
 }
- 
+
 
 
 readRangePorStream <- function(file,range)
@@ -178,6 +178,7 @@ parseHeaderPorStream <- function(stream){
   nvlab <- 1
   value.labels <- list()
   document <- NULL
+  types <- NULL
   repeat{
     #cat("##########################################################################\n")
     #cat("##########################################################################\n")
@@ -254,6 +255,6 @@ parseHeaderPorStream <- function(stream){
 
 
 seekDataPorStream <- function(p){
-  start <- p$start.data 
+  start <- p$start.data
   seekPorStream(p$stream,start)
 }
