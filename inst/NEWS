@@ -1,3 +1,7 @@
+2010-04-07:
+  - fixed bug in C-level function 'read_sysfile_subset' that caused spurious errors
+    while importing SPSS 'system' files with long strings.
+
 2010-03-18:
   - patch to trimws to make it locale-neutral
 

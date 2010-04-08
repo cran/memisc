@@ -21,7 +21,7 @@ typedef struct {
   R_flt64 *buf;
   int swap_code;
   long data_pos;
-  R_flt64 sysmis; 
+  R_flt64 sysmis;
 } sys_file;
 
 typedef union {
@@ -87,13 +87,13 @@ int sys_read(void *target, int n, sys_file *s){
 int sys_read_bytes(sys_file *s){
   int read_len = fread(s->bytes,8,1,s->f);
   return read_len;
-}*/ 
+}*/
 
 int sys_read_case(sys_file *s){
 #ifdef DEBUG
   Rprintf("\nsys_read_case");
   Rprintf("\ncase size: %d",s->case_size);
-#endif  
+#endif
   int read_len;
   if(!s->compressed)
     return fread(s->buf,8,s->case_size,s->f);
@@ -124,7 +124,7 @@ int sys_read_case(sys_file *s){
 #ifdef DEBUG
       Rprintf("\nbytes[%d]=%d",k,s->bytes[k]);
 #endif
-      
+
       if(s->bytes[k] == 252) /* End of file */ return j;
       else if(s->bytes[k] == 253) /* Uncompressed data */{
         read_len = fread(s->buf+j,8,1,s->f);
@@ -132,7 +132,7 @@ int sys_read_case(sys_file *s){
       }
       else if(s->bytes[k] == 254) /* 8 blanks */{
         memset(s->buf+j,' ',8);
-      } 
+      }
       else if(s->bytes[k] == 255) /* system missing value */{
         s->buf[j] = dswap(s->sysmis,s->swap_code);
       }
@@ -274,10 +274,10 @@ struct sysfile_header
 SEXP read_sysfile_header(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_header");
-#endif  
+#endif
 
   sys_file *s = get_sys_file(SysFile);
-  
+
   struct sysfile_header h;
 
   memset(h.rec_type,0,4+1);
@@ -298,7 +298,7 @@ SEXP read_sysfile_header(SEXP SysFile){
   sys_read(h.creation_time,8,s);
   sys_read(h.file_label,64,s);
   sys_read(h.padding,3,s);
-  
+
   SEXP ans;
   PROTECT(ans = allocVector(VECSXP,11));
   int protectcounter = 1;
@@ -309,7 +309,7 @@ SEXP read_sysfile_header(SEXP SysFile){
 #endif
   if(h.layout_code == 2)
     s->swap_code = 0; /*endian equality to system */
-  else 
+  else
     s->swap_code = 1; /*endian difference to system */
   s->compressed = iswap(h.compressed,s->swap_code);
   s->case_size = iswap(h.case_size,s->swap_code);
@@ -344,11 +344,11 @@ SEXP read_sysfile_header(SEXP SysFile){
   SET_STRING_ELT(names,9,mkChar("file_label"));
   SET_STRING_ELT(names,10,mkChar("swap_code"));
   SET_NAMES(ans,names);
-  
+
   UNPROTECT(protectcounter);
 #ifdef DEBUG
   PrintValue(ans);
-#endif  
+#endif
   return ans;
 }
 
@@ -374,7 +374,7 @@ struct sysfile_variable
 SEXP read_sysfile_var(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_var");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   int protectcounter = 0;
 
@@ -385,7 +385,7 @@ SEXP read_sysfile_var(SEXP SysFile){
   sys_read_int(&curr_var.rec_type,s);
 #ifdef DEBUG
   Rprintf("\ntag: %d",curr_var.rec_type);
-#endif  
+#endif
   if(curr_var.rec_type != 2) {
       Rprintf("%d\n",curr_var.rec_type);
       Rprintf("%s\n",&curr_var.rec_type);
@@ -425,7 +425,7 @@ SEXP read_sysfile_var(SEXP SysFile){
         Rprintf("\nas real = %.9e",curr_var.missing_values[i]);
         }
 #endif
-#undef DEBUG        
+#undef DEBUG
   }
 
 
@@ -481,7 +481,7 @@ SEXP read_sysfile_var(SEXP SysFile){
   PrintValue(var);
   Rprintf("\nPosition: %f",ftell(s->f));
 #endif
-    
+
   UNPROTECT(protectcounter);
   return var;
 }
@@ -490,7 +490,7 @@ SEXP read_sysfile_var(SEXP SysFile){
 SEXP test_sysfile_int32(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\ntest_sysfile_int32");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   R_int32 number;
   sys_read_int(&number,s);
@@ -504,7 +504,7 @@ SEXP test_sysfile_int32(SEXP SysFile){
 SEXP read_sysfile_value_labels (SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_value_labels");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   int protectcounter = 0;
   R_int32 rec_type;
@@ -565,7 +565,7 @@ SEXP read_sysfile_value_labels (SEXP SysFile){
   UNPROTECT(protectcounter);
 #ifdef DEBUG
     PrintValue(ans);
-#endif 
+#endif
   return ans;
 }
 #undef DEBUG
@@ -574,7 +574,7 @@ SEXP read_sysfile_value_labels (SEXP SysFile){
 SEXP read_sysfile_document(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_document");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   int protectcounter = 0;
   R_int32 rec_type;
@@ -604,7 +604,7 @@ static const int long_var_names = 13;
 SEXP read_sysfile_aux(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_aux");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   int protectcounter = 0;
   R_int32 rec_type, subtype;
@@ -617,7 +617,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
   if(subtype == info_int32){
 #ifdef DEBUG
     Rprintf("\nsubtype == info_int32");
-#endif  
+#endif
     PROTECT(ans = allocVector(VECSXP,2));
     PROTECT(names = allocVector(STRSXP,2));
     protectcounter+=2;
@@ -629,7 +629,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
     Rprintf("\nsize = %d",size);
     Rprintf("\nsize = %x",size);
     Rprintf("\ncount = %d",count);
-#endif    
+#endif
     if(size != 4) error("we're in trouble here: size != 4");
     PROTECT(data = allocVector(INTSXP,8));
     PROTECT(datanames = allocVector(STRSXP,8));
@@ -665,7 +665,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
   else if (subtype == info_flt64){
 #ifdef DEBUG
     Rprintf("\nsubtype == info_flt64");
-#endif  
+#endif
     PROTECT(ans = allocVector(VECSXP,2));
     PROTECT(names = allocVector(STRSXP,2));
     protectcounter+=2;
@@ -677,7 +677,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
     Rprintf("\nsize = %d",size);
     Rprintf("\nsize = %x",size);
     Rprintf("\ncount = %d",count);
-#endif    
+#endif
     if(size != 8) error("we're in trouble here: size != 8");
     PROTECT(data = allocVector(REALSXP,3));
     PROTECT(datanames = allocVector(STRSXP,3));
@@ -706,7 +706,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
   else if (subtype == aux_var){
 #ifdef DEBUG
     Rprintf("\nsubtype == aux_var");
-#endif  
+#endif
     PROTECT(ans = allocVector(VECSXP,2));
     PROTECT(names = allocVector(STRSXP,2));
     protectcounter+=2;
@@ -718,7 +718,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
     Rprintf("\nsize = %d",size);
     Rprintf("\nsize = %x",size);
     Rprintf("\ncount = %d",count);
-#endif    
+#endif
     if(size != 4) error("we're in trouble here: size != 4");
     int aux_nvars = count/3;
     PROTECT(data = allocVector(VECSXP,aux_nvars));
@@ -752,7 +752,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
   else if (subtype == long_var_names){
 #ifdef DEBUG
     Rprintf("\nsubtype == long_var_names");
-#endif  
+#endif
     PROTECT(ans = NEW_LIST(2));
     PROTECT(names = allocVector(STRSXP,2));
     protectcounter+=2;
@@ -765,7 +765,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
     Rprintf("\nsize = %x",size);
     Rprintf("\ncount = %d",count);
 #endif
- 
+
     SEXP longnames;
     PROTECT(longnames = allocVector(STRSXP,1));
     protectcounter++;
@@ -774,11 +774,11 @@ SEXP read_sysfile_aux(SEXP SysFile){
     memset(longnames_data,0,count+1);
     sys_read(longnames_data,count,s);
     SET_STRING_ELT(longnames,0,mkChar(longnames_data));
-    
+
     SET_VECTOR_ELT(ans,1,longnames);
     SET_STRING_ELT(names,1,mkChar("data"));
     SET_NAMES(ans,names);
-    
+
     UNPROTECT(protectcounter);
 #ifdef DEBUG
     PrintValue(ans);
@@ -788,7 +788,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
   else {
 #ifdef DEBUG
     Rprintf("\nsubtype == misc");
-#endif  
+#endif
     PROTECT(ans = NEW_LIST(2));
     PROTECT(names = allocVector(STRSXP,2));
     protectcounter+=2;
@@ -815,7 +815,7 @@ SEXP read_sysfile_aux(SEXP SysFile){
 SEXP read_sysfile_dict_term (SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nread_sysfile_dict_term");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
   R_int32 rec_type, filler;
   sys_read_int(&rec_type,s);
@@ -828,13 +828,13 @@ SEXP read_sysfile_dict_term (SEXP SysFile){
 SEXP rewind_sysfile(SEXP SysFile){
 #ifdef DEBUG
   Rprintf("\nrewind_sysfile");
-#endif  
+#endif
   sys_file *s = get_sys_file(SysFile);
 #ifdef DEBUG
   Rprintf("\ns address: %x",s);
   Rprintf("\nFile: %x",s->f);
   Rprintf("\nData pos: %d",s->data_pos);
-#endif  
+#endif
   int ret = fseek(s->f,s->data_pos,SEEK_SET);
 #ifdef DEBUG
   Rprintf("\ns address: %x",s);
@@ -905,7 +905,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
         Rprintf("\n");
       }
 #endif
-#undef DEBUG  
+#undef DEBUG
       if(read_len == 0){
         new_ncases = i;
         for(j = 0; j < nvar; j++){
@@ -914,7 +914,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
         }
 #ifdef DEBUG
         Rprintf("\nReached end of cases");
-#endif        
+#endif
         ncases = new_ncases;
         break;
       }
@@ -957,6 +957,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
           }
         }
         else if(types[j] == -1){
+          if(8*str_count > STRMAX-8) error("str_count out of bounds, 8*str_count = %d, STRMAX = %d",8*str_count,STRMAX);
           memcpy(&char_buf[8*str_count],s->buf+j,8);
 #ifdef DEBUG
           Rprintf("\n8*str_count=%d str_len=%d",8*str_count,str_len);
@@ -970,7 +971,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
             x = VECTOR_ELT(data,k);
             SET_STRING_ELT(x,i,mkChar(char_buf));
             str_count = 0;
-            k++; 
+            k++;
           }
         }
         else error("invalid type specifier");
@@ -988,7 +989,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
       x = VECTOR_ELT(what,j);
       y = VECTOR_ELT(data,j);
       copyMostAttrib(x,y);
-    }  
+    }
     UNPROTECT(3);
     return data;
 }
@@ -1011,7 +1012,7 @@ SEXP count_cases_sysfile (SEXP SysFile){
         ncases = i;
 #ifdef DEBUG
         Rprintf("\nReached end of cases");
-#endif        
+#endif
         break;
         }
       if(read_len < s->case_size) {
@@ -1030,7 +1031,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
   PROTECT(SysFile);
     sys_file *s = get_sys_file(SysFile);
     if(s->case_size == 0) error("case size is zero -- why??");
-  
+
   PROTECT(s_vars = coerceVector(s_vars,LGLSXP));
   PROTECT(s_cases = coerceVector(s_cases,LGLSXP));
   PROTECT(s_types = coerceVector(s_types,INTSXP));
@@ -1044,7 +1045,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
   for(i = 0; i < ncases; i++) n+=LOGICAL(s_cases)[i];
   SEXP x, y, data;
   /*char *charbuf;
-  int charbuflen = 0;*/ 
+  int charbuflen = 0;*/
   PROTECT(data = allocVector(VECSXP,m));
   k = 0;
   l = 0;
@@ -1097,7 +1098,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
         k = 0;
         l = 0;
         for(j = 0; j < s->case_size; j++){
-            /*Rprintf("i=%d, j=%d, k=%d, l=%d, ii=%d\n",i,j,k,l,ii);*/ 
+            /*Rprintf("i=%d, j=%d, k=%d, l=%d, ii=%d\n",i,j,k,l,ii);*/
             if(types[j] == 0){
               if(k >= nvar) error("index k out of bounds, k = %d, nvar = %d",k,m);
               if(LOGICAL(s_vars)[k]){
@@ -1128,7 +1129,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
               }
             }
             else if(types[j] == -1){
-              if(8*str_count >= STRMAX-8) error("str_count out of bounds, 8*str_count = %d, STRMAX = %d",8*str_count,STRMAX);
+              if(8*str_count > STRMAX-8) error("str_count out of bounds, 8*str_count = %d, STRMAX = %d",8*str_count,STRMAX);
               memcpy(&char_buf[8*str_count],s->buf+j,8);
               str_count++;
               if(8*str_count >= str_len){
@@ -1142,7 +1143,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
                 }
                 str_count = 0;
                 k++;
-              } 
+              }
             }
             else error("invalid type specifier");
           }
@@ -1159,7 +1160,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
         k++;
       }
     }
-    
+
     UNPROTECT(5);
     return data;
 }
