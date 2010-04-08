@@ -2,6 +2,11 @@
 \alias{getSummary}
 \alias{getSummary.lm}
 \alias{getSummary.glm}
+\alias{getSummary.polr}
+\alias{getSummary.simex}
+\alias{getSummary.lmer}
+\alias{getSummary.expcoef.glm}
+
 
 \title{Get Model Summaries for Use with "mtable"}
 \description{A generic function and methods to collect coefficients
@@ -10,6 +15,13 @@
 \usage{
   \method{getSummary}{lm}(obj, alpha=.05,\dots)
   \method{getSummary}{glm}(obj, alpha=.05,\dots)
+  \method{getSummary}{polr}(obj, alpha=.05,\dots)
+  \method{getSummary}{simex}(obj, alpha=.05,\dots)
+  \method{getSummary}{lmer}(obj, alpha=.05,\dots)
+
+  # Method for 'glm' objects - to report
+  # exponentiated coefficients.
+  getSummary.expcoef.glm(obj, alpha=.05,\dots)
 }
 \arguments{
   \item{obj}{a model object, e.g. of class \code{lm} or \code{glm}}
@@ -51,10 +63,17 @@
     The higher dimensions of the array correspond to
     the individual coefficients and, in multi-equation models,
     to the model equations.
-    
+
     }
   \item{sumstat}{a vector containing the model summary statistics;
     the components may have arbitrary names.}
 }
+\note{
+  \code{getSummary.polr} and \code{getSummary.simex} are contributions
+  from Christopher N. Lawrence (Texas A&M International University).
+  \code{getSummary.lmer} and \code{getSummary.expcoef.glm} are contributions
+  from Dave Atkins (Unversity of Washington).
+}
+
 \keyword{misc}
 \keyword{utilities}

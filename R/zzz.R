@@ -18,15 +18,23 @@
                                       )
 .CoefTemplates$horizontal <- t(c(est="($est:#)($p:*)",
                                           se="(($se:#))"))
-.CoefTemplates$ci <- c(est="($est:3)",
-                                      se="(($se:#))",
-                                      ci="[($lwr:#);($upr:#)]")
-.CoefTemplates$ci.vertical <- c(est="($est:#)",
+# .CoefTemplates$ci.se <- c(est="($est:3)",
+#                                       se="(($se:#))",
+#                                       ci="[($lwr:#);($upr:#)]")
+
+.CoefTemplates$ci <- c(est="($est:#)",
+                                        lwr="[($lwr:#)",
+                                        upr="($upr:#)]"
+                                        )
+
+
+.CoefTemplates$ci.se <- c(est="($est:#)",
                                         se="(($se:#))",
                                         lwr="[($lwr:#)",
                                         upr="($upr:#)]"
                                         )
-.CoefTemplates$ci.horizontal<- matrix(c(est="($est:#)",
+
+.CoefTemplates$ci.se.horizontal<- matrix(c(est="($est:#)",
                                         se="(($se:#))",
                                         lwr="[($lwr:#)",
                                         upr="($upr:#)]"
@@ -35,7 +43,25 @@
                                           c("est","ci"),
                                           c("est","se")
                                           ))
-.SummaryTemplates$lm <- 
+
+.CoefTemplates$ci.p <- c(est="($est:#)",
+                                        p="(($p:#))",
+                                        lwr="[($lwr:#)",
+                                        upr="($upr:#)]"
+                                        )
+
+.CoefTemplates$ci.p.horizontal<- matrix(c(est="($est:#)",
+                                        p="(($p:#))",
+                                        lwr="[($lwr:#)",
+                                        upr="($upr:#)]"
+                                        ),ncol=2,nrow=2,byrow=TRUE,
+                                        dimnames=list(
+                                          c("est","ci"),
+                                          c("est","se")
+                                          ))
+
+
+.SummaryTemplates$lm <-
   c(
           "R-squared"     = "($r.squared:f#)",
           "adj. R-squared" = "($adj.r.squared:f#)",
@@ -109,8 +135,8 @@ memisc_env <- environment()
     car_recode <- getFromNamespace("recode",ns=car_pkg)
     assign("car_recode",car_recode,env=memisc_env)
   }
-  
-  
+
+
   options(coef.style="default")
   options(baselevel.sep="/")
   options(factor.style="($f): ($l)")
@@ -130,6 +156,6 @@ memisc_env <- environment()
 .onUnload <- function(libpath)
 {
     assignInNamespace("sample",  base::.sample.orig,  ns = "base")
-   
+
     library.dynam.unload("memisc", libpath)
 }

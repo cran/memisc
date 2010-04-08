@@ -2,7 +2,10 @@ cases <- function(...,check.xor=FALSE){
   subst <- match.call(expand.dots=FALSE)$...
   deflabels <- sapply(subst,deparse)
   if(length(subst)<2) stop("need at least two conditions")
-  have.arrows <- sapply(sapply(subst,"[[",1),paste)=="<-"
+
+  have.arrows <- sapply(subst,length) > 1
+  have.arrows[have.arrows] <- have.arrows[have.arrows] & sapply(sapply(subst[have.arrows],"[[",1),paste)=="<-"
+
   parent <- parent.frame()
   if(all(have.arrows)){
     cond.names <- names(subst)
@@ -25,7 +28,7 @@ cases <- function(...,check.xor=FALSE){
         warning("conditions ",paste(neverlab,collapse=", ")," are never satisfied")
     }
 
-    values <- lapply(values,eval,enclos=parent.frame())
+    values <- lapply(values,eval,envir=parent.frame(),enclos=parent.frame())
     nrow <- unique(sapply(values,length))
     if(length(nrow) > 1 || nrow != nrow(conditions)){
       nrow <- nrow(conditions)

@@ -158,13 +158,20 @@ mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
            ddpi = "Growth rate of real per-capita disp. income"
   ))
 
+# This produces output in tab-delimited format:
 write.mtable(mtable123)
-\dontrun{file123 <- "mtable123.txt"
+
+\dontrun{
+# This produces output in tab-delimited format:
+file123 <- "mtable123.txt"
 write.mtable(mtable123,file=file123)
-file.show(file123)}
+file.show(file123)
+# The contents of this file can be pasted into Word
+# and converted into a Word table.
+}
 \dontshow{toLatex(mtable123)}
 \dontrun{texfile123 <- "mtable123.tex"
-cat(toLatex(mtable123),sep="\\n",file=texfile123)
+write.mtable(mtable123,forLaTeX=TRUE,file=texfile123)
 file.show(texfile123)}
 
 berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
@@ -188,10 +195,13 @@ mtable(berk0,berk1,berk2,
           coef.style="ci",
           summary.stats=c("Deviance","AIC","N"))
 mtable(berk0,berk1,berk2,
-          coef.style="ci.vertical",
+          coef.style="ci.se",
           summary.stats=c("Deviance","AIC","N"))
 mtable(berk0,berk1,berk2,
-          coef.style="ci.horizontal",
+          coef.style="ci.se.horizontal",
+          summary.stats=c("Deviance","AIC","N"))
+mtable(berk0,berk1,berk2,
+          coef.style="ci.p.horizontal",
           summary.stats=c("Deviance","AIC","N"))
 mtable(berk0,berk1,berk2,
           coef.style="all",
