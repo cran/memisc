@@ -888,7 +888,11 @@ toLatex.mtable <- function(object,...){
 
 
 write.mtable <- function(object,file="",...){
-  cat(format.mtable(object,...),file=file)
+  l <- list(...)
+  f <- format.mtable(object,...)
+  if(isTRUE(l[["forLaTeX"]]))
+    f <- paste(f,"\n",sep="")
+  cat(f,file=file,sep="")
 }
 
 
@@ -919,3 +923,230 @@ relabel.mtable <- function(x,...,gsub=FALSE,fixed=!gsub,warn=FALSE){
  x$summaries <- relabelTab(x$summaries)
  return(x)
 }
+
+## The following two functions are contributed by
+## Christopher N. Lawrence, Ph.D. <c.n.lawrence@gmail.com>
+## Assistant Professor of Political Science
+## Texas A&M International University
+## 313 LBVSC, 5201 University Blvd
+## Laredo, Texas 78041-1920
+
+getSummary.polr <- function(obj,
+            alpha=.05,
+            ...){
+
+  smry <- summary(obj)
+  N <- if(length(weights(obj))) sum(weights(obj))
+    else smry$nobs
+
+  coef <- smry$coef
+
+  if (smry$df.residual) {
+      pvals <- 2*pt(-abs(coef[,3]), smry$df.residual)
+  } else {
+      pvals <- 2*pnorm(-abs(coef[,3]))
+  }
+
+  lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
+  upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
+
+  coef <- cbind(coef,pvals,lower,upper)
+
+  colnames(coef) <- c("est","se","stat","p","lwr","upr")
+  null.model <- update(obj, paste(names(obj$model[1]), " ~ 1"))
+
+  LR <- deviance(null.model) - deviance(obj)
+  df <- null.model$df.residual - smry$df.resid
+
+  ll <- logLik(obj)
+  dev <- deviance(obj)
+
+  if(df > 0){
+    p <- pchisq(LR,df,lower.tail=FALSE)
+    L0.pwr <- exp(-deviance(null.model)/N)
+    #LM.pwr <- exp(-smry$deviance/N)
+
+    McFadden <- 1 - dev/deviance(null.model)
+    Cox.Snell <- 1 - exp(-LR/N)
+    Nagelkerke <- Cox.Snell/(1-L0.pwr)
+    }
+  else {
+    LR <- NA
+    df <- NA
+    p <- NA
+    McFadden <- NA
+    Cox.Snell <- NA
+    Nagelkerke <- NA
+    }
+
+  AIC <- AIC(obj)
+  BIC <- AIC(obj,k=log(N))
+  sumstat <- c(
+          LR             = LR,
+          df         = df,
+          p             = p,
+          logLik        = ll,
+          deviance      = dev,
+          McFadden      = McFadden,
+          Cox.Snell       = Cox.Snell,
+          Nagelkerke    = Nagelkerke,
+          AIC           = AIC,
+          BIC           = BIC,
+          N             = N
+          )
+
+  #coef <- apply(coef,1,applyTemplate,template=coef.template)
+
+  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
+  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=smry$xlevels,call=obj$call)
+}
+
+getSummary.simex <- function(obj,
+            alpha=.05,
+            ...){
+
+  smry <- summary(obj)
+  modsmry <- summary(obj$model)
+  N <- if(length(weights(obj$model))) sum(weights(obj$model))
+    else {
+        if(length(modsmry$df) > 1) sum(modsmry$df[1:2])
+        else obj$model$nobs
+    }
+
+  ## Asymptotics not guaranteed to be here.
+  coef <- smry$coef$jackknife
+
+  lower <- qnorm(p=alpha/2,mean=coef[,1],sd=coef[,2])
+  upper <- qnorm(p=1-alpha/2,mean=coef[,1],sd=coef[,2])
+
+  coef <- cbind(coef,lower,upper)
+
+  colnames(coef) <- c("est","se","stat","p","lwr","upr")
+  sumstat <- c(N=N,
+               LR=NA,
+               df=NA,
+               p=NA,
+               McFadden=NA,
+               Cox.Snell=NA,
+               Nagelkerke=NA,
+               logLik=NA,
+               deviance=NA,
+               AIC=NA,
+               BIC=NA)
+
+  #coef <- apply(coef,1,applyTemplate,template=coef.template)
+
+  #sumstat <- drop(applyTemplate(sumstat,template=sumstat.template))
+  list(coef=coef,sumstat=sumstat,contrasts=obj$contrasts,xlevels=smry$xlevels,call=obj$call)
+}
+
+## The following two functions are contributed by
+## Dave Atkins, PhD
+## Research Associate Professor
+## Center for the Study of Health and Risk Behaviors
+## Department of  Psychiatry and Behavioral Science
+## Unversity of Washington
+
+getSummary.expcoef.glm <- function (obj, alpha = 0.05, ...)
+{
+    smry <- summary(obj)
+    N <- if (length(weights(obj)))
+        sum(weights(obj))
+    else sum(smry$df[1:2])
+    coef <- cbind(exp(smry$coef[,1]), smry$coef[,2:4]) # NOTE: exponentiated coefficients
+    lower <- exp(qnorm(p = alpha/2, mean = smry$coef[, 1], sd = coef[,
+        2]))
+    upper <- exp(qnorm(p = 1 - alpha/2, mean = smry$coef[, 1], sd = coef[,
+        2]))
+    # NOTE: exponentiated CI
+    coef <- cbind(coef, lower, upper)
+    colnames(coef) <- c("est", "se", "stat", "p", "lwr", "upr")
+    phi <- smry$dispersion
+    LR <- smry$null.deviance - smry$deviance
+    df <- smry$df.null - smry$df.residual
+    ll <- logLik(obj)
+    deviance <- deviance(obj)
+    if (df > 0) {
+        p <- pchisq(LR, df, lower.tail = FALSE)
+        L0.pwr <- exp(-smry$null.deviance/N)
+        McFadden <- 1 - smry$deviance/smry$null.deviance
+        Cox.Snell <- 1 - exp(-LR/N)
+        Nagelkerke <- Cox.Snell/(1 - L0.pwr)
+    }
+    else {
+        LR <- NA
+        df <- NA
+        p <- NA
+        McFadden <- NA
+        Cox.Snell <- NA
+        Nagelkerke <- NA
+    }
+    AIC <- AIC(obj)
+    BIC <- AIC(obj, k = log(N))
+    sumstat <- c(phi = phi, LR = LR, df = df, p = p, logLik = ll,
+        deviance = deviance, McFadden = McFadden, Cox.Snell = Cox.Snell,
+        Nagelkerke = Nagelkerke, AIC = AIC, BIC = BIC, N = N)
+    list(coef = coef, sumstat = sumstat, contrasts = obj$contrasts,
+        xlevels = obj$xlevels, call = obj$call)
+}
+
+getSummary.lmer <- function (obj, alpha = 0.05, ...)
+{
+    smry <- summary(obj)
+    #N <- if (length(weights(obj))) ### NOTE: how to deal with groups/samp size?
+    #    sum(weights(obj))
+    #else sum(smry$df[1:2])
+    coef <- smry@coefs
+    lower <- qnorm(p = alpha/2, mean = coef[, 1], sd = coef[,
+        2])
+    upper <- qnorm(p = 1 - alpha/2, mean = coef[, 1], sd = coef[,
+        2])
+    if (ncol(smry@coefs) == 3) {
+      p <- (1 - pnorm(smry@coefs[,3]))*2 # NOTE: no p-values for lmer() due to
+                          # unclear dfs; calculate p-values based on z
+      coef <- cbind(coef, p, lower, upper)
+    } else {
+        coef <- cbind(coef, lower, upper) # glmer will have 4 columns with p-values
+        }
+    colnames(coef) <- c("est", "se", "stat", "p", "lwr", "upr")
+    #phi <- smry$dispersion
+    #LR <- smry$null.deviance - smry$deviance
+    #df <- smry$df.null - smry$df.residual
+    ll <- logLik(obj)[1]
+    deviance <- deviance(obj)
+    #if (df > 0) {
+    #    p <- pchisq(LR, df, lower.tail = FALSE)
+    #    L0.pwr <- exp(-smry$null.deviance/N)
+    #    McFadden <- 1 - smry$deviance/smry$null.deviance
+    #    Cox.Snell <- 1 - exp(-LR/N)
+    #    Nagelkerke <- Cox.Snell/(1 - L0.pwr)
+    #}
+    #else {
+    #    LR <- NA
+    #    df <- NA
+    #    p <- NA
+    #    McFadden <- NA
+    #    Cox.Snell <- NA
+    #    Nagelkerke <- NA
+    #}
+    AIC <- smry@AICtab[1][,1] # NOTE: these are both data.frames? not sure why...
+    BIC <- smry@AICtab[2][,1]
+    ### NOTE: don't see a similar slot for "xlevels" to get levels of
+    ###   factor variables used as predictors; for time being, force
+    ###   user to specify explicitly
+    #if (fac != NULL) {
+    #   n <- length(fac)
+    # xlevels <- vector(n, mode = "list")
+    # for (i in 1:n) {
+    #   xlevels[i] <- levels(obj@frame[,fac[i]])
+    #   }
+    # }
+    #sumstat <- c(phi = phi, LR = LR, df = df, p = p, logLik = ll,
+    #    deviance = deviance, McFadden = McFadden, Cox.Snell = Cox.Snell,
+    #    Nagelkerke = Nagelkerke, AIC = AIC, BIC = BIC, N = N)
+    sumstat <- c(logLik = ll, deviance = deviance, AIC = AIC, BIC = BIC)
+    list(coef = coef, sumstat = sumstat,
+       contrasts = attr(model.matrix(obj), "contrasts"),
+        xlevels = NULL, call = obj@call)
+}
+
