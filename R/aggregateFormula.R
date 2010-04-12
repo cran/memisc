@@ -57,12 +57,17 @@ genTable <- function (formula,
    else if(is.environment(data)){
     tmp <- try(as.data.frame(data),silent=TRUE)
     if(inherits(tmp,"try-error")) {
-        mf <- m
-        mf[[1]] <- as.name("model.frame.default")
-        mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
-        mf$... <- mf$exclude <- mf$names <- mf$addFreq <- NULL
-        data <- eval(mf,parent)
-      }
+      tmp <- try(as.data.frame(as.list(data)),silent=TRUE)
+      if(inherits(tmp,"try-error")) {
+          mf <- m
+          mf[[1]] <- as.name("model.frame.default")
+          mf$x <- NULL
+          mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
+          mf$data <- data
+          mf$... <- mf$names <- mf$addFreq <- mf$as.vars <- NULL
+          data <- eval(mf,parent)
+        }
+    }
     else
       data <- tmp
    }
@@ -170,13 +175,17 @@ aggregate.formula <- function (x,
    else if(is.environment(data)){
     tmp <- try(as.data.frame(data),silent=TRUE)
     if(inherits(tmp,"try-error")) {
-        mf <- m
-        mf[[1]] <- as.name("model.frame.default")
-        mf$x <- NULL
-        mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
-        mf$... <- mf$names <- mf$addFreq <- mf$as.vars <- NULL
-        data <- eval(mf,parent)
-      }
+      tmp <- try(as.data.frame(as.list(data)),silent=TRUE)
+      if(inherits(tmp,"try-error")) {
+          mf <- m
+          mf[[1]] <- as.name("model.frame.default")
+          mf$x <- NULL
+          mf$formula <- as.formula(paste("~",paste(all.vars(formula),collapse="+")))
+          mf$data <- data
+          mf$... <- mf$names <- mf$addFreq <- mf$as.vars <- NULL
+          data <- eval(mf,parent)
+        }
+    }
     else
       data <- tmp
    }

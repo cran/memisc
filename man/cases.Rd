@@ -22,10 +22,10 @@ cases(\dots,check.xor=FALSE)
   several logical cases or it can be used to conditionally
   evaluate an expression in a manner similar to \code{\link{ifelse}}.
 
-  For the first use, the \dots arguments have to be a series of
-  logical expressions. \code{cases} then returns a factor 
+  For the first use, the \code{\dots} arguments have to be a series of
+  logical expressions. \code{cases} then returns a factor
   with as many levels as logical expressions given as
-  \dots arguments. The resulting factor will attain its
+  \code{\dots} arguments. The resulting factor will attain its
   first level if the first condition is TRUE, otherwise it will attain its
   second level if the second condition is TRUE, etc.
   The levels will be named after the conditions or, if name tags are
@@ -33,7 +33,7 @@ cases(\dots,check.xor=FALSE)
   Not that the logical expressions all need to evaluate to logical vectors
   of the same length, otherwise an error condition is raised.
 
-  For the second use, the \dots arguments have to be a series
+  For the second use, the \code{\dots} arguments have to be a series
   of assignment expression of the type \code{<expression> <- <logical expression>}
   or \code{<logical expression> -> <expression>}. For cases
   in which the first logical expression is TRUE, the result of first expression that
@@ -44,8 +44,8 @@ cases(\dots,check.xor=FALSE)
   vector returned by \code{cases}, etc.
   Note that the logical expressions also here all need to evaluate to logical
   vectors of the same length. The expressions on the other side of the
-  assignment operator should also be either vectors of the same lenght
-  and mode or shoud scalars of the same mode, otherwise unpredictable
+  assignment operator should also be either vectors of the same length
+  and mode or should scalars of the same mode, otherwise unpredictable
   results may occur.
 }
 \value{

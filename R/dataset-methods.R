@@ -342,9 +342,6 @@ data.set <- function(..., row.names = NULL, check.rows = FALSE, check.names = TR
     )
 }
 
-cbind.data.set <- function (..., deparse.level = 1)
-  data.set(..., check.names = FALSE)
-
 
 setMethod("annotation","data.set",function(x){
   d <- lapply(x,annotation)
