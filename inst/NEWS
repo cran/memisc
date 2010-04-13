@@ -1,3 +1,13 @@
+2010-04-12:
+  - 'toLatex(mtable(<something>),useDcolumn=FALSE)' should now produce useable
+    LaTeX output ($'s are added to the table entries).
+
+2010-04-09:
+  - 'By' works now with 'genTable' and 'aggregate.formula'. It gains a 'data.frame'
+    method, which better cooperates with calls to 'lm'-like functions. Their results
+    get a 'data' component containing the subset of the data frame that was given
+    as 'data' argument to the call of 'By'.
+
 2010-04-08:
   - fixed bug in 'cases'. It works now with target expressions even with 'within'.
   - 'write.mtable' now handles a 'forLaTeX=TRUE' option in a more convenient way.

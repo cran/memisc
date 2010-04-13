@@ -26,10 +26,12 @@ By(formula,expr,data=parent.frame())
 \examples{
 
 berkeley <- aggregate(Table(Admit,Freq)~.,data=UCBAdmissions)
-By(~Dept,glm(cbind(Admitted,Rejected)~Gender,family="binomial"),data=berkeley)
+(Bres <- By(~Dept,glm(cbind(Admitted,Rejected)~Gender,family="binomial"),data=berkeley))
+# The results all have 'data' components
+str(Bres[[1]]$data)
 
 attach(berkeley)
-By(~Dept,glm(cbind(Admitted,Rejected)~Gender,family="binomial"))
+(Bres <- By(~Dept,glm(cbind(Admitted,Rejected)~Gender,family="binomial")))
 detach(berkeley)
 
 }

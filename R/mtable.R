@@ -725,12 +725,22 @@ format.mtable <- function(x,
                           integers=align.integers)
     coefs <- sub("(\\*+)","^{\\1}",coefs)
     coefs <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",coefs)
+    if(!useDcolumn){
+      tmpatt <- attributes(coefs)
+      coefs <- paste("$",coefs,"$",sep="")
+      attributes(coefs) <-tmpatt
+      }
 
     if(length(summaries)){
       if(nrow(summaries)>1)
           summaries <- apply(summaries,2,centerAt,
                             at=center.at,
                             integers=align.integers)
+      if(!useDcolumn){
+        tmpatt <- attributes(summaries)
+        summaries <- paste("$",summaries,"$",sep="")
+        attributes(summaries) <-tmpatt
+        }
       tmp.sumry <- array("",dim=c(nrow(summaries),ncol(coefs)/ncol(summaries),ncol(summaries)))
       if(center.summaries)
           sumpos <- (dim(tmp.sumry)[2]+1)%/%2
