@@ -1,3 +1,7 @@
+2010-07-16:
+  - fixed a bug in 'Simulate' that caused it to fail in certain situations
+    in R version >= 2.11.
+
 2010-04-12:
   - 'toLatex(mtable(<something>),useDcolumn=FALSE)' should now produce useable
     LaTeX output ($'s are added to the table entries).

@@ -33,6 +33,7 @@ Simulate <- function(
         RNGstate <- structure(seed, kind = as.list(RNGkind()))
     }
     m <- match.call()
+    dots <- list(...)
     bucket <- substitute(bucket)
     bucket <- if(is.character(bucket)) get(bucket,mode="function") else eval(bucket,parent.frame())
     results <- bucket(if(is.na(nsim))getOption("Simulation.chunk.size") else nsim)
@@ -46,12 +47,12 @@ Simulate <- function(
               print(conditions[i,])
               }
           if(length(m$start)){
-            start <- do.call("substitute",list(m$start,conditions[i,],list(...)))
+            start <- do.call("substitute",list(m$start,c(conditions[i,],dots)))
             dummy <- eval(start,envir=e)
           }
-          step <- do.call("substitute",list(m$step,c(conditions[i,],list(...))))
+          step <- do.call("substitute",list(m$step,c(conditions[i,],dots)))
           step.vars <- all.vars(step)
-          
+
           if(trace)
             fun <- function(.__repl){
               if(!(.__repl %% trace)) cat("Replication ",.__repl,"\n")
@@ -59,7 +60,7 @@ Simulate <- function(
             }
           else
             fun <- function(.__repl) eval(step,envir=e)
-            
+
           tryCatch(
             for(j in 1:nsim){
                 res.j <- fun(j)
@@ -80,7 +81,7 @@ Simulate <- function(
             )
 
           if(length(m$cleanup)){
-            cleanup <- do.call("substitute",list(m$cleanup,conditions[i,],list(...)))
+            cleanup <- do.call("substitute",list(m$cleanup,c(conditions[i,],dots)))
             dummy <- eval(cleanup,envir=e)
           }
           if(keep.states)
@@ -99,12 +100,12 @@ Simulate <- function(
     else {
       e <- new.env(parent=parent.frame())
       if(length(m$start)){
-        start <- do.call("substitute",list(m$start,list(...)))
+        start <- do.call("substitute",list(m$start,dots))
         dummy <- eval(start,envir=e)
       }
-      step <- do.call("substitute",list(m$step,list(...)))
+      step <- do.call("substitute",list(m$step,dots))
       step.vars <- all.vars(step)
-      
+
       if(trace)
         fun <- function(.__repl){
           if(!(.__repl %% trace)) cat("Replication ",.__repl,"\n")
@@ -114,7 +115,7 @@ Simulate <- function(
         fun <- function(.__repl) eval(step,envir=e)
 
       if(length(m$cleanup)){
-        cleanup <- do.call("substitute",list(m$cleanup,conditions[i,],list(...)))
+        cleanup <- do.call("substitute",list(m$cleanup,c(conditions[i,],dots)))
         dummy <- eval(cleanup,envir=e)
       }
       results <- bucket(if(is.na(nsim))getOption("Simulation.chunk.size") else nsim)
@@ -136,7 +137,7 @@ Simulate <- function(
               cat("finishing replications\n")
               }
           )
-      
+
       if(keep.data){
         results <- pour_out(results)
         if(keep.states){

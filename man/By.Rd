@@ -1,6 +1,6 @@
 \name{By}
 \alias{By}
-\title{Conditional evaluation of an expression}
+\title{Conditional Evaluation of an Expression}
 \description{
   The function \code{By} evaluates an expression within subsets of
   a data frame, where the subsets are defined by a formula.
