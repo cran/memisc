@@ -1,3 +1,4 @@
+%nin%                   Negative Match
 aggregate.formula       Data Frames and Tables of Descriptive
                         Statistics
 annotation              Adding Annotations to Objects
@@ -7,7 +8,7 @@ as.array                Converting Data Frames into Arrays
 as.symbols              Construction of Lists of Symbols
 bucket                  Abstract Data Structures to Collect Simulation
                         Results
-By                      Conditional evaluation of an expression
+By                      Conditional Evaluation of an Expression
 cases                   Distinguish between Cases Specified by Logical
                         Conditions
 codebook                Generate a Codebook of a Data Set
@@ -30,7 +31,6 @@ memisc-package          Introduction to the 'memisc' Package
 mkHelpDir               Collect HTML Documentation
 mtable                  Comparative Table of Model Estimates
 named.list              Named Lists, Lists of Items, and Atomic Vectors
-%nin%                   Negative Match
 panel.errbars           Panel Functions for Error Bars
 percent                 Table of Percentages with Percentage Base
 prediction.frame        Produce a Data Frame of Predictions and
@@ -44,7 +44,7 @@ retain                  Retain Objects in an Environment
 sample.data.frame       Take a Sample from a Data Frame-like Object
 Sapply                  A Dimension Preserving Variant of "sapply" and
                         "lapply"
-Simulate                Simulation Experiments
+Simulate                Support for Simulation Experiments
 sort.data.frame         Convenience Methods to Sort Data Frames and
                         Data Sets
 Substitute              Substitutions in Language Objects

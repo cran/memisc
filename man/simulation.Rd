@@ -1,7 +1,7 @@
 \name{Simulate}
 \alias{Simulate}
 \alias{interrupt}
-\title{Simulation Experiments}
+\title{Support for Simulation Experiments}
 \description{
   \code{Simulate} is a function to simplify simulation studies.
   It can be used to conduct Monte Carlo studies of statistical estimators,
@@ -22,7 +22,7 @@ Simulate(step,
     restore.seed = !is.null(seed),
     bucket = default_bucket
     )
- 
+
 # signal an interrupt condition
 interrupt(msg=NULL)
 }
@@ -102,7 +102,7 @@ interrupt(msg=NULL)
 
   On the other hand, \code{interrupt} can be used to determine at run-time
   how often \code{step} is evaluated.
-  
+
 }
 \value{
     A data frame that contains experimental conditions and simulation results.
