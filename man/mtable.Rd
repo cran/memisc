@@ -13,7 +13,7 @@
 mtable(...,coef.style=getOption("coef.style"),
     summary.stats=TRUE,
     factor.style=getOption("factor.style"),
-    getSummary=function(obj,...)UseMethod("getSummary"),
+    getSummary=eval.parent(quote(getSummary)),
     float.style=getOption("float.style"),
     digits=min(3,getOption("digits")),
     drop=TRUE
@@ -188,6 +188,9 @@ mtable(berk1,drop=FALSE,summary.stats=c("Deviance","N"))
 
 mtable(berk0,berk1,berk2,summary.stats=c("Deviance","N"))
 
+mtable(berk0,berk1,berk2,
+          coef.style="horizontal",
+          summary.stats=c("Deviance","AIC","N"))
 mtable(berk0,berk1,berk2,
           coef.style="stat",
           summary.stats=c("Deviance","AIC","N"))
