@@ -77,6 +77,7 @@
 
 .SummaryTemplates$glm <-
   c(
+          "Aldrich-Nelson R-sq." = "($Aldrich.Nelson:f#)",
           "McFadden R-sq." = "($McFadden:f#)",
           "Cox-Snell R-sq." = "($Cox.Snell:f#)",
           "Nagelkerke R-sq."  = "($Nagelkerke:f#)",
@@ -92,6 +93,7 @@
 
 .SummaryTemplates$default <-
   c(
+          "Aldrich-Nelson R-sq." = "($Aldrich.Nelson:f#)",
           "McFadden R-sq." = "($McFadden:f#)",
           "Cox-Snell R-sq." = "($Cox.Snell:f#)",
           "Nagelkerke R-sq."  = "($Nagelkerke:f#)",
@@ -105,8 +107,18 @@
   )
 
 
-assign("SummaryTemplates",.SummaryTemplates, env=.memiscEnv)
-assign("CoefTemplates",.CoefTemplates, env=.memiscEnv)
+.SummaryTemplates$mer <- .SummaryTemplates$lmer
+  c(
+          "Log-likelihood" = "($logLik:f#)",
+          Deviance      = "($deviance:f#)",
+          AIC           = "($AIC:f#)",
+          BIC           = "($BIC:f#)",
+          N             = "($N:d)"
+  )
+
+
+assign("SummaryTemplates",.SummaryTemplates, envir=.memiscEnv)
+assign("CoefTemplates",.CoefTemplates, envir=.memiscEnv)
 
 sampleGeneric <- function(x, size, replace = FALSE, prob=NULL,...)
   UseMethod("sample")
@@ -119,6 +131,7 @@ car_recode <- function (var, recodes, as.factor.result, levels)
   stop("package 'car' is not available")
 
 car_pkg <-"car"
+lme4_pkg <- "lme4"
 memisc_env <- environment()
 
 
@@ -133,9 +146,12 @@ memisc_env <- environment()
   if(any(car_pkg == .packages(TRUE))){
     do.call("require",list(package=car_pkg))
     car_recode <- getFromNamespace("recode",ns=car_pkg)
-    assign("car_recode",car_recode,env=memisc_env)
+    assign("car_recode",car_recode,envir=memisc_env)
   }
-
+#   if(any(lme4_pkg == .packages(TRUE))){
+#     do.call("require",list(package=lme4_pkg))
+#     setMethod("getSummary", "mer", getSummary.mer)
+#   }
 
   options(coef.style="default")
   options(baselevel.sep="/")
