@@ -1,6 +1,5 @@
-dc089029fe56027569add603b1477768 *DESCRIPTION
-ccc80426e2c1536cd177dda7856a36cc *INDEX
-69227330bad177903e1e8c39ae8d8f4e *NAMESPACE
+1fabdd1c561c4d64d552b9bda99f15af *DESCRIPTION
+d2de68ebf9cfd29626e153960f36dde6 *NAMESPACE
 c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
 6d84932f980caf232b8871156af59c1f *R/AllGenerics.R
 51d61ad020ffe5c711c729f2df7996b6 *R/AllInternalGenerics.R
@@ -30,7 +29,7 @@ da7491f6b33be07f038d983b257523e9 *R/import-internal-spss-syntax.R
 2e5443623d2376bbd3911646a0aeaba7 *R/import-internal-spss-sysfile.R
 26c9db8fc9d260a54db4abd116339bdc *R/import-internal-stata.R
 9dcfb6315cce70b73c70df87f018d731 *R/importer-methods.R
-2c1e3e65013d78c057acc13bccb7eee0 *R/item-methods.R
+a0308d87b1d1597c9fbf544ea8d52a89 *R/item-methods.R
 d19e302d55b1112aade286eed1c1f17f *R/mcf.R
 c9d20dafe28c7e400e2db46f81185e8a *R/measurement.R
 8e2053edce5526b8d650a71f9d80b388 *R/mtable.R
@@ -39,7 +38,7 @@ c9d20dafe28c7e400e2db46f81185e8a *R/measurement.R
 76f1d5f94c494777d07895a0564c338a *R/predictionFrame.R
 c729513bfdf1170701acfa89205f5a9a *R/query.R
 bef7f4e27ab55aa13e6658d57c758f10 *R/quote.R
-75ab7d99a58662644ced31d180b6481d *R/recode.R
+037bf5f1882efb750a2aa5afd46f298d *R/recode.R
 0b4266c0120d1c07739f27a403189995 *R/rename.R
 5f10963771a1986af50bcc10753f18c8 *R/retain.R
 28130f789074b1051c184031d356d0c9 *R/sample_methods.R
@@ -66,11 +65,11 @@ f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
 02a8c092a27d07f82e721bfbf7ae42de *demo/monte.carlo.R
 5f88267e369e6d4a5820b82ab1031f1d *demo/random.walk.R
 8688722b38cfb623431d898d7db638cf *demo/schelling.R
-e6d346163c6ef659a0f5ed88b4d045db *inst/NEWS
+52d1c19505afb590d4e5e9635f87ec42 *inst/NEWS
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 607eee2fdaeb8ff782b42f02f9a71ad6 *inst/doc/Sweave.sty
 98d18ad5f536ac759853695f570359f6 *inst/doc/anes48.Rnw
-7ab59952d1194ed885ceb1c2b511cb88 *inst/doc/anes48.pdf
+97c9d6b69e9e88315661492fd753ce5e *inst/doc/anes48.pdf
 07dfbc38a83949d41f1aa95be7faaf57 *man/00memisc.Rd
 b750f9cb261e15a1e27de36b837a1955 *man/By.Rd
 c8f84d7581394b5e8f7e9475b447f471 *man/Descriptives.Rd
@@ -95,7 +94,7 @@ aaa4a71ffe3ce8ceefb33395b0ed5219 *man/dimrename.Rd
 04ad45dfdb4c3b710c8caa64241b4801 *man/getSummary.Rd
 05226ef0973f55b423d9dab732c0cd94 *man/importers.Rd
 f8ff18358f4245c7c7eba655e67671f9 *man/include.Rd
-61a49c7dfbc47e11fa6aed03e433e038 *man/items.Rd
+e7b6ab4b3f0cf18e7aa21185233e2739 *man/items.Rd
 3bf7ac6b583959bdf218f1a40ef8fc78 *man/labels.Rd
 7595c783194e39095216677a550b2360 *man/measurement.Rd
 be28799d3a09c5533b07d0e4b7fc1d4e *man/mtable.Rd
