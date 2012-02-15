@@ -1,4 +1,4 @@
-25d50d1f43d14cd7da9bd4b59ea50b19 *DESCRIPTION
+83ec801112a486d99b8bbbefc3afc45a *DESCRIPTION
 ccc80426e2c1536cd177dda7856a36cc *INDEX
 31a96fe09993b40de18aa8e1277a624a *NAMESPACE
 c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
@@ -6,7 +6,7 @@ c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
 51d61ad020ffe5c711c729f2df7996b6 *R/AllInternalGenerics.R
 ab3a87b394232f76a4f3e337d95808aa *R/By.R
 297c89d6ab3b49783d9fe203e73cbedd *R/Foreach.R
-14daccd010bcde43cf31eccacd8306ac *R/Sapply.R
+64d99720e7506a71d45fa525d62dce72 *R/Sapply.R
 67190e78472981fa1fa9ef3769ac6b89 *R/Substitute.R
 937bdcd9b88b309c666c49cb4a9e0d94 *R/Table.R
 9b16c9c8cdff2c6d0215514fea763c8e *R/Termplot.R
@@ -41,8 +41,8 @@ c729513bfdf1170701acfa89205f5a9a *R/query.R
 bef7f4e27ab55aa13e6658d57c758f10 *R/quote.R
 037bf5f1882efb750a2aa5afd46f298d *R/recode.R
 0b4266c0120d1c07739f27a403189995 *R/rename.R
-5f10963771a1986af50bcc10753f18c8 *R/retain.R
-28130f789074b1051c184031d356d0c9 *R/sample_methods.R
+c2049c7871aeb2d78f07b590f8700faf *R/retain.R
+e15d149a335cfaa3db86fbc1dc3f833a *R/sample_methods.R
 51107e011bf37bef17c445bde6e82dc3 *R/simplifyTypes.R
 eb18b0deb2dd44fbe608a2f0c815e9ae *R/simulate.R
 cc855a2aec7ed0e7a1063b42f5f1bd77 *R/sort.R
@@ -54,7 +54,7 @@ e60ad4a01045549d913be17c42ac5ae3 *R/to-things.R
 4234a083ecdc3e1c228435022e71a1c7 *R/tolatex-ftable.R
 26d912bcf8c077cf0443c9c9e4b6b7d5 *R/tolatex-matrix.R
 df98ac59f78e284e22ba5bb5126643d6 *R/trimws.R
-9444d8a76aa72c3fb37f7ee64958b16b *R/unzip.R
+e0ce7bd1701aae4985eefe01d4b56614 *R/unzip.R
 7fdea6d880afc03c522f6829d9e1c507 *R/value-filters.R
 967beb3c1b7bc49df2cb49f4ff9bf0c1 *R/value-labels.R
 557aef1a650108a8a0f26e92901c9238 *R/varpredict.R
@@ -66,11 +66,10 @@ f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
 02a8c092a27d07f82e721bfbf7ae42de *demo/monte.carlo.R
 5f88267e369e6d4a5820b82ab1031f1d *demo/random.walk.R
 8688722b38cfb623431d898d7db638cf *demo/schelling.R
-b7b722e3b785dbf778e530396efe050f *inst/NEWS
+fdcde78585e0a1cbe49dc1772e87baf3 *inst/NEWS
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
-607eee2fdaeb8ff782b42f02f9a71ad6 *inst/doc/Sweave.sty
 98d18ad5f536ac759853695f570359f6 *inst/doc/anes48.Rnw
-4b0cabb0008292af16680a6ed72e9195 *inst/doc/anes48.pdf
+4ca90365888a255c39586782014ef4d2 *inst/doc/anes48.pdf
 07dfbc38a83949d41f1aa95be7faaf57 *man/00memisc.Rd
 b750f9cb261e15a1e27de36b837a1955 *man/By.Rd
 c8f84d7581394b5e8f7e9475b447f471 *man/Descriptives.Rd
@@ -126,7 +125,7 @@ fb9cd4f93aa3ea125ddaa54c598ab98f *src/memisc.h
 cbfb0e25383013a94754e162049b62eb *src/ord_union.c
 8065edb081d4f0ce59dafc5c1591767b *src/parsehelpers.c
 aa808825138f8996b6e53f71c0f61efa *src/pspp-portableStream-for-R.c
-09d31595b968cb580914642c4260b2d7 *src/pspp-system-for-R.c
+217e6b840643c320d61fee83fc075783 *src/pspp-system-for-R.c
 682abfeda0172157f9fc53c6d5e65b70 *src/readfixed.c
 c4e06f0a22f343cc995ad22f45ee5e5e *src/rofile.c
 03da5a3346e76f2ba5d692c370eb60a9 *src/rofile.h
