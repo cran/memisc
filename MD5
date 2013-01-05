@@ -1,5 +1,4 @@
-83ec801112a486d99b8bbbefc3afc45a *DESCRIPTION
-ccc80426e2c1536cd177dda7856a36cc *INDEX
+60f11a8e10e7b0f3260a33b182d95062 *DESCRIPTION
 31a96fe09993b40de18aa8e1277a624a *NAMESPACE
 c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
 6d84932f980caf232b8871156af59c1f *R/AllGenerics.R
@@ -20,7 +19,7 @@ ffd3230ec0bd51b4d176f2ef2926f47a *R/codebook-methods.R
 1af5394a3141efb2b574019ed24a7f1c *R/collect.R
 e1c96c86ee9161293bc5f8a5695f3ce1 *R/compress-storage-modes.R
 7fe6f41eea9f43dd3082d765635080d9 *R/contrasts.R
-7903550f17676c2e45a868021921b6a6 *R/dataset-methods.R
+620ed66de64eee5f27cd08b1a0113d27 *R/dataset-methods.R
 2affb1df5b5a61f3f2b33871dc580d70 *R/expand.R
 e4d32afdef74bf64e49e3a0033986ab6 *R/fapply.R
 63beb7ec74885324543aa3a701287664 *R/groupwise.R
@@ -66,10 +65,10 @@ f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
 02a8c092a27d07f82e721bfbf7ae42de *demo/monte.carlo.R
 5f88267e369e6d4a5820b82ab1031f1d *demo/random.walk.R
 8688722b38cfb623431d898d7db638cf *demo/schelling.R
-fdcde78585e0a1cbe49dc1772e87baf3 *inst/NEWS
+1ac46525de3e89918ac25566e0cbf94d *inst/NEWS
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 98d18ad5f536ac759853695f570359f6 *inst/doc/anes48.Rnw
-4ca90365888a255c39586782014ef4d2 *inst/doc/anes48.pdf
+cdffa6e0614c21ecb182cd1c9f4f4071 *inst/doc/anes48.pdf
 07dfbc38a83949d41f1aa95be7faaf57 *man/00memisc.Rd
 b750f9cb261e15a1e27de36b837a1955 *man/By.Rd
 c8f84d7581394b5e8f7e9475b447f471 *man/Descriptives.Rd
@@ -115,7 +114,7 @@ ecd2565a92ac5257d1952d2fc8ad02d9 *man/simulation.Rd
 c3f78bafbf7e7eb06fa4e73784c6e1f1 *man/toLatexExtra.Rd
 34d5b014293c89d00090aae5ed6687f3 *man/trimws.Rd
 663d217c3e4eeca3d8de5d465bd36574 *man/unzip.Rd
-0dbd13bcae9deb4b50776405c52ee598 *man/utility-classes.Rd
+777bd11b7f9dfc8ff68a14d4bd67c93c *man/utility-classes.Rd
 8eafe2c7595ef9b390c0b9cb22489df5 *man/value-filters.Rd
 9d62c6c4c03d1a60f472af293ff55ce4 *src/dta-for-R.c
 3212a41a24eb6f2aa2a8375c6dd62756 *src/dumbswap.c
