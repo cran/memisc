@@ -20,7 +20,7 @@ typedef struct {
   R_flt64 bias;
   R_flt64 *buf;
   int swap_code;
-  long data_pos;
+  int data_pos;
   R_flt64 sysmis;
   R_flt64 highest;
   R_flt64 lowest;
@@ -36,7 +36,7 @@ static double second_lowest_double_val();
 #define HIGHEST DBL_MAX
 #define LOWEST second_lowest_double_val()
 
-
+#undef DEBUG
 /** sysfile tools **/
 
 void init_sys_file(sys_file *s){
@@ -58,34 +58,34 @@ void init_sys_file(sys_file *s){
 
 int sys_read_int(R_int32 *target, sys_file *s){
   R_int32 x;
-  int read_len = fread(&x,sizeof(R_int32),1,s->f);
+  int read_len = (int)fread(&x,sizeof(R_int32),1,s->f);
   *target = iswap(x,s->swap_code);
   return read_len;
 }
 
 int sys_read_real(R_flt64 *target, sys_file *s){
   R_flt64 x;
-  int read_len = fread(&x,sizeof(R_flt64),1,s->f);
-  *target = iswap(x,s->swap_code);
+  int read_len = (int)fread(&x,sizeof(R_flt64),1,s->f);
+  *target = dswap(x,s->swap_code);
   return read_len;
 }
 
 int sys_read_octet(char *target, sys_file *s){
-  int read_len = fread(target,8,1,s->f);
+  int read_len = (int)fread(target,8,1,s->f);
   return read_len;
 }
 
 int sys_read_string(char *target, sys_file *s){
-  unsigned char str_len;
-  int read_len = fread(&str_len,1,1,s->f);
+  int str_len;
+  int read_len = (int)fread(&str_len,1,1,s->f);
   str_len = (str_len/8)*8+7;
   char *string = S_alloc(str_len+1,1);
-  read_len = fread(string,str_len,1,s->f);
+  read_len = (int)fread(string,str_len,1,s->f);
   return read_len;
 }
 
 int sys_read(void *target, int n, sys_file *s){
-  return fread(target,1,n,s->f);
+  return (int)fread(target,1,n,s->f);
 }
 
 /*int sys_read_word(sys_word *word, sys_file *s){
@@ -105,7 +105,7 @@ int sys_read_case(sys_file *s){
 #endif
   int read_len;
   if(!s->compressed)
-    return fread(s->buf,8,s->case_size,s->f);
+    return (int)fread(s->buf,8,s->case_size,s->f);
   else{
     int j,k = s->byte_pos;
     for(j = 0; j < s->case_size; j++){
@@ -116,7 +116,7 @@ int sys_read_case(sys_file *s){
 #endif
       }
       if(k >= 8) /* Read new command bytes */{
-        read_len = fread(s->bytes,1,8,s->f);
+        read_len = (int)fread(s->bytes,1,8,s->f);
 #ifdef DEBUG
         Rprintf("\nread length for bytes: %d",read_len);
         Rprintf("\nnew bytes=(%d,%d,%d,%d,%d,%d,%d,%d)",
@@ -139,7 +139,7 @@ int sys_read_case(sys_file *s){
 
       if(s->bytes[k] == 252) /* End of file */ return j;
       else if(s->bytes[k] == 253) /* Uncompressed data */{
-        read_len = fread(s->buf+j,8,1,s->f);
+        read_len = (int)fread(s->buf+j,8,1,s->f);
         if(!read_len) return j;
       }
       else if(s->bytes[k] == 254) /* 8 blanks */{
@@ -167,7 +167,7 @@ int sys_read_case(sys_file *s){
   }
   return 0; /* -Wall */
 }
-#undef DEBUG
+
 
 
 /** sysfile objects **/
@@ -199,7 +199,7 @@ SEXP NewSysFile (SEXP name){
     return ans;
   }
 }
-#undef DEBUG
+
 
 SEXP sys_file_restore_from_attrib(SEXP SysFile, sys_file *s,const char* attribname){
   SEXP ans = getAttrib(SysFile,install(attribname));
@@ -334,7 +334,7 @@ SEXP read_sysfile_header(SEXP SysFile){
   SET_VECTOR_ELT(ans,3,ScalarInteger(iswap(h.compressed,s->swap_code)));
   SET_VECTOR_ELT(ans,4,ScalarInteger(iswap(h.weight_index,s->swap_code)));
   SET_VECTOR_ELT(ans,5,ScalarInteger(iswap(h.ncases,s->swap_code)));
-  SET_VECTOR_ELT(ans,6,ScalarInteger(dswap(h.bias,s->swap_code)));
+  SET_VECTOR_ELT(ans,6,ScalarReal(dswap(h.bias,s->swap_code)));
   SET_VECTOR_ELT(ans,7,mkString(h.creation_date));
   SET_VECTOR_ELT(ans,8,mkString(h.creation_time));
   SET_VECTOR_ELT(ans,9,mkString(h.file_label));
@@ -437,7 +437,7 @@ SEXP read_sysfile_var(SEXP SysFile){
         Rprintf("\nas real = %.9e",curr_var.missing_values[i]);
         }
 #endif
-#undef DEBUG
+
   }
 
 
@@ -541,7 +541,7 @@ SEXP read_sysfile_value_labels (SEXP SysFile){
     REAL(values)[i] = value;
     unsigned char lablen, readlen;
     sys_read(&lablen,1,s);
-    readlen = (lablen/8)*8+7;
+    readlen = (unsigned char)((lablen/8)*8+7);
     sys_read(labbuf,readlen,s);
     labbuf[lablen] = 0;
 #ifdef DEBUG
@@ -582,7 +582,7 @@ SEXP read_sysfile_value_labels (SEXP SysFile){
 #endif
   return ans;
 }
-#undef DEBUG
+
 
 
 SEXP read_sysfile_document(SEXP SysFile){
@@ -717,7 +717,6 @@ SEXP read_sysfile_aux(SEXP SysFile){
 #ifdef DEBUG
     PrintValue(ans);
 #endif
-#undef DEBUG
     return ans;
   }
   else if (subtype == aux_var){
@@ -867,7 +866,7 @@ SEXP read_sysfile_dict_term (SEXP SysFile){
   sys_read_int(&rec_type,s);
   if(rec_type != 999) error("expecting a dictionary termination record");
   sys_read_int(&filler,s);
-  s->data_pos = ftell(s->f);
+  s->data_pos = ftell32(s->f);
   return ScalarInteger(s->data_pos);
 }
 
@@ -989,7 +988,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
           memset(char_buf,0,STRMAX);
           memcpy(char_buf,s->buf+j,8);
           if(types[j]<=8){
-            trim(char_buf,strlen(char_buf));
+            trim(char_buf,(int)strlen(char_buf));
 #ifdef DEBUG
             Rprintf("\nchar_buf=|%s|",char_buf);
 #endif
@@ -1009,7 +1008,7 @@ SEXP read_sysfile_data (SEXP SysFile, SEXP what,
 #endif
           str_count++;
           if(8*str_count >= str_len){
-            trim(char_buf,strlen(char_buf));
+            trim(char_buf,(int)strlen(char_buf));
 #ifdef DEBUG
             Rprintf("\nchar_buf=|%s|",char_buf);
 #endif
@@ -1164,7 +1163,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
               if(types[j]<=8){
                 if(k >= nvar) error("index k out of bounds, k = %d, nvar = %d",k,m);
                 if(LOGICAL(s_vars)[k]){
-                  trim(char_buf,strlen(char_buf));
+                  trim(char_buf,(int)strlen(char_buf));
                   if(l >= m) error("index l out of bounds, l = %d, m = %d",l,m);
                   x = VECTOR_ELT(data,l);
                   SET_STRING_ELT(x,ii,mkChar(char_buf));
@@ -1181,7 +1180,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
               memcpy(&char_buf[8*str_count],s->buf+j,8);
               str_count++;
               if(8*str_count >= str_len){
-                trim(char_buf,strlen(char_buf));
+                trim(char_buf,(int)strlen(char_buf));
                 if(k >= nvar) error("index k out of bounds, k = %d, nvar = %d",k,m);
                 if(LOGICAL(s_vars)[k]){
                   if(l >= m) error("index l out of bounds, l = %d, m = %d",l,m);
@@ -1212,7 +1211,7 @@ SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
     UNPROTECT(5);
     return data;
 }
-#undef DEBUG
+
 
 SEXP check_pointer(SEXP ptr){
   if(TYPEOF(ptr) != EXTPTRSXP) return ScalarLogical(0);
