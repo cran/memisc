@@ -1,4 +1,4 @@
-0aeeeff5938c6005fc4c8eaa7f188788 *DESCRIPTION
+8060db8d41f2a4245ba644cd9b35d587 *DESCRIPTION
 05bdf69ae52f5d7c2e2cd1194865fa18 *NAMESPACE
 c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
 6d84932f980caf232b8871156af59c1f *R/AllGenerics.R
@@ -64,7 +64,7 @@ c0d83d649fb35d7e6ad7141ef7a2bf23 *R/yy-mtable-ext-AchimZeileis.R
 16c0d017345e7b36480f10fb47747546 *R/yy-mtable-ext-DaveAtkins.R
 e00117f10553e5f14ac5efc81465bcc7 *R/yy-mtable-ext-JasonWMorgan.R
 b180d75380b365c80a346ffdbf5927b4 *R/yz-getSummary-mer.R
-e291cf858cacf2f73b124be7ce4c5a5f *R/zzz.R
+5307a901ad6c3d071250b6010a301458 *R/zzz.R
 3b4b22907367b3b49e7e7d5a08f71bb7 *demo/00Index
 9e708e543fceb81a61fc6f56f0b3e0eb *demo/Termplot.R
 f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
@@ -76,7 +76,7 @@ ee7dc1880e0fffc8137d2c899a8e9a3c *inst/NEWS
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 135de2a211d85228cb507c6f6dcb7352 *inst/doc/anes48.R
 98d18ad5f536ac759853695f570359f6 *inst/doc/anes48.Rnw
-c0789911cd2997a5121795ca4bc458a9 *inst/doc/anes48.pdf
+9adcde19bea8c02d9c290046231469de *inst/doc/anes48.pdf
 07dfbc38a83949d41f1aa95be7faaf57 *man/00memisc.Rd
 b750f9cb261e15a1e27de36b837a1955 *man/By.Rd
 c8f84d7581394b5e8f7e9475b447f471 *man/Descriptives.Rd
