@@ -14,6 +14,7 @@
 \fvset{fontsize=\small}
 \usepackage[noae]{Sweave}
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 % \VignetteIndexEntry{Analysing the American National Election Study of 1948}
 \title{Analysing the American National Election Study
   of 1948 using the \code{memisc} package}
@@ -112,21 +113,21 @@ here because the output would have taken more then thirty pages).
 \subsection{Reading In a Subset of the Data}
 After we have decided which variables to use we can read in a subset of
 the data:
-\begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
-vote.48 <- subset(nes1948,
-              select=c(
-                  v480018,
-                  v480029,
-                  v480030,
-                  v480045,
-                  v480046,
-                  v480047,
-                  v480048,
-                  v480049,
-                  v480050
-                  ))
-\end{Verbatim}
-
+% \begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
+% vote.48 <- subset(nes1948,
+%               select=c(
+%                   v480018,
+%                   v480029,
+%                   v480030,
+%                   v480045,
+%                   v480046,
+%                   v480047,
+%                   v480048,
+%                   v480049,
+%                   v480050
+%                   ))
+% \end{Verbatim}
+% 
 <<eval=TRUE>>=
 vote.48 <- subset(nes1948,
               select=c(
@@ -160,20 +161,20 @@ and one defined missing value.
 
 Since the variable names in the ANES data set are not very mnemonic,
 we rename the variables:
-\begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
-vote.48 <- rename(vote.48,
-                  v480018 = "vote",
-                  v480029 = "occupation.hh",
-                  v480030 = "unionized.hh",
-                  v480045 = "gender",
-                  v480046 = "race",
-                  v480047 = "age",
-                  v480048 = "education",
-                  v480049 = "total.income",
-                  v480050 = "religious.pref"
-        )
-\end{Verbatim}
-
+% \begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
+% vote.48 <- rename(vote.48,
+%                   v480018 = "vote",
+%                   v480029 = "occupation.hh",
+%                   v480030 = "unionized.hh",
+%                   v480045 = "gender",
+%                   v480046 = "race",
+%                   v480047 = "age",
+%                   v480048 = "education",
+%                   v480049 = "total.income",
+%                   v480050 = "religious.pref"
+%         )
+% \end{Verbatim}
+% 
 <<>>=
 vote.48 <- rename(vote.48,
                   v480018 = "vote",
@@ -203,31 +204,31 @@ We start our analyses with a contingency table, but first
 we make some preparations: We recode the variables of
 interest into a smaller number of categories in order to
 get results that are easier to read and interpret.
-\begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
-vote.48 <- within(vote.48,{
-  vote3 <- recode(vote,
-    1   -> "Truman",
-    2   -> "Dewey",
-    3:4 -> "Other"
-    )
-  occup4 <- recode(occupation.hh,
-    10:20 -> "Upper white collar",
-    30    -> "Other white collar",
-    40:70 -> "Blue collar",
-    80    -> "Farmer"
-    )
-  relig3 <- recode(religious.pref,
-    1   -> "Protestant",
-    2   -> "Catholic",
-    3:5 -> "Other/none"
-    )
-   race2 <- recode(race,
-    1 -> "White",
-    2 -> "Black"
-    )
-  })
-\end{Verbatim}
-
+% \begin{Verbatim}[frame=single,numbers=left,numbersep=1pt]
+% vote.48 <- within(vote.48,{
+%   vote3 <- recode(vote,
+%     1   -> "Truman",
+%     2   -> "Dewey",
+%     3:4 -> "Other"
+%     )
+%   occup4 <- recode(occupation.hh,
+%     10:20 -> "Upper white collar",
+%     30    -> "Other white collar",
+%     40:70 -> "Blue collar",
+%     80    -> "Farmer"
+%     )
+%   relig3 <- recode(religious.pref,
+%     1   -> "Protestant",
+%     2   -> "Catholic",
+%     3:5 -> "Other/none"
+%     )
+%    race2 <- recode(race,
+%     1 -> "White",
+%     2 -> "Black"
+%     )
+%   })
+% \end{Verbatim}
+% 
 <<>>=
 vote.48 <- within(vote.48,{
   vote3 <- recode(vote,
