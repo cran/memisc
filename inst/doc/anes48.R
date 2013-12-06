@@ -1,13 +1,13 @@
 ### R code from vignette source 'anes48.Rnw'
 
 ###################################################
-### code chunk number 1: anes48.Rnw:71-72
+### code chunk number 1: anes48.Rnw:72-73
 ###################################################
 options(width=72)
 
 
 ###################################################
-### code chunk number 2: anes48.Rnw:74-77
+### code chunk number 2: anes48.Rnw:75-78
 ###################################################
 library(memisc)
 options(digits=3)
@@ -15,32 +15,32 @@ nes1948.por <- UnZip("anes/NES1948.ZIP","NES1948.POR",package="memisc")
 
 
 ###################################################
-### code chunk number 3: anes48.Rnw:91-93
+### code chunk number 3: anes48.Rnw:92-94
 ###################################################
 nes1948 <- spss.portable.file(nes1948.por)
 print(nes1948)
 
 
 ###################################################
-### code chunk number 4: anes48.Rnw:98-99
+### code chunk number 4: anes48.Rnw:99-100
 ###################################################
 names(nes1948)
 
 
 ###################################################
-### code chunk number 5: anes48.Rnw:102-103
+### code chunk number 5: anes48.Rnw:103-104
 ###################################################
 description(nes1948)
 
 
 ###################################################
-### code chunk number 6: anes48.Rnw:106-107 (eval = FALSE)
+### code chunk number 6: anes48.Rnw:107-108 (eval = FALSE)
 ###################################################
 ## codebook(nes1948)
 
 
 ###################################################
-### code chunk number 7: anes48.Rnw:130-142
+### code chunk number 7: anes48.Rnw:131-143
 ###################################################
 vote.48 <- subset(nes1948,
               select=c(
@@ -57,13 +57,13 @@ vote.48 <- subset(nes1948,
 
 
 ###################################################
-### code chunk number 8: anes48.Rnw:153-154
+### code chunk number 8: anes48.Rnw:154-155
 ###################################################
 str(vote.48)
 
 
 ###################################################
-### code chunk number 9: anes48.Rnw:177-188
+### code chunk number 9: anes48.Rnw:178-189
 ###################################################
 vote.48 <- rename(vote.48,
                   v480018 = "vote",
@@ -79,13 +79,13 @@ vote.48 <- rename(vote.48,
 
 
 ###################################################
-### code chunk number 10: anes48.Rnw:192-193
+### code chunk number 10: anes48.Rnw:193-194
 ###################################################
 codebook(vote.48)
 
 
 ###################################################
-### code chunk number 11: anes48.Rnw:231-253
+### code chunk number 11: anes48.Rnw:232-254
 ###################################################
 vote.48 <- within(vote.48,{
   vote3 <- recode(vote,
@@ -112,34 +112,34 @@ vote.48 <- within(vote.48,{
 
 
 ###################################################
-### code chunk number 12: anes48.Rnw:264-265
+### code chunk number 12: anes48.Rnw:265-266
 ###################################################
 toLatex(xtabs(~vote3+occup4,data=vote.48))
 
 
 ###################################################
-### code chunk number 13: anes48.Rnw:273-275
+### code chunk number 13: anes48.Rnw:274-276
 ###################################################
 toLatex(t(genTable(percent(vote3)~occup4,data=vote.48)),
   digits=c(1,1,1,0))
 
 
 ###################################################
-### code chunk number 14: anes48.Rnw:285-287
+### code chunk number 14: anes48.Rnw:286-288
 ###################################################
 toLatex(t(genTable(percent(vote3)~relig3,data=vote.48)),
   digits=c(1,1,1,0))
 
 
 ###################################################
-### code chunk number 15: anes48.Rnw:295-297
+### code chunk number 15: anes48.Rnw:296-298
 ###################################################
 toLatex(t(genTable(percent(vote3)~race2,data=vote.48)),
   digits=c(1,1,1,0))
 
 
 ###################################################
-### code chunk number 16: anes48.Rnw:306-309
+### code chunk number 16: anes48.Rnw:307-310
 ###################################################
 inc.tab <- t(genTable(percent(vote3)~total.income,data=vote.48))
 rownames(inc.tab) <- gsub("$","\\$",rownames(inc.tab),fixed=TRUE)
@@ -147,13 +147,13 @@ toLatex(inc.tab,digits=c(1,1,1,0))
 
 
 ###################################################
-### code chunk number 17: anes48.Rnw:320-321
+### code chunk number 17: anes48.Rnw:321-322
 ###################################################
 options(width=60)
 
 
 ###################################################
-### code chunk number 18: anes48.Rnw:323-334
+### code chunk number 18: anes48.Rnw:324-335
 ###################################################
 agg.inc <- aggregate(percent(vote3,ci=TRUE)~total.income,data=vote.48)
 agg.inc.errbars <- xyplot(cbind(Percentage,upper,lower)~total.income,
@@ -169,13 +169,13 @@ agg.inc.errbars <- xyplot(cbind(Percentage,upper,lower)~total.income,
 
 
 ###################################################
-### code chunk number 19: anes48.Rnw:337-338 (eval = FALSE)
+### code chunk number 19: anes48.Rnw:338-339 (eval = FALSE)
 ###################################################
 ## print(agg.inc.errbars)
 
 
 ###################################################
-### code chunk number 20: anes48.Rnw:340-346
+### code chunk number 20: anes48.Rnw:341-347
 ###################################################
 trellis.device(pdf,file="agg-inc-errbars.pdf",width=6,height=6)
 print(agg.inc.errbars)
@@ -186,13 +186,13 @@ dev.off()
 
 
 ###################################################
-### code chunk number 21: anes48.Rnw:348-349
+### code chunk number 21: anes48.Rnw:349-350
 ###################################################
 options(width=72)
 
 
 ###################################################
-### code chunk number 22: anes48.Rnw:364-375
+### code chunk number 22: anes48.Rnw:365-376
 ###################################################
 agg.occup <- aggregate(percent(vote3,ci=TRUE)~occup4,data=vote.48)
 agg.occup.errbars <- xyplot(cbind(Percentage,upper,lower)~occup4,
@@ -208,13 +208,13 @@ agg.occup.errbars <- xyplot(cbind(Percentage,upper,lower)~occup4,
 
 
 ###################################################
-### code chunk number 23: anes48.Rnw:378-379 (eval = FALSE)
+### code chunk number 23: anes48.Rnw:379-380 (eval = FALSE)
 ###################################################
 ## print(agg.occup.errbars)
 
 
 ###################################################
-### code chunk number 24: anes48.Rnw:381-387
+### code chunk number 24: anes48.Rnw:382-388
 ###################################################
 trellis.device(pdf,file="agg-occup-errbars.pdf",width=6,height=6)
 print(agg.occup.errbars)
@@ -225,7 +225,7 @@ dev.off()
 
 
 ###################################################
-### code chunk number 25: anes48.Rnw:406-410
+### code chunk number 25: anes48.Rnw:407-411
 ###################################################
 vote.48 <- within(vote.48,{
   contrasts(occup4) <- contr("treatment",base = 3)
@@ -234,7 +234,7 @@ vote.48 <- within(vote.48,{
 
 
 ###################################################
-### code chunk number 26: anes48.Rnw:421-431
+### code chunk number 26: anes48.Rnw:422-432
 ###################################################
 model1 <- glm((vote3=="Truman")~occup4,data=vote.48,
               family="binomial")
@@ -249,13 +249,13 @@ model5 <- glm((vote3=="Truman")~occup4+relig3,data=vote.48,
 
 
 ###################################################
-### code chunk number 27: anes48.Rnw:438-439
+### code chunk number 27: anes48.Rnw:439-440
 ###################################################
 mtable(model1,model2,model3,summary.stats=c("Nagelkerke R-sq.","Deviance","AIC","N"))
 
 
 ###################################################
-### code chunk number 28: anes48.Rnw:449-464
+### code chunk number 28: anes48.Rnw:450-465
 ###################################################
 toLatex(relabel(mtable(
             "Model 1"=model1,
@@ -275,7 +275,7 @@ toLatex(relabel(mtable(
 
 
 ###################################################
-### code chunk number 29: anes48.Rnw:481-492
+### code chunk number 29: anes48.Rnw:482-493
 ###################################################
 toLatex(relabel(mtable(
               "Model 1"=model1,
@@ -291,19 +291,19 @@ toLatex(relabel(mtable(
 
 
 ###################################################
-### code chunk number 30: anes48.Rnw:501-502
+### code chunk number 30: anes48.Rnw:502-503
 ###################################################
 Tp35 <- Termplot(model3,model5,se=TRUE,residuals="none",xrot=90)#,models="columns")
 
 
 ###################################################
-### code chunk number 31: anes48.Rnw:504-505 (eval = FALSE)
+### code chunk number 31: anes48.Rnw:505-506 (eval = FALSE)
 ###################################################
 ## print(Tp35)
 
 
 ###################################################
-### code chunk number 32: anes48.Rnw:507-513
+### code chunk number 32: anes48.Rnw:508-514
 ###################################################
 trellis.device(pdf,file="Tp35.pdf",width=7,height=7)
 print(Tp35)

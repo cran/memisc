@@ -1,4 +1,4 @@
-8060db8d41f2a4245ba644cd9b35d587 *DESCRIPTION
+046b405a55a5be21c7eba22c05c8f4e3 *DESCRIPTION
 05bdf69ae52f5d7c2e2cd1194865fa18 *NAMESPACE
 c56dbc78b6f3dc5ca416d9044e539d5e *R/AllClasses.R
 6d84932f980caf232b8871156af59c1f *R/AllGenerics.R
@@ -8,7 +8,7 @@ ab3a87b394232f76a4f3e337d95808aa *R/By.R
 a5b5c8a9d2cc74588eaae8ff4511b518 *R/Sapply.R
 67190e78472981fa1fa9ef3769ac6b89 *R/Substitute.R
 c10f075275f66a050b641db32dae8852 *R/Table.R
-9b16c9c8cdff2c6d0215514fea763c8e *R/Termplot.R
+f3e998ab1651c03d251c9e7234a6ea38 *R/Termplot.R
 af3c01c0b7a08e9d1673f03abb126223 *R/aaa.R
 a79cfe5ea1f963f78a3a899e23b7dbc7 *R/aggregateFormula.R
 6416862fe7fda12d7c82db97296c0ca5 *R/annotation.R
@@ -65,6 +65,7 @@ c0d83d649fb35d7e6ad7141ef7a2bf23 *R/yy-mtable-ext-AchimZeileis.R
 e00117f10553e5f14ac5efc81465bcc7 *R/yy-mtable-ext-JasonWMorgan.R
 b180d75380b365c80a346ffdbf5927b4 *R/yz-getSummary-mer.R
 5307a901ad6c3d071250b6010a301458 *R/zzz.R
+0480dd8fd93040c1277d578f621c2ba1 *build/vignette.rds
 3b4b22907367b3b49e7e7d5a08f71bb7 *demo/00Index
 9e708e543fceb81a61fc6f56f0b3e0eb *demo/Termplot.R
 f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
@@ -72,11 +73,11 @@ f5c9ed16b79f770273356261fd25b903 *demo/anes48.R
 02a8c092a27d07f82e721bfbf7ae42de *demo/monte.carlo.R
 5f88267e369e6d4a5820b82ab1031f1d *demo/random.walk.R
 8688722b38cfb623431d898d7db638cf *demo/schelling.R
-ee7dc1880e0fffc8137d2c899a8e9a3c *inst/NEWS
+2a17ed0d4b6006e75a0aecb2fe5fe07a *inst/NEWS
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
-135de2a211d85228cb507c6f6dcb7352 *inst/doc/anes48.R
-98d18ad5f536ac759853695f570359f6 *inst/doc/anes48.Rnw
-9adcde19bea8c02d9c290046231469de *inst/doc/anes48.pdf
+c1791048a25542f87310b38006bc3a58 *inst/doc/anes48.R
+95c9119c3f7b36910686bef61cff98d7 *inst/doc/anes48.Rnw
+d68798c93fe4b5bbd9d566a96c562ab6 *inst/doc/anes48.pdf
 07dfbc38a83949d41f1aa95be7faaf57 *man/00memisc.Rd
 b750f9cb261e15a1e27de36b837a1955 *man/By.Rd
 c8f84d7581394b5e8f7e9475b447f471 *man/Descriptives.Rd
@@ -115,7 +116,7 @@ d6b9034180039a2de15d44f5b1c430f8 *man/rename.Rd
 d841780ad4ea07355ddb602bc92acab8 *man/reorder.array.Rd
 0a3842562e228fddcef8487a9e3a676e *man/retain.Rd
 707fe74a6e49674709ea6eea482e903d *man/sample-methods.Rd
-ecd2565a92ac5257d1952d2fc8ad02d9 *man/simulation.Rd
+bb74aac2930b2dd5a0d18c73b624c63a *man/simulation.Rd
 94a4d641be2a356ad20da5f002782b23 *man/sort-methods.Rd
 0f44536a3e8c7a26b368dd33bed9305c *man/styles.Rd
 9b5c01d3a5249c6fc49cb08327f850c9 *man/toDataFrame.Rd
@@ -131,10 +132,10 @@ f838417d86ebfd1cb5fd7f1c97cb67e7 *src/dumbswap.c
 399f9f635feaaea60348a7bcb646572d *src/numeric_if_possible.c
 cbfb0e25383013a94754e162049b62eb *src/ord_union.c
 7eaac20473120d8b476b7b7619661736 *src/parsehelpers.c
-f5b10b3f1ad4d69cf48be322e2226a5b *src/pspp-portableStream-for-R.c
+17c8f06405479fcaff70973d1a90c566 *src/pspp-portableStream-for-R.c
 fee270037ce461307e0f84d87495dcd0 *src/pspp-system-for-R.c
 efcd84aeafb980c02ea21cead5a63576 *src/readfixed.c
 6fc8843d8db3e78b908d77f5eced082f *src/rofile.c
 03da5a3346e76f2ba5d692c370eb60a9 *src/rofile.h
 8acf5f2547d2fa84eec70a1a1ac10168 *src/update_data_frame.c
-98d18ad5f536ac759853695f570359f6 *vignettes/anes48.Rnw
+95c9119c3f7b36910686bef61cff98d7 *vignettes/anes48.Rnw
