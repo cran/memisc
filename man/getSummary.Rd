@@ -1,19 +1,19 @@
 \name{getSummary}
 \alias{getSummary}
-\alias{getSummary.expcoef}
+\alias{getSummary_expcoef}
 \alias{getSummary.lm}
 \alias{getSummary.glm}
 \alias{getSummary.clm}
 \alias{getSummary.polr}
 \alias{getSummary.simex}
-\alias{getSummary.expcoef}
-\alias{getSummary.expcoef.glm}
+\alias{getSummary_expcoef.glm}
 \alias{getSummary.aftreg}
 \alias{getSummary.coxph}
 \alias{getSummary.phreg}
 \alias{getSummary.survreg}
 \alias{getSummary.weibreg}
 \alias{getSummary.mer}
+\alias{getSummary.merMod}
 \alias{getSummary.ivreg}
 \alias{getSummary.tobit}
 \alias{getSummary.hurdle}
@@ -30,6 +30,7 @@
   
   \method{getSummary}{lm}(obj, alpha=.05,\dots)
   \method{getSummary}{glm}(obj, alpha=.05,\dots)
+  \method{getSummary}{merMod}(obj, alpha=.05, varPar.as.coef = TRUE, \dots)
 
   # These are contributed by Christopher N. Lawrence
   \method{getSummary}{clm}(obj, alpha=.05,\dots)
@@ -55,8 +56,8 @@
   # These are contributed by Dave Atkins
   # Method for 'glm' objects - to report
   # exponentiated coefficients.
-  \method{getSummary}{expcoef}(obj, alpha=.05,\dots)
-  \method{getSummary.expcoef}{glm}(obj, alpha=.05,\dots)
+  getSummary_expcoef(obj, alpha=.05,\dots)
+  \method{getSummary_expcoef}{glm}(obj, alpha=.05,\dots)
 }
 \arguments{
   \item{obj}{a model object, e.g. of class \code{lm} or \code{glm}}

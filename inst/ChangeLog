@@ -1,3 +1,31 @@
+2015-03-07:
+  - Renamed 'getSummary.expCoef' into 'getSummary_expCoef' to avoid R CMD check fussiness.
+
+2015-02-14:
+  - Modified file structure somewhat and added some lines do clarify credit for code.
+  - Added documentation for 'as.character' method for 'codebook' objects.
+  - Implemented 'Write()' convenience function for 'descriptions' objects.
+
+2015-02-13:
+  - Removed 'aggregate.formula' method as it conflicts with a method of the name that was included
+    into the 'base' R package more or less recenlty.
+  - Removed 'include' and 'uninclude' since it modifies (in a benign way though) the global namespace,
+    which is discouraged by recently changed CRAN policies.
+
+2015-01-26:
+  - Added 'as.character' method for 'codebook' objects, to allow conveniently write the to files using 'writeLines'
+
+2015-01-25:
+  - Explicitly export S3 method as required by package check by more recent R version
+  - Added github URL
+  - Listed packages that are 'enhanced' by supporting them for `mtable`
+
+2014-12-14: 
+  - Correct buglet in 'recode' method for numeric vectors
+
+2014-11-04:
+  - Fixed silly bug introduced in recent update: Long variable names in SPSS "sav" files should work again now.
+
 2014-10-11:
   - added method for "merMod" objects to the getSummary() generic function. mtable() now 
     should be able (again) to handle estimation results produced by lmer() and glmer() from 

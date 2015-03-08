@@ -155,7 +155,7 @@ options(width=60)
 ###################################################
 ### code chunk number 18: anes48.Rnw:324-335
 ###################################################
-agg.inc <- aggregate(percent(vote3,ci=TRUE)~total.income,data=vote.48)
+agg.inc <- Aggregate(percent(vote3,ci=TRUE)~total.income,data=vote.48)
 agg.inc.errbars <- xyplot(cbind(Percentage,upper,lower)~total.income,
         data=subset(agg.inc,vote3=="Truman"),
         panel=panel.errbars,
@@ -194,7 +194,7 @@ options(width=72)
 ###################################################
 ### code chunk number 22: anes48.Rnw:365-376
 ###################################################
-agg.occup <- aggregate(percent(vote3,ci=TRUE)~occup4,data=vote.48)
+agg.occup <- Aggregate(percent(vote3,ci=TRUE)~occup4,data=vote.48)
 agg.occup.errbars <- xyplot(cbind(Percentage,upper,lower)~occup4,
         data=subset(agg.occup,vote3=="Truman"),
         panel=panel.errbars,

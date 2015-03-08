@@ -48,6 +48,14 @@ codebookStatsMetric <- function(x){
     )
 }
 
+setMethod("as.character","codebook",function(x,...){
+  width <- getOption("width")
+  toprule <- paste(rep("=",width),collapse="")
+  midrule <- paste(rep("-",width),collapse="")
+  out <- mapply(format,x=x,name=names(x),toprule=toprule,midrule=midrule)
+  unlist(out)
+})
+
 setMethod("show","codebook",function(object){
   width <- getOption("width")
   toprule <- paste(rep("=",width),collapse="")
@@ -56,6 +64,26 @@ setMethod("show","codebook",function(object){
   out <- unlist(out)
   writeLines(out)
 })
+
+# setMethod("Write",signature(x="codebook"),
+#           function(x,file=stdout(),...){
+#             width <- getOption("width")
+#             toprule <- paste(rep("=",width),collapse="")
+#             midrule <- paste(rep("-",width),collapse="")
+#             out <- mapply(format,x=x,name=names(x),toprule=toprule,midrule=midrule)
+#             out <- unlist(out)
+#             writeLines(out,con=file)
+#           })
+
+Write.codebook <- function(x,file=stdout(),...){
+  width <- getOption("width")
+  toprule <- paste(rep("=",width),collapse="")
+  midrule <- paste(rep("-",width),collapse="")
+  out <- mapply(format,x=x,name=names(x),toprule=toprule,midrule=midrule)
+  out <- unlist(out)
+  writeLines(out,con=file)
+}
+
 
 setMethod("format","codebookEntry",
   function(x,name="",width=getOption("width"),

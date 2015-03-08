@@ -77,12 +77,15 @@ parseSysHeader <- function(file){
   if(spss.testcode(file)==999) start.data <- spss.dictterm(file)
   else stop("did not find dictionary termination code")
   #message("\nstart of data:",p$start.data)
+  attr(file,"sysmis") <- sysmis
   attr(file,"data_pos") <- start.data
 
   if(length(auxiliaries$longVariableNames)){
     longVariableNames <- auxiliaries$longVariableNames
     longVariableNames <- strsplit(longVariableNames,"\t")[[1]]
     longVariableNames <- strsplit(longVariableNames,"=")
+    longVariableNames <- sapply(longVariableNames,function(lvn)
+        structure(lvn[2],names=lvn[1]))
     ii <- match(names(longVariableNames),names(variables))
     names(variables)[ii] <- unname(longVariableNames)
   }
