@@ -1,6 +1,6 @@
 useDynLib(memisc)
 import(stats,grid,lattice,methods,MASS)
-importFrom(utils,toLatex,head,tail,capture.output,getFromNamespace)
+importFrom(utils,ls.str,str,toLatex,head,tail,capture.output,getFromNamespace,View,browseURL,getS3method)
 export(
       contr,
       contr.treatment,
@@ -42,13 +42,6 @@ export(
       relabel4,
       rename,
       rowrename,
-      Simulate,
-      default_bucket,
-      textfile_bucket,
-      put_into,
-      pour_out,
-      interrupt,
-      trimws,
       genTable,
       Aggregate,
       #wtable,
@@ -64,9 +57,6 @@ export(
       sort.data.set,
       to.data.frame,
       as.array,
-      prediction.frame,
-      Termplot,
-      panel.errbars,
       as.item,
       labels,
       "labels<-",
@@ -105,9 +95,9 @@ export(
       Substitute,
       collect,
       fapply,
-      UnZip,
       "%nin%",
       codebook,
+      wild.codes,
       spss.fixed.file,
       spss.portable.file,
       spss.system.file,
@@ -115,7 +105,17 @@ export(
       query,
       relabel4,
       Iconv,
-      Write
+      Write,
+      mtable_format_print,
+      mtable_format_latex,
+      mtable_format_html,
+      mtable_format_delim,
+      show_html,
+      write_html,
+      format_html,
+      dsView,
+      summaryTemplate,
+      percentages
       )
 S3method(getSummary,aftreg)
 S3method(getSummary,betareg)
@@ -139,17 +139,23 @@ S3method(sort,data.frame)
 S3method(sort,data.set)
 S3method(print,mtable)
 S3method(format,mtable)
+S3method(dim,mtable)
+S3method(dimnames,mtable)
+S3method("[",mtable)
+S3method(c,mtable)
 S3method(toLatex,default)
 S3method(toLatex,matrix)
 S3method(toLatex,mtable)
 S3method(toLatex,ftable)
-S3method(relabel,mtable)
-S3method(Termplot,default)
+
 S3method(relabel,default)
 S3method(relabel,factor)
+S3method(relabel,mtable)
+S3method(relabel,table)
+S3method(relabel,ftable)
+
 S3method(reorder,matrix)
 S3method(reorder,array)
-S3method(prediction.frame,default)
 S3method(collect,default)
 S3method(collect,matrix)
 S3method(collect,array)
@@ -162,17 +168,6 @@ S3method(percent,default)
 S3method(percent,logical)
 S3method(By,default)
 S3method(By,data.frame)
-S3method(print,bucket)
-S3method(dim,default_bucket)
-S3method(as.matrix,default_bucket)
-S3method(as.data.frame,default_bucket)
-S3method(pour_out,default_bucket)
-S3method(put_into,textfile_bucket)
-S3method(pour_out,textfile_bucket)
-S3method(dim,textfile_bucket)
-S3method(as.data.frame,textfile_bucket)
-S3method(as.matrix,textfile_bucket)
-S3method("[",bucket)
 
 exportClasses(
   atomic,
@@ -237,9 +232,11 @@ exportMethods(
     as.factor,
     as.ordered,
     contrasts,
+    as.data.set,
     "contrasts<-",
     summary,
     within,
+    merge,
     "%in%",
     recode,
     dim,
@@ -249,6 +246,7 @@ exportMethods(
     Table,
     Descriptives,
     codebook,
+    wild.codes,
     sample,
     query
     )
@@ -273,3 +271,80 @@ S3method(Iconv,importer)
 S3method(Write,descriptions)
 S3method(Write,codebook)
 
+S3method(format_html,mtable)
+S3method(format_html,ftable)
+S3method(format_html,codebook)
+S3method(format_html,codebookEntry)
+S3method(format_html,data.frame)
+
+S3method(sort,data.set)
+S3method(rbind,data.set)
+
+S3method(as.POSIXct,datetime.item)
+S3method(as.data.frame,datetime.item)
+
+S3method(xtfrm,integer.item)
+S3method(xtfrm,double.item)
+S3method(xtfrm,character.item)
+S3method(xtfrm,datetime.item)
+S3method(unique,integer.item)
+S3method(unique,double.item)
+S3method(unique,character.item)
+S3method(unique,datetime.item)
+
+S3method(toLatex,data.frame)
+S3method(toLatex,data.set)
+
+S3method(percentages,table)
+S3method(percentages,formula)
+S3method(as.data.frame,percentage.table)
+S3method(as.data.frame,xpercentage.table)
+
+S3method(cbind,ftable)
+S3method(rbind,ftable)
+S3method(cbind,ftable_matrix)
+S3method(rbind,ftable_matrix)
+S3method(format,ftable_matrix)
+S3method(print,ftable_matrix)
+S3method(Write,ftable_matrix)
+
+S3method(toLatex,ftable_matrix)
+S3method(format_html,ftable_matrix)
+S3method(relabel,ftable_matrix)
+
+export(
+    df_format_stdstyle,
+    ftable_format_stdstyle,
+    mat_format_stdstyle,
+    mtable_format_stdstyle)
+
+export(html,content,attribs,style,
+  setContent,setStyle,setAttribs,
+  html_group,as.html_group,
+  css,as.css,
+  "content<-","attribs<-","style<-")
+  
+S3method(as.character,html_elem)
+S3method(print,html_elem)
+S3method(c,html_elem)
+S3method(format_html,html_elem)
+
+S3method(as.character,html_group)
+S3method(print,html_group)
+S3method(c,html_group)
+S3method("[",html_group)
+S3method("[<-",html_group)
+S3method(format_html,html_group)
+
+
+S3method(setAttribs,html_elem)
+S3method(setAttribs,html_group)
+S3method("[<-",html_attributes)
+
+S3method(as.character,css)
+S3method(print,css)
+S3method(setStyle,html_elem)
+S3method(setStyle,html_group)
+S3method("[<-",css)
+
+S3method(format_html,descriptions)

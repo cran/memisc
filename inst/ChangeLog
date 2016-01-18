@@ -1,3 +1,252 @@
+2016-01-16:
+  - Use "html_viewer" option instead of "show_html.output".
+
+2016-01-04:
+  - Deleted last sentence in package description.
+  - Put back vignette for `ftable-matrix`.
+  - `show_html` can be used with arbitrary output functions, e.g. `rstudio::viewer`.
+
+2016-01-03:
+  - Removed `UnZip` from package, which has been redundant for some time.
+  - Use `knitr::rmarkdown` instead of `knitr::knit` in vignettes.
+  - Added vignette for `ftable_matrix`.
+  - `show_html` can be used with arbitrary output functions, e.g. `rstudio::viewer`.
+  
+2016-01-02:
+  - Small vignette update.
+  - New maintainer address
+
+2015-12-31:
+  - R-dependency should be >= 3.0, because this is needed for knitr vignettes.
+  - Some improvements of ANES vignette.
+  - Improvements for variable descriptions in data sets and importers, 
+    including HTML formatting.
+  - Added explanation of `tolower` to ANES Vignette.
+  - New argument `margin` of `format_html` method functions, 
+    which determines the positioning of the HTML tables. By default it centers the table horizontally.
+  - Export `format_html` cell standard styles.
+  - Renamed `html_style` into `css`, etc.
+  - Automatic HTML output in ANES vignette.
+  - Remove LaTeX/PDF Vignette
+  - Added documentation for `html()` and friends. 
+    Implemented `show_html()` method function for HTML code.
+
+2015-12-30:
+  - Make concatenation of html-elements safer
+  
+2015-12-29:
+  - Added documentation for `toLatex` method for "ftable_matrix" objects
+  - No longer make a fuss about duplicate model names in `combine_mtables`
+
+2015-12-28: 
+  - Added example for named model groups in `mtables`.
+  - Added documentation of `format_html.ftable_matrix`.
+  - Updated documentation of `mtable_format_latex`
+  - Create and use `Write` method function for `ftable_matrix` objects.
+  - Added documentation of `ftable_matrix` objects
+
+2015-12-18:
+  - Added support for with model groups in `mtable`. `c.mtable` now creates 
+    groups of models, if arguments are tagged.
+
+2015-12-16:
+  - Fixed issues shown by R CMD check
+  - Adapt `format_html.ftable_matrix` to html-objects infrastructure.
+  
+2015-12-13:
+  - Enable automatic insertion of linebreaks into HTML code.
+  - Export methods for html objects etc.
+
+2015-12-12:
+  - Adapted HTML formatting of 'codebook's to new HTML infrastructure.
+  - Added syntactic sugar to 'html()'. Corrected formatting of fixed-point numbers.
+  - Made formatting of value filters safer.
+
+2015-12-07: 
+  - Encapsulate fixed-point numbers into "html_group" objects
+  - Update version number
+  
+2015-12-06:
+  - Start object-oriented infrastructure for the creation of HTML code.
+  
+2015-11-13: 
+  - Import 'str' and 'ls.str' from 'utils' package to prevent a NOTE in R CMD check
+  
+2015-11-09: 
+  - Make `percentages()` a little more robust against empty cells in marginal tables.
+
+2015-09-24:
+  - Fixed Latex output of data frames.
+
+2015-09-13: 
+  - Fix regressions caused by `rbind()` and `cbind()` methods for "ftable" objects.
+
+2015-09-12: 
+  - Added some new `relabel()` methods.
+
+2015-09-06:
+  - Fixed treatment of value labels in HTML formatting of codebooks.
+
+2015-09-03: 
+  - Added basic HTML formatting of `ftable_matrix` objects. (LaTeX formatting was already implemented.)
+
+2015-08-29: 
+   - Fix CSS class of ftable formatted in HTML
+   - Implement `ftable_matrix` objects - objects composed from several `ftable`s.
+
+2015-08-26:
+  - Added `percentages` function to easily create tables of percentages.
+
+2015-08-18:
+  - Fix bug that presented Stata 9-10 files to be successfully imported.
+
+2015-08-16: 
+  - Fix that allows to import ANES 2008 data with the provided buggy SPSS script files.
+
+2015-08-03:
+  - Allow specification of `show.baselevel=`, and `baselevel.sep=` as arguments of `mtable()`
+
+2015-07-21:
+  - Make `write.mtable` more coherent.
+
+2015-07-20:
+  - Eliminate buglino that causes knitr to gobble up stars (not those in the sky, 
+    but those used to indicate levels of statistical significance)
+
+2015-07-18:
+  - New `signif.symbols` argument to `mtable`, that allows to change
+    the "level of significance symbols"
+  - Implemented `[` operator for `mtable` results as well as
+    the `c` (concatenation) operator.
+
+2015-07-15:
+  - New `gs.options=` argument to `mtable`, that allows to pass optional
+    arguments to getSummary.
+
+2015-07-14:
+  - Added vignette about survey items (objects of class "item")
+
+2015-07-13: 
+  - Add basic documentation for 'summaryTemplate' generic function.
+  - Add documentation for 'dsView'.
+  - Fix codoc mismatches pointed out by R CMD check.
+  - 'spss.fixed.file' now checks whether there are undefined variables in 'varlab.file' etc.
+
+2015-07-10: 
+  - Correct `sourcename` default argument of `collect` methods.
+  - Get rid of duplicate aliases in documentation.
+  - FIX: `coef.tab` not `coef.table`
+  - Add documentation for `datetime.item` objects (merged from an earlier development branch)
+  - Add documentation for data set manipulation (`merge` etc.)
+  - Make `cases` more fussy about logical conditions.
+
+2015-07-02: 
+  - Provide HTML formatting of data frames.
+
+2015-06-15: 
+  - New option 'show.baselevel' for function 'mtable' that allows to decised whether the baseline category of 
+    dummy variable shows up in the table.
+
+2015-06-13:
+  - Scalars created by 'within' expression are now retained constant items in data.sets
+  - 'sourcename' argument of collect methods for data frames and data.sets now has a 
+    coherent default.
+
+2015-06-08:
+  - 'mtable_format_html' works again
+  - Slight reorganisation of 'mtable' and associated formatting functions.
+  - Nicer grouping of coefficients of multiple-equation models
+  - 'applyTemplate' now returns empty strings for undefined quantities.
+
+2015-06-02: 
+  - Moved 'toLatex' method for 'data.set' objects into different file. Added 'toLatex' method for data frames.
+
+2015-06-01:
+  - Completely refactored 'mtable' - more flexible handling of models with varying numbers of equations; 
+    some formatting is delayed and moved to the 'mtable_format' functions.
+
+2015-05-31:
+  - Added toLatex-method for data.set objects.
+
+2015-05-28:
+  - Added missing 'drop=FALSE' in format_html.codebookEntry
+  - 'codebookEntry' can now deal with factors that have no non-missing levels
+
+2015-05-16:
+  - 2015-05-16: Added support for date-time "item" objects (from former 'codebooks' package)
+  - dsView, cbind, rbind, collect, and merge methods for "data.set" objects copied from former 
+    'codebooks' package to 'memisc'.
+
+2015-05-14:
+  - Fixed bugs introduced by rewrite of 'import-internal-spss-syntax.R'.
+    Dependency 'MicroDatosEs' should work okay now.
+
+2015-05-12: 
+  - Fixed a bug introduced by side-effects of manipulating the arguments of 'readfixed'. 
+  - Make sure that codebook entries for items in external data sources are complete.
+  - Add dots to 'format_html.codebookEntry' formal arguments.
+  - Improved `toLatex` formatting of `ftable`s
+  - Set version number to 0.98.1
+
+2015-05-11: Make memisc:::trimws work without changing locale
+  - Complete rewrite of major parts of 'import-internal-spss-syntax.R': 
+    Handling of SPSS syntax files for fixed format data files is changed from a presumptious vectorising approach
+    to an old-school but more flexible and stable Turing approach. 
+  - 'spss.fixed.file()' should work for a wider range of situations.
+
+2015-05-10: 
+  - Use endash in HTML format of codebooks, correct removal extra styling of variable names
+
+2015-05-09: 
+  - Remove hardcoded styling of variable names in codebook entries.
+  - Codebook support for numeric vectors and factors
+  - Fix console output of data.set objects
+
+2015-04-29:
+  - Step up version number and date.
+  - Removed functions panel.errbars, Termplot, Simulate, and associated stuff (buckets etc.)
+
+2015-04-28:
+  - Documented 'format_html' method for codebooks
+  - Added HTML formatting of codebooks.
+  - Bugfix in 'codebook-methods.R': specify sensible defauls for 'toprule' and 'midrule' in format,codebookEntry-method.
+  - Added dumentation for 'format_html' methods for "ftable" and "mtable" objects.
+  - Added documentation for 'format_html' function
+  - Documented 'wild.codes' function
+  - Fixed as.data.set,list-method, added documentation for as.data.set,list-method
+
+2015-04-26:
+  - Changed vignette engine to 'rmarkdown' as this gives better output.
+  - Added html vignette 'ANES 1948'
+  - Fix html formatting of mtables
+  - Bugfix of format_html.ftable: Now digits after the dot are handled correctly.
+  - Some adjustments of HTML formatting of "mtables"
+  - Support for HTML formatting of "ftables"
+  - Added function 'wild.codes' to find, well, wild codes.
+
+2015-04-20: 
+  - Fix collect method of "data.set" objects, by providing "as.data.set" method for lists.
+
+2015-04-09: 
+  - Improvement of header formatting of mtables for LaTeX
+
+2015-04-07: 
+  - Shorter vignette for html output of mtable results.
+  - Update README.md
+  - Create README.md
+  - More modular code for HTML formatting
+  - Added knitr vignette for HTML output example 
+  - Corrected NEWS.Rd
+  - Minor correction of format of ANES48 vignette
+  
+2015-04-06: 
+  - Improved HTML output of 'mtable' results  - alignment on decimal signs and straight borders. 
+  - Updated documentation of 'mtable' results.
+  
+2015-04-05: 
+  - New coefficient style - confidence intervals right of estimates
+  - Some cleanup in mtable; special formatting functions for mtable objects (needs testing)
+
 2015-03-07:
   - Renamed 'getSummary.expCoef' into 'getSummary_expCoef' to avoid R CMD check fussiness.
 
