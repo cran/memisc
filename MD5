@@ -1,4 +1,4 @@
-528944b1692f2c3388326b3d4b6730af *DESCRIPTION
+24de0d2fd8a0ad79278b6a0646482a89 *DESCRIPTION
 53c618bc5a5a31e0f6e5e99af1a50267 *NAMESPACE
 9b29e217e4337944566ac2c2f0fdf772 *R/AllClasses.R
 1e39dc0f5a08e4a4c04076305ae204e6 *R/AllGenerics.R
@@ -23,8 +23,8 @@ c81170463ee94af28a35a94294f7b676 *R/dataset-methods.R
 2affb1df5b5a61f3f2b33871dc580d70 *R/expand.R
 e4d32afdef74bf64e49e3a0033986ab6 *R/fapply.R
 a377256b816602e0f1d20d8145cf06c9 *R/format-html-dataframe.R
-0fa2d632a93352b0359a731ae642e923 *R/format-html-ftable-matrix.R
-efda530ee35633eaa4c37fe70d7aa373 *R/format-html-ftable.R
+60d96559be27db7eb591194ce880c7eb *R/format-html-ftable-matrix.R
+1216970ac3bff281cbb354e259b66a0c *R/format-html-ftable.R
 76c8525155b3e6b07d162cea333192b6 *R/format-html-matrix.R
 f7f32860feed7dbd4820f216579b996e *R/format-html-other.R
 64c9c33b96434161f4d485ddd28b510b *R/ftable-matrix.R
@@ -43,11 +43,11 @@ e7ebb5ac05c127a0501a8a19eb4ae1fe *R/importer-methods.R
 d19e302d55b1112aade286eed1c1f17f *R/mcf.R
 c9d20dafe28c7e400e2db46f81185e8a *R/measurement.R
 c72a2076084c3003b527b38e0cfa1299 *R/mtable-format-delim.R
-db981182aa8025014de1060c5c76a62e *R/mtable-format-html.R
+c5a93862f81355c04304af21b5a5d59c *R/mtable-format-html.R
 36688062447e6fe3d5e5fe988df6de67 *R/mtable-format-latex.R
 07f7a5912ff143364fc7583c92ad93fd *R/mtable-format-print.R
-1ed788592019c4d7237fd09349099c60 *R/mtable-manip.R
-7890fa3b165d3c386bb2ecd86c0c2f20 *R/mtable-tools-format.R
+59b253a2ec77612382bfd4e59c537eb8 *R/mtable-manip.R
+15cb9d4ffa1cbacf61096c6b2a1f0dde *R/mtable-tools-format.R
 a24bfbd4473678d8913a35c10e45c5bf *R/mtable.R
 60380a2da6c562eb5037b1147e8ed362 *R/numeric-if-possible.R
 9e6dee040e97644b75700d0de685c290 *R/percent.R
@@ -80,15 +80,15 @@ dbafcc9748e471478959d2b68bbb2062 *R/yy-mtable-ext-DaveAtkins.R
 e00117f10553e5f14ac5efc81465bcc7 *R/yy-mtable-ext-JasonWMorgan.R
 b180d75380b365c80a346ffdbf5927b4 *R/yz-getSummary-mer.R
 a7385bc1239a6e5424c898ce3375d518 *R/yz-getSummary-merMod.R
-ba14c4a6b920a639d800355585ad66bc *R/zzz.R
+5af90fce6c3eeb1b38509cb9c9585a83 *R/zzz.R
 e87c4a7478cf3cee8ec0b3dd6562d652 *build/vignette.rds
-e20220b15e277045faad1ae2bf573c67 *inst/ChangeLog
+2dd54c631d799385ac45239926a8c720 *inst/ChangeLog
 97954d15673c69b36e01f9146f9e8108 *inst/NEWS.Rd
 c2edff28f01026697e7e40da48f020c4 *inst/NEWS.html
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 0a2be7d09b3f12fc2833744f2f6ab3df *inst/doc/anes48.R
 bd2e629aae7eac1b41093b766359049c *inst/doc/anes48.Rmd
-c965985d264be3fd6803d7b196514c7a *inst/doc/anes48.html
+d5c05cd6bad9e76279fdb19bb8fd1154 *inst/doc/anes48.html
 c73163804df1a5e9d63247e6d6547514 *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 250f560753472c83aadb2b3eeeea752d *inst/doc/ftable-matrix.html
@@ -97,7 +97,7 @@ af480cd7fbc2c37a3b81ba6fa0b8514b *inst/doc/items.R
 2443a37cbcb67ed5aa430f56016bae84 *inst/doc/items.html
 fd3e41a8a05d3624345a4b3a383b2cee *inst/doc/mtable-html.R
 98635f08dfd9b7af55c2a1984591d6c8 *inst/doc/mtable-html.Rmd
-e827eaeaef0a5d00a2e545fb63fc716d *inst/doc/mtable-html.html
+058b2e83c7e22400025dfaeb03b89746 *inst/doc/mtable-html.html
 b99fbb1ab17d8624b63b989a410cdeba *inst/gles/gles2013work.RData
 ba7addf40db7f7ba6de12630e0a78a27 *man/00memisc.Rd
 239cf63ea7099c43accfbdf2ada958ca *man/By.Rd
@@ -119,7 +119,7 @@ d3da2697e74c62d9c63d51af021128ee *man/contrasts.Rd
 58359071180345dc51253066a6b92dbb *man/dataSets.Rd
 dc848e17f9fb1747013470d06901e472 *man/dataset-manip.Rd
 aaa4a71ffe3ce8ceefb33395b0ed5219 *man/dimrename.Rd
-175b303cfc91074062d5ff7cc5b76739 *man/format_html.Rd
+6fd6e9ab257c510f75ce98ba198b4197 *man/format_html.Rd
 d9b9a4aad935cd977f58d35d18a2fbda *man/format_html.codebook.Rd
 75ffab7ea6ce59a86db206df930b45b3 *man/format_html.ftable.Rd
 c7021f521c5cfb4f1f79ccfb9894600a *man/ftable-matrices.Rd
@@ -131,7 +131,7 @@ eaf9f1062c9197d57db33d9b0a8194e2 *man/genTable.Rd
 3bf7ac6b583959bdf218f1a40ef8fc78 *man/labels.Rd
 7595c783194e39095216677a550b2360 *man/measurement.Rd
 a743b4ef7c9c1b0e110cd926930260b5 *man/mtable-format-delim.Rd
-6a58e49d9acc00719b74183734e1de0b *man/mtable-format-html.Rd
+331b7696c409f5ee38b2c4e9c3d08e7b *man/mtable-format-html.Rd
 2a687cc3d9551bc074c521e104fbc679 *man/mtable-format-latex.Rd
 a3396852584f1a52ab63d85fb90014a2 *man/mtable-format-print.Rd
 a4958265bd775e8cc29d9ab7b10ea05d *man/mtable.Rd
