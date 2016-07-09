@@ -87,7 +87,8 @@ toLatex.ftable <- function(object,
     else
       header[i] <- paste(header[i],collapse=" && ")
   }
-  
+
+  show.titles <- show.titles && length(names(row.vars)) && length(names(col.vars))
   if(show.titles){
     if(length(names(col.vars))==1){
       
@@ -149,8 +150,7 @@ toLatex.ftable <- function(object,
     rowsep <- rep("\\\\",NROW(body))
     .extrarowsep <- rep("",NROW(body))
     lrv <- length(row.vars[[n.row.vars]])
-    ii <- seq(NROW(body)%/%lrv)*lrv
-    if(show.titles && length(names(row.vars))) ii <- ii+1
+    ii <- seq(NROW(body)%/%lrv-1)*lrv
     .extrarowsep[ii] <- paste("[",extrarowsep,"]",sep="")
     rowsep <- paste(rowsep,.extrarowsep,sep="")
     body <- paste(body,rowsep,sep="")
