@@ -116,11 +116,19 @@ setMethod("readData","spss.portable.importer",
       types=x@data.spec$types
 ))
 
-setMethod("readSubset","spss.portable.importer",
+setMethod("readSlice","spss.portable.importer",
   function(x,rows,cols)
-    .Call("readSubsetPorStream",x@ptr,
+    .Call("readSlicePorStream",x@ptr,
       what=x,
       j=cols,i=rows,
+      types=x@data.spec$types
+))
+
+setMethod("readSubset","spss.portable.importer",
+  function(x,nrows,cols)
+    .Call("readSubsetPorStream",x@ptr,
+      what=x,
+      vars=cols,n=nrows,
       types=x@data.spec$types
 ))
 
