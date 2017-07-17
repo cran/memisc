@@ -14,15 +14,29 @@
           by the eponymous function in the \code{stats} package) can now be
           combined into \code{ftable_matrix} objects. This can be done by
           using \code{rbind()} or \code{cbind()}.
-      
     \item There is now an object class for survey items containing dates (without
           times), called \code{"Date.item"}.
-    }
+    \item Support for including sandwich estimates of sampling variances and
+          standard errors into the output of \code{summary} and \code{mtable},
+          by the new generic functions \code{withVCov} and
+					\code{withSE}.
+		\item Support for different parameter sections is added to
+		      \code{mtable}. This is intended to allow output of mixed
+					effects  models to distinguish between ("fixed effects")
+					coefficients and variance parameters.
+		\item Objects created by \code{mtable()} also can have several
+		      header lines. Facilities to add additional header lines will
+					be added soon.
+		\item Support for HTML and LaTeX output in Jupyter notebooks is added to objects
+		      created by \code{mtable} and \code{ftable} etc.			
+  }
   }
   \subsection{IMPROVEMENTS}{
     \itemize{
       \item Subset methods for importer objects are much more memory
           efficient and now can handle files of size larger than 1GB.
+      \item \code{useDcolumn} and \code{useBooktabs} arguments of
+			    \code{toLatex()} methods now have global options as defaults
     }
   }
   \subsection{BUGFIXES}{
@@ -39,10 +53,17 @@
           showing non-existent variable names, better application of
           \code{extracolsep}.
     \item Duplicate value labels now produce an error if item object is
-          coerced into a factor. (This addresses a 'felicity' issue pointed
-          out by MartinMaechler.)
+          coerced into a factor.
     \item A bug concerning missing values in SPSS files is fixed.
     \item Headlines in vignettes are now coherent.
+    \item \code{mtable} with empty summary sections can be created
+		(again).
+		\item Objects returned by \code{mtable} return objects with class
+          "memisc_mtable" to avoid name clash with objects created by the
+          \code{model.table} in package "stats".
+		\item Calls to PROTECTION are added to the C-source to prevent protection
+		errors.
+		\item \code{toLatex()} now handles matrices in data frames.
     }
   }
   \subsection{USER-VISIBLE CHANGES}{

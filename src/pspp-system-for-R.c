@@ -193,9 +193,10 @@ SEXP NewSysFile (SEXP name){
   else {
     init_sys_file(s);
     SEXP ans = R_MakeExternalPtr(s, install("sys_file"), R_NilValue);
+		PROTECT(ans);
     R_RegisterCFinalizer(ans, (R_CFinalizer_t) closeSysFile);
     setAttrib(ans,install("file.name"),name);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return ans;
   }
 }
@@ -1274,7 +1275,7 @@ second_lowest_double_val()
 }
 
 
-SEXP read_sysfile_subset (SEXP SysFile, SEXP what,
+SEXP read_sysfile_chunk (SEXP SysFile, SEXP what,
                           SEXP s_vars, SEXP s_ncases, SEXP s_types){
   PROTECT(SysFile);
     sys_file *s = get_sys_file(SysFile);

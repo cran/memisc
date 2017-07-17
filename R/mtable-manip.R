@@ -1,149 +1,174 @@
-dim.mtable <- function(x){
-  
-  coefs <- x$coefficients
-  ncols <- length(coefs)
-  cdims <- lapply(coefs,dim)
-  nrows <- sapply(cdims,"[",3)
-  nrows <- max(nrows)
-  c(nrows,ncols)
+dim.memisc_mtable <- function(x){
+
+    sapply(dimnames(x),length)
 }
 
-dimnames.mtable <- function(x){
-  coefs <- x$coefficients
-  colnames <- names(coefs)
-  rownames <- lapply(coefs,dimnames)
-  rownames <- lapply(rownames,"[[",3)
-  rownames <- unique(unlist(rownames))
-  list(
-    rownames,
-    colnames
-  )
-}
+dimnames.memisc_mtable <- function(x){
 
-"[.mtable" <- function(x, i, j, drop = FALSE){
-  
+    coln <- names(x)
 
-  nrows <- nrow(x)
-  ncols <- ncol(x)
-  rownms <- rownames(x)
-  colnms <- colnames(x)
-  
-  mdrop <- missing(drop)
-  Narg <- nargs() - (!mdrop)
-  
-  if(Narg<3){
+    allcompo <- unique(unlist(lapply(x,names)))
+    nonparnames <- c("sumstat","contrasts","xlevels","call")
+    partypes <- setdiff(allcompo,nonparnames)
+
+    parms <- lapply(x,`[`,partypes)
+    parms <- do.call(cbind,parms)
+
+    rown <- lapply(1:nrow(parms),function(i)unique(unlist(lapply(parms[i,],rownames))))
+
+    rown <- Map(
+        function(x,n)
+        {
+            names(x) <- rep(n,length(x))
+            x
+        },rown,partypes)
     
-    if(missing(i)){
-      
-      i <- 1:nrows
-      j <- 1:ncols
+    rown <- do.call(c,rown)
+    
+    list(
+        rown,
+        coln
+    )
+}
+
+"[.memisc_mtable" <- function(x, i, j, drop = FALSE){
+
+    
+    dn.x <- dimnames(x)
+    rown <- dn.x[[1]]
+    coln <- dn.x[[2]]
+
+    allcompo <- unique(unlist(lapply(x,names)))
+    nonparnames <- c("sumstat","contrasts","xlevels","call")
+    partypes <- setdiff(allcompo,nonparnames)
+    
+    nrows <- length(rown)
+    ncols <- length(coln)
+    
+    mdrop <- missing(drop)
+    Narg <- nargs() - (!mdrop)
+    
+    if(Narg<3){
+        
+        if(missing(i)){
+            
+            i <- 1:nrows
+            j <- 1:ncols
+        }
+        else {
+            
+            j <- i
+            i <- 1:nrows
+        }
     }
     else {
-      
-      j <- i
-      i <- 1:nrows
+        
+        if(missing(i)) i <- 1:nrows
+        if(missing(j)) j <- 1:ncols
     }
-  }
-  else {
+
+    if(is.logical(i))
+        i <- unique(rown[i])
+    else if(is.numeric(i)){
+        i <- unique(rown[i])
+    }
+    else if(!is.character(i)){
+        stop("wrong index type ",typeof(i))
+    }
+
+    if(is.logical(j))
+        j <- which(j)
+    else if(is.character(j)){
+        j <- match(j,names(x))
+    }
+    else if(!is.numeric(j)){
+                stop("wrong index type ",typeof(i))
+    }
     
-    if(missing(i)) i <- 1:nrows
-    if(missing(j)) j <- 1:ncols
-  }
-  
-  #   return(list(Narg,i,j))(
-  
-  if(is.character(i)){
-    i <- match(i,rownms)
-    if(any(is.na(i))) stop("undefined row names")
-  } 
-  if(is.character(j)) {
-    j <- match(j,colnms)
-    if(any(is.na(j))) stop("undefined column names")
-  }
-  if(is.logical(i)) {
-    tmp <- logical(nrows)
-    tmp[] <- i
-    i <- which(tmp)
-  }
-  
-  if(is.logical(j)) {
-    tmp <- logical(ncols)
-    tmp[] <- j
-    j <- which(tmp)
-  }
+    y <- unclass(x)[j]
+    attr.x <- attributes(x)
+    attr.x$names <- attr.x$names[j]
+    attr.x$stemplates <- attr.x$stemplates[j]
+    
+    for(pt in partypes){
+        for(m in 1:length(y)){
+            tmp <- y[[m]][[pt]]
+            i.tmp <- intersect(i,rownames(tmp))
+            if(length(i.tmp))
+                y[[m]][[pt]] <- tmp[i.tmp,,drop=FALSE]
+            else
+                y[[m]][[pt]] <- NULL
+        }
+    }
 
-  coefficients <- x$coefficients[j]
-  
-  coefficients <- lapply(coefficients, selCoef, i=i)
-  
-  summaries <- x$summaries[,j,drop=FALSE]
-  calls <- x$calls[j]
-  
-  structure(list(
-    coefficients=coefficients,
-    summaries=summaries,
-    calls=calls),
-    class="mtable")
+    attributes(y) <- attr.x
+    return(structure(y,class="mtable"))
 }
 
-selCoef <- function(coef,i){
-  if(length(dim(coef))==3) coef[,,i,drop=FALSE]
-  else if(length(dim(coef))==4) coef[,,i,,drop=FALSE]
-  else stop("This structure not yet supported")
-}
 
 
 ##
+get.summary.stats <- function(x){
+    y <- attr(x,"summary.stats")
+    if(is.logical(y)){
+        if(isTRUE(y)){
+           names(unlist(attr(x,"stemplates")))
+        }
+        else character()
+    }
+    else
+        y
+}
 
 combine_mtables <- function(...){
   
-  args <- list(...)
-  argnames <- names(args)
-  
-  coefs <- lapply(args,"[[","coefficients")
-  
-  model.groups <- lapply(coefs,names)
-  model.names <- unlist(model.groups)
-  if(!length(argnames) || !any(nzchar(argnames)))
-    model.groups <- NULL
-  else {
-    mg <- lapply(model.groups,seq_along)
-    mg1 <- lapply(model.groups,length)
-    mg1 <- cumsum(c(0,mg1[-length(mg1)]))
-    model.groups <- mapply(`+`,mg,mg1,SIMPLIFY=FALSE)
-  }
-  
-  if(all(sapply(coefs,length)==1) && length(argnames) && any(nzchar(argnames))){
-    model.names[nzchar(argnames)] <- argnames[nzchar(argnames)]
-    model.groups <- NULL
-  }
-  
-  coefs <- do.call("c",coefs)
-  nms <- names(coefs)
-  
-  rown <- lapply(args,rownames)
-  rown <- unique(unlist(rown))
-  
-  coefs <- lapply(coefs,coefxpand,rown)
-  
-  smrys <- lapply(args, "[[","summaries")
-  s.rown <- lapply(smrys,rownames)
-  s.rown <- unique(unlist(s.rown))
-  smrys <- lapply(smrys,smryxpand,s.rown)
-  smrys <- do.call("cbind",smrys)
-  
-  names(coefs) <- model.names
-  colnames(smrys) <- model.names
-  
-  calls <- lapply(args,"[[","calls")
-  calls <- do.call("c",calls)
-  
-  structure(list(
-    coefficients=coefs,
-    summaries=smrys,
-    calls=calls,
-    model.groups=model.groups),
-    class="mtable")
+    args <- list(...)
+    argnames <- names(args)
+    names(args) <- NULL
+
+    if(length(argnames)>1){
+        
+        mg <- sapply(args,length)   
+        mg1 <- lapply(mg,seq.int)
+        mg0 <- c(0,mg[-length(mg)])
+        model.groups <- Map(`+`,mg0,mg1)
+        names(model.groups) <- argnames
+    }
+    else
+        model.groups <- NULL
+    
+    coef.style <- attr(args[[1]],"coef.style")
+    
+    summary.stats <- lapply(args,get.summary.stats)
+    summary.stats <- unique(unlist(summary.stats))
+
+    signif.symbols <- attr(args[[1]],"signif.symbols")       
+    factor.style <- attr(args[[1]],"factor.style")
+    show.baselevel <- attr(args[[1]],"show.baselevel")
+    baselevel.sep <- attr(args[[1]],"baselevel.sep")
+    float.style <- attr(args[[1]],"float.style")
+    digits <- attr(args[[1]],"digits")
+    stemplates <- do.call(c,lapply(args,attr,"stemplates"))
+    sdigits <- attr(args[[1]],"sdigits")
+
+    args <- lapply(args,unclass)
+
+    res <- do.call(c,args)
+
+    structure(res,
+            class="mtable",
+            coef.style=coef.style,
+            summary.stats=summary.stats,
+            signif.symbols=signif.symbols,
+            factor.style=factor.style,
+            show.baselevel=show.baselevel,
+            baselevel.sep=baselevel.sep,
+            float.style=float.style,
+            digits=digits,
+            stemplates=stemplates,
+            sdigits=sdigits,
+            model.groups=model.groups
+            )
 }
 
-c.mtable <- function(...) combine_mtables(...)
+c.memisc_mtable <- function(...) combine_mtables(...)

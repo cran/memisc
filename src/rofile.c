@@ -1,9 +1,3 @@
-#include <R.h>
-#include <Rdefines.h>
-#include <string.h>
-#include <Rmath.h>
-#include <stdio.h>
-#include <Rinternals.h>
 #include "memisc.h"
 
 int ftell32 (FILE *f){
@@ -33,9 +27,10 @@ SEXP rofile (SEXP name){
       }
   else {
     SEXP ans = R_MakeExternalPtr(f, install("rofile"), R_NilValue);
+		PROTECT(ans);
     R_RegisterCFinalizer(ans, (R_CFinalizer_t) rofile_fclose);
     setAttrib(ans,install("file.name"),name);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return ans;
     }
 }

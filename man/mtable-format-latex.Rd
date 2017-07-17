@@ -7,20 +7,19 @@
   }
 \usage{
   mtable_format_latex(x,
-            useDcolumn=TRUE,
+            useDcolumn=getOption("useDcolumn",TRUE),
             colspec=if(useDcolumn) 
                       paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") 
-                    else "r",
+                    else "l",
             LaTeXdec=".",
             ddigits=min(3,getOption("digits")),
-            useBooktabs=TRUE,
+            useBooktabs=getOption("useBooktabs",TRUE),
             toprule=if(useBooktabs) "\\\\toprule" else "\\\\hline\\\\hline",
             midrule=if(useBooktabs) "\\\\midrule" else "\\\\hline",
             cmidrule=if(useBooktabs) "\\\\cmidrule" else "\\\\cline",
             bottomrule=if(useBooktabs) "\\\\bottomrule" else "\\\\hline\\\\hline",
             interaction.sep = " $\\\\times$ ",
             sdigits=min(1,ddigits),
-            force.names = FALSE,
             compact=FALSE,
             sumry.multicol=FALSE,
             \dots
@@ -45,8 +44,6 @@
      \item{interaction.sep}{a character string that separates factors that are involved
         in an interaction effect}
      \item{sdigits}{integer; number of digits after decimal dot for summary statistics.}
-    \item{force.names}{logical; should model names be shown even
-     if estimates of only one model are displayed?}
     \item{compact}{logical; should the table be compact, without extra columns
     between multi-equation models?}
     \item{sumry.multicol}{logical, should summaries enclosed into

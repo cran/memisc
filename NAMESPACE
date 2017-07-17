@@ -1,6 +1,16 @@
 useDynLib(memisc)
 import(stats,grid,lattice,methods,MASS)
-importFrom(utils,ls.str,str,toLatex,head,tail,capture.output,getFromNamespace,View,browseURL,getS3method)
+importFrom(utils,
+           ls.str,
+           str,
+           toLatex,
+           head,
+           tail,
+           capture.output,
+           getFromNamespace,
+           View,
+           browseURL,
+           getS3method)
 export(
       contr,
       contr.treatment,
@@ -137,20 +147,20 @@ S3method(getSummary,weibreg)
 S3method(getSummary_expcoef,glm)
 S3method(sort,data.frame)
 S3method(sort,data.set)
-S3method(print,mtable)
-S3method(format,mtable)
-S3method(dim,mtable)
-S3method(dimnames,mtable)
-S3method("[",mtable)
-S3method(c,mtable)
+S3method(print,memisc_mtable)
+S3method(format,memisc_mtable)
+S3method(dim,memisc_mtable)
+S3method(dimnames,memisc_mtable)
+S3method("[",memisc_mtable)
+S3method(c,memisc_mtable)
 S3method(toLatex,default)
 S3method(toLatex,matrix)
-S3method(toLatex,mtable)
+S3method(toLatex,memisc_mtable)
 S3method(toLatex,ftable)
 
 S3method(relabel,default)
 S3method(relabel,factor)
-S3method(relabel,mtable)
+S3method(relabel,memisc_mtable)
 S3method(relabel,table)
 S3method(relabel,ftable)
 
@@ -275,7 +285,7 @@ S3method(Iconv,importer)
 S3method(Write,descriptions)
 S3method(Write,codebook)
 
-S3method(format_html,mtable)
+S3method(format_html,memisc_mtable)
 S3method(format_html,ftable)
 S3method(format_html,codebook)
 S3method(format_html,codebookEntry)
@@ -355,3 +365,20 @@ S3method(setStyle,html_group)
 S3method("[<-",css)
 
 S3method(format_html,descriptions)
+
+export(withSE,withVCov)
+S3method(withVCov,lm)
+S3method(vcov,withVCov)
+S3method(summary,withVCov)
+S3method(summary,withVCov.lm)
+
+importFrom(repr,
+           repr_html,
+           repr_latex)
+S3method(repr_html,memisc_mtable)
+S3method(repr_html,ftable)
+S3method(repr_html,ftable_matrix)
+S3method(repr_html,html_elem)
+S3method(repr_html,html_group)
+
+S3method(repr_latex,memisc_mtable)

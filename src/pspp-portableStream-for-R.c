@@ -685,9 +685,10 @@ SEXP NewPorStream (SEXP name){
   else {
     fillPorStreamBuf(b);
     SEXP ans = R_MakeExternalPtr(b, install("porStreamBuf"), R_NilValue);
+		PROTECT(ans);
     R_RegisterCFinalizer(ans, (R_CFinalizer_t) closePorStream);
     setAttrib(ans,install("file.name"),name);
-    UNPROTECT(1);
+    UNPROTECT(2);
     return ans;
   }
 }
@@ -1077,7 +1078,7 @@ SEXP readSlicePorStream(SEXP porStream, SEXP what, SEXP s_vars, SEXP s_cases, SE
 
 
 
-SEXP readSubsetPorStream(SEXP porStream, SEXP what,
+SEXP readChunkPorStream(SEXP porStream, SEXP what,
 		       SEXP s_vars, SEXP s_ncases, SEXP s_types){
   porStreamBuf *b = get_porStreamBuf(porStream);
   PROTECT(s_vars = coerceVector(s_vars,LGLSXP));

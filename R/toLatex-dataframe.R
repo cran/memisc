@@ -1,22 +1,26 @@
 toLatex.data.frame <- function(object,
                            digits=getOption("digits"),
                            format="f",
-                           useDcolumn=TRUE,
-                           numeric.colspec=if(useDcolumn) paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="") else "l",
+                           useDcolumn=getOption("useDcolumn",TRUE),
+                           numeric.colspec=if(useDcolumn)
+                                               paste("D{.}{",LaTeXdec,"}{",ddigits,"}",sep="")
+                                           else "r",
                            factor.colspec="l",
                            LaTeXdec=".",
                            ddigits=digits,
-                           useBooktabs=TRUE,
+                           useBooktabs=getOption("useBooktabs",TRUE),
                            toprule=if(useBooktabs) "\\toprule" else "\\hline\\hline",
                            midrule=if(useBooktabs) "\\midrule" else "\\hline",
                            cmidrule=if(useBooktabs) "\\cmidrule" else "\\cline",
                            bottomrule=if(useBooktabs) "\\bottomrule" else "\\hline\\hline",
-                           row.names=TRUE,
+                           row.names=is.character(attr(object,"row.names")),
+                           NAas="",
                            ...){
   n <- nrow(object)
   m <- ncol(object)
   d <- digits
   is.num <- sapply(object,is.numeric)
+  is.mat <- sapply(object,is.matrix)
   m.num <- sum(is.num)
   digits <- integer(m.num)
   digits[] <- d
@@ -25,22 +29,26 @@ toLatex.data.frame <- function(object,
   fo <- format
   format <- character(m)
   format[is.num] <- fo
-  #print(digits)
-  body <- array("",dim=dim(object))
+
+  body <- list()
   for(i in 1:m) {
-    if(is.numeric(object[,i]))
-      body[,i] <- formatC(object[,i],digits=fdigits[i],format=format[i])
-    else
-      body[,i] <- as.character(object[,i])
-    body[is.na(object)] <- ""
+      if(is.numeric(object[,i]))
+          body.i <- formatC(object[[i]],digits=fdigits[i],format=format[i])
+      else
+        body.i <- as.character(object[[i]])
+      body.i[is.na(body.i)] <- NAas
+      body[[i]] <- format(body.i,justify="right")
   }
+  body <- do.call(cbind,body)
   ans <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
   
   if(row.names){
-    ans <- cbind(rownames(object),ans)
+    ans <- cbind(format(rownames(object),justify="right"),ans)
   }
+
+  colspan <- sapply(object,NCOL)
+  header <- paste0("\\multicolumn{",colspan,"}{c}{",colnames(object),"}")
   
-  header <- sapply(colnames(object),function(x)paste("\\multicolumn{1}{c}{",x,"}",sep=""))
   header <- paste(header,collapse=" & ")
   if(row.names) header <- paste("&",header)
   header <- paste(header,"\\\\")
@@ -61,6 +69,8 @@ toLatex.data.frame <- function(object,
   dd[] <- ddigits
   ddigits <- dd
   body.spec[is.num] <- numeric.colspec
+  body.spec <- rep(body.spec,colspan)
+
   if(row.names)
     tabspec <- c("l",body.spec)
   else
