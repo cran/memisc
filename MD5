@@ -1,4 +1,4 @@
-3a93b089acba57ef74129358cf1cd670 *DESCRIPTION
+575805478341470e2f25f33fbfe61520 *DESCRIPTION
 fb4aa299589ede5adb41c82388c40bf4 *NAMESPACE
 9b29e217e4337944566ac2c2f0fdf772 *R/AllClasses.R
 1e39dc0f5a08e4a4c04076305ae204e6 *R/AllGenerics.R
@@ -46,7 +46,7 @@ c9d20dafe28c7e400e2db46f81185e8a *R/measurement.R
 253e08139b0eb9946019a65aab7febc1 *R/mtable-format-html.R
 010b2f4595b1d667f8c160bcd59d2fef *R/mtable-format-latex.R
 de97e4e30cbc8b9db41dcde0c02462d5 *R/mtable-format-print.R
-0bf64547e5dfe2f9852c850d553a9670 *R/mtable-manip.R
+cf131af508731dd1e3de9b274da83ab7 *R/mtable-manip.R
 defbfb8cca792b2552ecbfba5d7d2748 *R/mtable-tools-format.R
 e36f320b6e119b3896a7c3c95e403cd3 *R/mtable.R
 60380a2da6c562eb5037b1147e8ed362 *R/numeric-if-possible.R
@@ -83,13 +83,13 @@ e00117f10553e5f14ac5efc81465bcc7 *R/yy-mtable-ext-JasonWMorgan.R
 b180d75380b365c80a346ffdbf5927b4 *R/yz-getSummary-mer.R
 a7385bc1239a6e5424c898ce3375d518 *R/yz-getSummary-merMod.R
 f7f21fb4b02096337e9ec35a8935aad9 *R/zzz.R
-97f43da911e4500ddcc02297efbce7a0 *build/vignette.rds
-51a6a65cefb6b376f0a39da4557e5b52 *inst/ChangeLog
+dad790736c9edf3608b065b956927e1a *build/vignette.rds
+662c38482fcbd27625f4b9b1c3e8f187 *inst/ChangeLog
 3912222662035b98c096b27b4833d645 *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 0a2be7d09b3f12fc2833744f2f6ab3df *inst/doc/anes48.R
 a9e3e1cab3f4e2568311861565f0e8df *inst/doc/anes48.Rmd
-b55ebf5ba6523773b50ffcf45306467f *inst/doc/anes48.html
+e1985d78f1d04f79b100955295bc3453 *inst/doc/anes48.html
 c73163804df1a5e9d63247e6d6547514 *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 8c732bac669cf1749b9e8928443c6eff *inst/doc/ftable-matrix.html
