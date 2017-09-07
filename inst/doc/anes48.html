@@ -190,7 +190,7 @@ CONTROL' 'NEW DEAL' 'MARSHALL PLAN' 'FIRM RUSSIAN POLICY' 'HELP ISRAEL
 (PALESTINE)' 'PROMOTE PEACE'</code></pre>
 <pre class="r"><code>print(nes1948)</code></pre>
 <pre><code>
-SPSS portable file '/tmp/RtmpvUsVcY/file1acd4535057f/NES1948.POR' 
+SPSS portable file '/tmp/RtmpVLlLES/file32de1e2ff87e/NES1948.POR' 
     with 67 variables and 662 observations</code></pre>
 <p>At this stage, the data are not loaded into the memory yet. But we can see which variables exist inside the data set:</p>
 <pre class="r"><code>names(nes1948)</code></pre>
@@ -5756,35 +5756,35 @@ model2: glm(formula = (vote3 == &quot;Truman&quot;) ~ total.income, family = &qu
 model3: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + total.income, family = &quot;binomial&quot;, 
     data = vote.48)
 
-===============================================================
-                               model1     model2     model3    
----------------------------------------------------------------
-  (Intercept)                 1.047***   0.708***   1.316***   
-                             (0.184)    (0.210)    (0.268)     
-  occup4Upper white collar   -2.448***             -2.328***   
-                             (0.327)               (0.357)     
-  occup4Other white collar   -1.080***             -1.015**    
-                             (0.315)               (0.323)     
-  occup4Farmer               -0.622                -0.792*     
-                             (0.362)               (0.383)     
-  total.incomeUNDER $500                -0.708     -0.662      
-                                        (0.737)    (1.056)     
-  total.income$500-$999                 -0.238      0.912      
-                                        (0.607)    (1.143)     
-  total.income$1000-1999                -0.115      0.144      
-                                        (0.343)    (0.440)     
-  total.income$3000-3999                -0.807**   -0.527      
-                                        (0.289)    (0.338)     
-  total.income$4000-4999                -0.875*    -0.509      
-                                        (0.358)    (0.411)     
-  total.income$5000 AND OVER            -1.470***  -0.535      
-                                        (0.337)    (0.405)     
----------------------------------------------------------------
-  Nagelkerke R-sq.               0.2        0.1        0.3     
-  Deviance                     404.2      524.4      390.6     
-  AIC                          412.2      538.4      410.6     
-  N                            344        398        340       
-===============================================================</code></pre>
+===============================================================================
+                                             model1      model2      model3    
+-------------------------------------------------------------------------------
+  (Intercept)                                1.047***    0.708***    1.316***  
+                                            (0.184)     (0.210)     (0.268)    
+  occup4: Upper white collar/Blue collar    -2.448***               -2.328***  
+                                            (0.327)                 (0.357)    
+  occup4: Other white collar/Blue collar    -1.080***               -1.015**   
+                                            (0.315)                 (0.323)    
+  occup4: Farmer/Blue collar                -0.622                  -0.792*    
+                                            (0.362)                 (0.383)    
+  total.income: UNDER $500/$2000-2999                   -0.708      -0.662     
+                                                        (0.737)     (1.056)    
+  total.income: $500-$999/$2000-2999                    -0.238       0.912     
+                                                        (0.607)     (1.143)    
+  total.income: $1000-1999/$2000-2999                   -0.115       0.144     
+                                                        (0.343)     (0.440)    
+  total.income: $3000-3999/$2000-2999                   -0.807**    -0.527     
+                                                        (0.289)     (0.338)    
+  total.income: $4000-4999/$2000-2999                   -0.875*     -0.509     
+                                                        (0.358)     (0.411)    
+  total.income: $5000 AND OVER/$2000-2999               -1.470***   -0.535     
+                                                        (0.337)     (0.405)    
+-------------------------------------------------------------------------------
+  Nagelkerke R-sq.                           0.246       0.085       0.274     
+  Deviance                                 404.190     524.433     390.551     
+  AIC                                      412.190     538.433     410.551     
+  N                                        344         398         340         
+===============================================================================</code></pre>
 <p><code>mtable</code> returns an object of class <code>&quot;mtable&quot;</code>. When formatted it looks close to the requirements of typical social science publications. Yet at least we want to change the technical variable names into non-technical ones, for which we can use <code>relabel</code>:</p>
 <pre class="r"><code>relabel(mtable(
             &quot;Model 1&quot;=model1,
@@ -5806,35 +5806,35 @@ Model 2: glm(formula = (vote3 == &quot;Truman&quot;) ~ total.income, family = &q
 Model 3: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + total.income, family = &quot;binomial&quot;, 
     data = vote.48)
 
-=================================================================================
-                                                Model 1    Model 2    Model 3    
----------------------------------------------------------------------------------
-  (Intercept)                                   1.047***   0.708***   1.316***   
-                                               (0.184)    (0.210)    (0.268)     
-  Occup. class: Upper white collar/Blue collar -2.448***             -2.328***   
-                                               (0.327)               (0.357)     
-  Occup. class: Other white collar/Blue collar -1.080***             -1.015**    
-                                               (0.315)               (0.323)     
-  Occup. class: Farmer/Blue collar             -0.622                -0.792*     
-                                               (0.362)               (0.383)     
-  Income: under $500/$2000-2999                           -0.708     -0.662      
-                                                          (0.737)    (1.056)     
-  Income: $500-$999/$2000-2999                            -0.238      0.912      
-                                                          (0.607)    (1.143)     
-  Income: $1000-1999/$2000-2999                           -0.115      0.144      
-                                                          (0.343)    (0.440)     
-  Income: $3000-3999/$2000-2999                           -0.807**   -0.527      
-                                                          (0.289)    (0.338)     
-  Income: $4000-4999/$2000-2999                           -0.875*    -0.509      
-                                                          (0.358)    (0.411)     
-  Income: $5000 and over/$2000-2999                       -1.470***  -0.535      
-                                                          (0.337)    (0.405)     
----------------------------------------------------------------------------------
-  Nagelkerke R-sq.                                 0.2        0.1        0.3     
-  Deviance                                       404.2      524.4      390.6     
-  AIC                                            412.2      538.4      410.6     
-  N                                              344        398        340       
-=================================================================================</code></pre>
+====================================================================================
+                                                 Model 1     Model 2     Model 3    
+------------------------------------------------------------------------------------
+  (Intercept)                                     1.047***    0.708***    1.316***  
+                                                 (0.184)     (0.210)     (0.268)    
+  Occup. class: Upper white collar/Blue collar   -2.448***               -2.328***  
+                                                 (0.327)                 (0.357)    
+  Occup. class: Other white collar/Blue collar   -1.080***               -1.015**   
+                                                 (0.315)                 (0.323)    
+  Occup. class: Farmer/Blue collar               -0.622                  -0.792*    
+                                                 (0.362)                 (0.383)    
+  Income: under $500/$2000-2999                              -0.708      -0.662     
+                                                             (0.737)     (1.056)    
+  Income: $500-$999/$2000-2999                               -0.238       0.912     
+                                                             (0.607)     (1.143)    
+  Income: $1000-1999/$2000-2999                              -0.115       0.144     
+                                                             (0.343)     (0.440)    
+  Income: $3000-3999/$2000-2999                              -0.807**    -0.527     
+                                                             (0.289)     (0.338)    
+  Income: $4000-4999/$2000-2999                              -0.875*     -0.509     
+                                                             (0.358)     (0.411)    
+  Income: $5000 and over/$2000-2999                          -1.470***   -0.535     
+                                                             (0.337)     (0.405)    
+------------------------------------------------------------------------------------
+  Nagelkerke R-sq.                                0.246       0.085       0.274     
+  Deviance                                      404.190     524.433     390.551     
+  AIC                                           412.190     538.433     410.551     
+  N                                             344         398         340         
+====================================================================================</code></pre>
 <p>The comparison of the pseudo-R-Square values of model 1 and 2 suggests that occupational class has a stronger influence on a preference for Truman than household income. Indeed, if occupational class is taken into account, the effect of income is no longer statistically significant as the column corresponding to model 3 indicates.</p>
 <p>Second, we compare the effect of occupational class and religious denomination on the preference for Truman along the same lines as above. We use <code>mtable</code> to collect the estimates of <code>model1</code>, <code>model4</code>, and <code>model5</code> into a common table.</p>
 <pre class="r"><code>relabel(mtable(
@@ -5855,27 +5855,27 @@ Model 4: glm(formula = (vote3 == &quot;Truman&quot;) ~ relig3, family = &quot;bi
 Model 5: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + relig3, family = &quot;binomial&quot;, 
     data = vote.48)
 
-=================================================================================
-                                                Model 1    Model 4    Model 5    
----------------------------------------------------------------------------------
-  (Intercept)                                   1.047***  -0.213      0.698**    
-                                               (0.184)    (0.126)    (0.216)     
-  Occup. class: Upper white collar/Blue collar -2.448***             -2.385***   
-                                               (0.327)               (0.337)     
-  Occup. class: Other white collar/Blue collar -1.080***             -1.098***   
-                                               (0.315)               (0.326)     
-  Occup. class: Farmer/Blue collar             -0.622                -0.346      
-                                               (0.362)               (0.374)     
-  Religion: Catholic/Protestant                            0.877***   0.685*     
-                                                          (0.243)    (0.292)     
-  Religion: Other,none/Protestant                          0.975**    1.191**    
-                                                          (0.347)    (0.441)     
----------------------------------------------------------------------------------
-  Nagelkerke R-sq.                                 0.2        0.1        0.3     
-  Deviance                                       404.2      537.7      393.1     
-  AIC                                            412.2      543.7      405.1     
-  N                                              344        402        344       
-=================================================================================</code></pre>
+====================================================================================
+                                                 Model 1     Model 4     Model 5    
+------------------------------------------------------------------------------------
+  (Intercept)                                     1.047***   -0.213       0.698**   
+                                                 (0.184)     (0.126)     (0.216)    
+  Occup. class: Upper white collar/Blue collar   -2.448***               -2.385***  
+                                                 (0.327)                 (0.337)    
+  Occup. class: Other white collar/Blue collar   -1.080***               -1.098***  
+                                                 (0.315)                 (0.326)    
+  Occup. class: Farmer/Blue collar               -0.622                  -0.346     
+                                                 (0.362)                 (0.374)    
+  Religion: Catholic/Protestant                               0.877***    0.685*    
+                                                             (0.243)     (0.292)    
+  Religion: Other,none/Protestant                             0.975**     1.191**   
+                                                             (0.347)     (0.441)    
+------------------------------------------------------------------------------------
+  Nagelkerke R-sq.                                0.246       0.060       0.281     
+  Deviance                                      404.190     537.711     393.105     
+  AIC                                           412.190     543.711     405.105     
+  N                                             344         402         344         
+====================================================================================</code></pre>
 <p>A comparison of the pseudo-R-squared values suggests that also the effect of religious denomination is weaker than that of occupational class. However, as the third column in the above table indicates the effect of religious denomination remains statistically significant.</p>
 </div>
 </div>

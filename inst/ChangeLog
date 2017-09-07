@@ -1,7 +1,46 @@
+2071-09-6:
+	 - Lines without contents from 'mtable()' results are now automatically dropped
+   - Added support for additional statitics without standard errors in 'mtable()'
+	 - Improved mtable support for merMod objects (created by package "lme4")
+
+2017-09-03:
+   - Completed list of exported C functions in 'CallMethods'
+   - Removed getSummary support for long obsolete class 'mer'
+   - Adapted getSummary support for class 'merMod'
+   - Removed 'varPar.as.coef' argument from 'getSummary.merMod'
+
+2017-09-02:
+   - Moved basic getSummary methods into specific file
+   - Made excaping of '$', '_', '^' optional when exporting to LaTeX
+   - Adapted getSummary methods contributed by Christopher Lawrence (polr, clm, simex) to new version of 'mtable'
+   - Adapted getSummary methods contributed by Jason W Morgan to new version of 'mtable'
+   - Adapted getSummary methods contributed by Dave Atkins to new version of 'mtable'
+
+2017-09-02:
+   - Adapted getSummary methods contributed by Achim Zeileis (ivreg, tobit, hurdle, zeroinfl,
+     betareg, multinom) to new version of 'mtable'
+
+2017-08-18:
+   - Improved array semantics of 'mtable' objects. Reordering
+     of coefficients should work as expected  after regression introduced
+     by last refactoring.
+   - Standard getsummary methods now report name of dependent variables
+   - 'mtable' now reports dependent variables of single equation models,
+     if they differ (and the 'getSummary' methods support this)
+   - Fixed relabeling of 'mtable' results after regression introduced
+     by last refactoring.
+   - 'mtable' optionally shows dependent variables even if they
+     are the same in all models.
+
+2017-08-16:
+   - Make sure that 'PrettyNames' is always applied when an 'mtable' object is
+     formatted.
+   - Escape TeX active chars '$', '_', '^' in toLatex methods etc.
+
 2017-07-29:
   - Fix refactoring: `c.memisc_mtable` and `[.memisc_mtable` now return objects
     with the correct class attribute.
-  - Make package depend on versio 3.4
+  - Make package depend on R version 3.4
 
 2017-07-13:
   - Fix handling of matrices contained in data frames by `toLatex()`

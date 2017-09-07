@@ -5,7 +5,7 @@ dim.memisc_mtable <- function(x){
 
 dimnames.memisc_mtable <- function(x){
 
-    coln <- names(x)
+    modn <- names(x)
 
     allcompo <- unique(unlist(lapply(x,names)))
     nonparnames <- c("sumstat","contrasts","xlevels","call")
@@ -24,85 +24,109 @@ dimnames.memisc_mtable <- function(x){
         },rown,partypes)
     
     rown <- do.call(c,rown)
+
+    parn <- attr(x,"parameter.names")
+    
+    resp <- unique(unlist(lapply(parms[1,],dimnames3)))
     
     list(
-        rown,
-        coln
+        parn,
+        resp,
+        modn
     )
 }
 
-"[.memisc_mtable" <- function(x, i, j, drop = FALSE){
+safe.charidx <- function(nms,i){
 
+    lnms <- length(nms)
+    if(!length(i))
+        i <- nms
+    else if(is.character(i))
+        i <- i[i %in% nms]
+    else if(is.logical(i))
+        i <- nms[i]
+    else if(is.numeric(i)){
+        i <- i[abs(i) <= lnms]
+        i <- nms[i]
+    }
+    i
+}
+
+"[.memisc_mtable" <- function(x, i, j, k){
+
+    if(nargs() == 2){
+        k <- if(missing(i)) return(x) else i
+        i <- logical(0) 
+        j <- logical(0) 
+    }
+    else if(nargs() == 3){
+        i <- if(missing(i)) logical(0) else i
+        k <- if(missing(j)) logical(0) else j
+        j <- logical(0)
+    }
+    else { #nargs() == 4   
+        i <- if(missing(i)) logical(0) else i
+        j <- if(missing(j)) logical(0) else j
+        k <- if(missing(k)) logical(0) else k
+    }
     
     dn.x <- dimnames(x)
-    rown <- dn.x[[1]]
-    coln <- dn.x[[2]]
-
+    parn <- dn.x[[1]]
+    resp <- dn.x[[2]]
+    modn <- dn.x[[3]]
+        
     allcompo <- unique(unlist(lapply(x,names)))
     nonparnames <- c("sumstat","contrasts","xlevels","call")
     partypes <- setdiff(allcompo,nonparnames)
     
-    nrows <- length(rown)
-    ncols <- length(coln)
-    
-    mdrop <- missing(drop)
-    Narg <- nargs() - (!mdrop)
-    
-    if(Narg<3){
-        
-        if(missing(i)){
-            
-            i <- 1:nrows
-            j <- 1:ncols
-        }
-        else {
-            
-            j <- i
-            i <- 1:nrows
-        }
-    }
-    else {
-        
-        if(missing(i)) i <- 1:nrows
-        if(missing(j)) j <- 1:ncols
-    }
+    nparn <- length(parn)
+    nresp <- length(resp)
+    nmodn <- length(modn)
 
-    if(is.logical(i))
-        i <- unique(rown[i])
-    else if(is.numeric(i)){
-        i <- unique(rown[i])
-    }
-    else if(!is.character(i)){
-        stop("wrong index type ",typeof(i))
-    }
+    i <- safe.charidx(parn,i)
+    j <- safe.charidx(resp,j)
+    k <- safe.charidx(modn,k)
+    kk <- match(k,names(x))
+    
+    y <- unclass(x)[k]
+    attr.y <- attributes(x)
+    attr.y$names <- k
+    attr.y$stemplates <- attr.y$stemplates[kk]
+    attr.y$parameter.names <- i
 
-    if(is.logical(j))
-        j <- which(j)
-    else if(is.character(j)){
-        j <- match(j,names(x))
-    }
-    else if(!is.numeric(j)){
-                stop("wrong index type ",typeof(i))
-    }
+    l.y <- length(y)
+    l.pt <- length(partypes)
+
+    lt <- matrix(0,l.pt,l.y)
     
-    y <- unclass(x)[j]
-    attr.x <- attributes(x)
-    attr.x$names <- attr.x$names[j]
-    attr.x$stemplates <- attr.x$stemplates[j]
-    
-    for(pt in partypes){
-        for(m in 1:length(y)){
+    for(k in 1:l.pt){
+        pt <- partypes[k]
+        for(m in 1:l.y){
             tmp <- y[[m]][[pt]]
             i.tmp <- intersect(i,rownames(tmp))
-            if(length(i.tmp))
-                y[[m]][[pt]] <- tmp[i.tmp,,drop=FALSE]
+            j.tmp <- intersect(j,dimnames3(tmp))
+            if(length(i.tmp) && length(j.tmp))
+                tmp <- tmp[i.tmp,,j.tmp,drop=FALSE]
+            else if(length(i.tmp))
+                tmp <- tmp[i.tmp,,0,drop=FALSE]
+            else if(length(j.tmp))
+                tmp <- tmp[0,,j.tmp,drop=FALSE]
             else
+                tmp <- tmp[0,,0,drop=FALSE]
+            y[[m]][[pt]] <- tmp
+            lt[k,m] <- length(tmp)
+        }
+        if(!any(lt>0)){
+            for(m in 1:l.y)
                 y[[m]][[pt]] <- NULL
         }
     }
-
-    attributes(y) <- attr.x
-    return(structure(y,class="memisc_mtable"))
+    if(all(lt==0))
+        return(NULL)
+    else{
+        attributes(y) <- attr.y
+        return(structure(y,class="memisc_mtable"))
+    }
 }
 
 
@@ -138,6 +162,9 @@ combine_mtables <- function(...){
         model.groups <- NULL
     
     coef.style <- attr(args[[1]],"coef.style")
+
+    parameter.names <- lapply(args,attr,"parameter.names")
+    parameter.names <- unique(unlist(parameter.names))
     
     summary.stats <- lapply(args,get.summary.stats)
     summary.stats <- unique(unlist(summary.stats))
@@ -157,6 +184,7 @@ combine_mtables <- function(...){
 
     structure(res,
             class="memisc_mtable",
+            parameter.names=parameter.names,
             coef.style=coef.style,
             summary.stats=summary.stats,
             signif.symbols=signif.symbols,

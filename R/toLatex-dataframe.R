@@ -32,15 +32,17 @@ toLatex.data.frame <- function(object,
 
   body <- list()
   for(i in 1:m) {
-      if(is.numeric(object[,i]))
-          body.i <- formatC(object[[i]],digits=fdigits[i],format=format[i])
+      object.i <- object[,i]
+      is.na.object.i <- is.na(object.i)
+      if(is.numeric(object.i))
+          body.i <- formatC(object.i,digits=fdigits[i],format=format[i])
       else
-        body.i <- as.character(object[[i]])
-      body.i[is.na(body.i)] <- NAas
+        body.i <- as.character(object.i)
+      body.i[is.na.object.i] <- NAas
       body[[i]] <- format(body.i,justify="right")
   }
   body <- do.call(cbind,body)
-  ans <- sub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
+  ans <- gsub("([eE])([-+]?[0-9]+)","\\\\textrm{\\1}\\2",body)
   
   if(row.names){
     ans <- cbind(format(rownames(object),justify="right"),ans)
@@ -53,7 +55,6 @@ toLatex.data.frame <- function(object,
   if(row.names) header <- paste("&",header)
   header <- paste(header,"\\\\")
 
-
   ans <- apply(ans,1,paste,collapse=" & ")
   ans <- paste(ans,"\\\\")
   ans <- c(
@@ -62,7 +63,10 @@ toLatex.data.frame <- function(object,
       midrule,
       ans,
       bottomrule
-    )
+  )
+  
+  if(getOption("toLatex.escape.tex",TRUE))
+      ans <- LaTeXcape(ans)
 
   body.spec <- rep(factor.colspec,m)
   dd <- integer(m.num)

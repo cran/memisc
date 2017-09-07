@@ -236,6 +236,8 @@ toLatex.ftable_matrix <- function(object,
   ans <- unlist(ans)
   
   ans <- c(toprule,header,midrule,ans,bottomrule)
+  if(getOption("toLatex.escape.tex",TRUE))
+      ans <- LaTeXcape(ans)
   
   tabspec <- mapply(ltfm_mkTabspec,colspec,ii,m,USE.NAMES=FALSE)
   

@@ -1,16 +1,14 @@
 setSummaryTemplate(lmerMod = c("Log-likelihood" = "($logLik:f#)",
                      "Deviance" = "($deviance:f#)",
                      "AIC" = "($AIC:f#)",
-                     "BIC" = "($BIC:f#)",
-                     "N" = "($N:d)"))
+                     "BIC" = "($BIC:f#)"))
 
 setSummaryTemplate(glmerMod = c("Log-likelihood" = "($logLik:f#)",
                                "Deviance" = "($deviance:f#)",
                                "AIC" = "($AIC:f#)",
-                               "BIC" = "($BIC:f#)",
-                               "N" = "($N:d)"))
+                               "BIC" = "($BIC:f#)"))
 
-getSummary.merMod <- function (obj, alpha = 0.05, varPar.as.coef=TRUE, ...) {
+getSummary.merMod <- function (obj, alpha = 0.05, ...) {
 
   smry <- summary(obj)
   coef <- smry$coefficients
@@ -24,10 +22,19 @@ getSummary.merMod <- function (obj, alpha = 0.05, varPar.as.coef=TRUE, ...) {
   else {
     coef <- cbind(coef, lower, upper)
   }
+
+  dn.cf <- list(
+      rownames(coef),
+      c("est","se","stat","p","lwr","upr"),
+      names(obj@frame)[1]
+  )
+  dim(coef) <- c(dim(coef)[1],dim(coef)[2],1)
+  dimnames(coef) <- dn.cf
+    
   varcor <- smry$varcor
 
-  VarPar <- matrix(nrow=0,ncol=ncol(coef))
-  VarPar.rnames <- c()
+  VarPar <- list()
+  VarPar.names <- c()
   
   for(i in seq_along(varcor)){
     vc.i <- varcor[[i]]
@@ -41,21 +48,28 @@ getSummary.merMod <- function (obj, alpha = 0.05, varPar.as.coef=TRUE, ...) {
     cvnames.i <- cvnames.i[lower.tri(cvnames.i)]
     if(length(cvnames.i))
       cvnames.i <- paste0("Cov(~",cvnames.i,"|",lv.i,")")
-    vp.i <- matrix(NA,nrow=length(vr.i)+length(cv.i),ncol=ncol(VarPar))
+    vp.i <- matrix(NA,nrow=length(vr.i)+length(cv.i),ncol=6)
     vp.i[,1] <- c(vr.i,cv.i)
-    VarPar <- rbind(VarPar,vp.i)
-    VarPar.rnames <- c(VarPar.rnames, vrnames.i,cvnames.i)
+    dim(vp.i) <- c(dim(vp.i),1)
+    dimnames(vp.i) <- list(c(vrnames.i,cvnames.i),
+                           c("est","se","stat","p","lwr","upr"),
+                           names(obj@frame)[1])
+    VarPar <- c(VarPar,list(vp.i))
+    VarPar.names <- c(paste0("Var(",lv.i,")"),
+                       VarPar.names)
   }
   if(smry$sigma>1){
-    vp.i <- matrix(NA,nrow=1,ncol=ncol(VarPar))
+    vp.i <- matrix(NA,nrow=1,ncol=6)
     vp.i[1] <- smry$sigma^2
-    VarPar <- rbind(VarPar,vp.i)
-    VarPar.rnames <- c(VarPar.rnames,"Var(residual)")
+    dim(vp.i) <- c(dim(vp.i),1)
+    dimnames(vp.i) <- list("Var(residual)",
+                           c("est","se","stat","p","lwr","upr"),
+                           names(obj@frame)[1])
+    VarPar <- c(list(vp.i),VarPar)
+    VarPar.names <- c("Var(residual)",VarPar.names)
   }
-  
-  colnames(coef) <- colnames(VarPar) <- c("est", "se", "stat", "p", "lwr", "upr")
-  rownames(VarPar) <- format(VarPar.rnames,justify="right")
-  
+  names(VarPar) <- VarPar.names
+    
   ## Factor levels.
   xlevels <- list()
   Contr <- names(attr(model.matrix(obj), "contrasts"))
@@ -71,19 +85,26 @@ getSummary.merMod <- function (obj, alpha = 0.05, varPar.as.coef=TRUE, ...) {
   AIC <- AIC(obj)
   BIC <- BIC(obj)
   
-  N <- nobs(obj)
-  G <- smry$ngrps
-  names(G) <- paste("Groups",names(G),sep=" - ")
-
-  sumstat <- c(logLik = ll, deviance = deviance, AIC = AIC,
-               BIC = BIC, N = N)
+  N <- c(Total=nobs(obj))
+  G <-as.integer(smry$ngrps)
+  names(G) <- names(smry$ngrps)
+  G <- c(N,G)
+    
+  sumstat <- c(logLik = ll,
+               deviance = deviance,
+               AIC = AIC,
+               BIC = BIC)
   ## Return model summary.
   
-  if(varPar.as.coef)
-    coef <- rbind(coef,VarPar)
-  
-  list(coef= coef,
-       sumstat = sumstat, extra.stats= G,
-       contrasts = Contr, ## Reuse 'Contr'
-       xlevels = xlevels, call = obj@call)
+  ans <- list(coef= coef)
+
+  ans <- c(ans,VarPar)
+    
+  ans <- c(ans,       
+           list(Groups = G,
+                sumstat = sumstat,
+                contrasts = Contr, ## Reuse 'Contr'
+                xlevels = xlevels,
+                call = obj@call))
+  return(ans)
 }
