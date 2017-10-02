@@ -1,4 +1,4 @@
-3ac6b63510d59495b4cc7db564d89400 *DESCRIPTION
+cbb624332d7a70612f7ee18cafc8eb80 *DESCRIPTION
 c2e62ac64cc2de409803ba06cf0d36fb *NAMESPACE
 9b29e217e4337944566ac2c2f0fdf772 *R/AllClasses.R
 1e39dc0f5a08e4a4c04076305ae204e6 *R/AllGenerics.R
@@ -85,12 +85,12 @@ c42134c6db42c080bb938f970c40e1db *R/wild-codes.R
 8f66b397e9c0282626740d48382f6b3e *R/yz-getSummary-merMod.R
 f7f21fb4b02096337e9ec35a8935aad9 *R/zzz.R
 dad790736c9edf3608b065b956927e1a *build/vignette.rds
-83af30a7d95a2c2ac35e7e6b0c01b6d8 *inst/ChangeLog
+4339870efd03ae9109f939aaf9dc7fe3 *inst/ChangeLog
 b18f604966876ba0d009512a8764b8ef *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 0a2be7d09b3f12fc2833744f2f6ab3df *inst/doc/anes48.R
 867d53198d1dc706d252a29cf2d7a72b *inst/doc/anes48.Rmd
-8b44e8e0a1c638aa459a125fd25949e3 *inst/doc/anes48.html
+18f9efd3f2bb5d3e66eff69bd2f0a421 *inst/doc/anes48.html
 c73163804df1a5e9d63247e6d6547514 *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 8c732bac669cf1749b9e8928443c6eff *inst/doc/ftable-matrix.html
@@ -98,8 +98,8 @@ af480cd7fbc2c37a3b81ba6fa0b8514b *inst/doc/items.R
 9c5506b1af8526268c66e5d5e9ce24bf *inst/doc/items.Rmd
 b1d645b2b6d0a182d179dd1b67cb4b03 *inst/doc/items.html
 fd3e41a8a05d3624345a4b3a383b2cee *inst/doc/mtable-html.R
-98635f08dfd9b7af55c2a1984591d6c8 *inst/doc/mtable-html.Rmd
-8b01920f07e5eccdd29e293283735963 *inst/doc/mtable-html.html
+9ed220d898ee60aaad2801be7c32135b *inst/doc/mtable-html.Rmd
+a1b766aaaa43b5624b995993d96a9cbf *inst/doc/mtable-html.html
 b99fbb1ab17d8624b63b989a410cdeba *inst/gles/gles2013work.RData
 ba7addf40db7f7ba6de12630e0a78a27 *man/00memisc.Rd
 239cf63ea7099c43accfbdf2ada958ca *man/By.Rd
@@ -161,7 +161,7 @@ f838417d86ebfd1cb5fd7f1c97cb67e7 *src/dumbswap.c
 41d6e6f2ccd7986833313c4a57e82c58 *src/dumbswap.h
 85ee2687d224944df42eec04864972dd *src/init-memisc.c
 44d7573ac5cf2636a280f2ba5f8d9591 *src/memisc-win.def
-ef05f894260e77500468d8fb32526971 *src/memisc.h
+5f1bc92c143bb673f0e58c70fd36b9c6 *src/memisc.h
 399f9f635feaaea60348a7bcb646572d *src/numeric_if_possible.c
 cbfb0e25383013a94754e162049b62eb *src/ord_union.c
 7eaac20473120d8b476b7b7619661736 *src/parsehelpers.c
@@ -174,4 +174,4 @@ abb06acad12a12b01826f1817353cda4 *src/readfixed.c
 867d53198d1dc706d252a29cf2d7a72b *vignettes/anes48.Rmd
 5cb0a874850641fdba4b1119a95c2def *vignettes/ftable-matrix.Rmd
 9c5506b1af8526268c66e5d5e9ce24bf *vignettes/items.Rmd
-98635f08dfd9b7af55c2a1984591d6c8 *vignettes/mtable-html.Rmd
+9ed220d898ee60aaad2801be7c32135b *vignettes/mtable-html.Rmd
