@@ -1,4 +1,4 @@
-fa30f40ac115fbd97251d1df35d20cc7 *DESCRIPTION
+b0f9101104e1bc281bb376564191692b *DESCRIPTION
 c2e62ac64cc2de409803ba06cf0d36fb *NAMESPACE
 9b29e217e4337944566ac2c2f0fdf772 *R/AllClasses.R
 1e39dc0f5a08e4a4c04076305ae204e6 *R/AllGenerics.R
@@ -48,7 +48,7 @@ e58d85cff4b649124ff2d7e356da1720 *R/mtable-format-html.R
 c153f7c6a8dca4999456ffc87c6486e0 *R/mtable-format-print.R
 bf195593d23fcee12d1fcbcf60de78b0 *R/mtable-manip.R
 defbfb8cca792b2552ecbfba5d7d2748 *R/mtable-tools-format.R
-4116796c6d605302e6d92bb4ce935437 *R/mtable.R
+3ba959e28a684dc1d88a066edda01256 *R/mtable.R
 60380a2da6c562eb5037b1147e8ed362 *R/numeric-if-possible.R
 9e6dee040e97644b75700d0de685c290 *R/percent.R
 6828013afb276e37ab699b5f0765dde0 *R/percentages.R
@@ -83,14 +83,14 @@ c42134c6db42c080bb938f970c40e1db *R/wild-codes.R
 89056348cf3c0b709f1bd62a0ff73d78 *R/yy-mtable-ext-DaveAtkins.R
 2037141c519163af41507cd6a11209ad *R/yy-mtable-ext-JasonWMorgan.R
 8f66b397e9c0282626740d48382f6b3e *R/yz-getSummary-merMod.R
-f7f21fb4b02096337e9ec35a8935aad9 *R/zzz.R
+c4b3e0f5daec4decf7781767dd31bfeb *R/zzz.R
 48ddb7feac732061d71fd2c4a26a3d71 *build/vignette.rds
-0e6f7c1f1bb2a592c8ead6c04f344b6e *inst/ChangeLog
+781148a75f2f5e6ef56cf74ac1fac52b *inst/ChangeLog
 6b5c2afb9470cc23a6b7a9a89f2965db *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 0a2be7d09b3f12fc2833744f2f6ab3df *inst/doc/anes48.R
 867d53198d1dc706d252a29cf2d7a72b *inst/doc/anes48.Rmd
-1eb75cea324c2b65634ed2e346064037 *inst/doc/anes48.html
+bd059e8030f0e8b24716fc8356b1e6d8 *inst/doc/anes48.html
 c73163804df1a5e9d63247e6d6547514 *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 8c732bac669cf1749b9e8928443c6eff *inst/doc/ftable-matrix.html
@@ -136,10 +136,10 @@ d0abfdd04596a8d3a78ae18f28e344a8 *man/mtable-format-delim.Rd
 90f7b0149c9576c2536c366eec47677e *man/mtable-format-html.Rd
 996622f70eea8335d41392e46817a55c *man/mtable-format-latex.Rd
 c02d5f6e9b356207fc2c7e62242c9e8e *man/mtable-format-print.Rd
-61a7b7e826e68d8e6336a936f14ca0ef *man/mtable.Rd
+5f7af11b5ad0a9ec01864067b2b10efe *man/mtable.Rd
 6b3646e6451f8fea78e2c865726d00d5 *man/nin.Rd
 63b79a6025d23a0981fbad725bda0b37 *man/percent.Rd
-9211c96b0620a7710f10496ee81a89a2 *man/percentages.Rd
+cb824194955e7bdd07acfe7e1729f09b *man/percentages.Rd
 1d81dcb68024e805f09b8eb9a85e9f35 *man/query.Rd
 2ab493f7f2d330f677e59dca71addfcf *man/recode.Rd
 631be12e3a9026f96b5417d08efe1a08 *man/relabel.Rd
@@ -166,7 +166,7 @@ f838417d86ebfd1cb5fd7f1c97cb67e7 *src/dumbswap.c
 cbfb0e25383013a94754e162049b62eb *src/ord_union.c
 7eaac20473120d8b476b7b7619661736 *src/parsehelpers.c
 11c196ed14f5e3f42c329e6d9c0450fe *src/pspp-portableStream-for-R.c
-dded2dcd5a24cff7188fe499c0f83ab7 *src/pspp-system-for-R.c
+ccc5a105180896f7a5e35d2568e563ef *src/pspp-system-for-R.c
 c3bfcf2d3c05c2188de4c40c1c507bfe *src/readfixed.c
 996e3421b2d4ab4c68021ca75faac530 *src/rofile.c
 03da5a3346e76f2ba5d692c370eb60a9 *src/rofile.h
