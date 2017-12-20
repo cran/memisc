@@ -4,7 +4,8 @@
 #include <Rmath.h>
 #include <stdio.h>
 #include <Rinternals.h>
-
+#include <Rversion.h>
+#include <R_ext/Rdynload.h>
 
 FILE *get_FILE(SEXP);
 void trim (char *, int);
@@ -91,7 +92,6 @@ SEXP dta_fseek (SEXP s_file, SEXP s_pos, SEXP s_whence);
 SEXP dta_feof (SEXP s_file);
 SEXP dta_skip_records(SEXP s_dta_file, SEXP s_n);
 SEXP ord_union(SEXP x, SEXP y);
-
 
 
 static const R_CallMethodDef CallMethods[]  = {
