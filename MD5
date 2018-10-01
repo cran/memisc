@@ -1,4 +1,4 @@
-9f171f168c5c8387cb20f22e024f6489 *DESCRIPTION
+b79013ae95df415e0f1dfdc2b9431543 *DESCRIPTION
 a94af9cbc304665cae64241b7a13e783 *NAMESPACE
 d60cf6f53cb04ec1d36d8c0fa0cb7ccd *R/AllClasses.R
 1e39dc0f5a08e4a4c04076305ae204e6 *R/AllGenerics.R
@@ -63,7 +63,7 @@ e15d149a335cfaa3db86fbc1dc3f833a *R/sample_methods.R
 51107e011bf37bef17c445bde6e82dc3 *R/simplifyTypes.R
 cc855a2aec7ed0e7a1063b42f5f1bd77 *R/sort.R
 a0690123b4323000763b29e248578c19 *R/spss-portable-methods.R
-e507e13901eaa0bea37e5931d0588422 *R/spss-syntax-methods.R
+e17697f5ebcac1548f6cf3e1d5f6fd14 *R/spss-syntax-methods.R
 6dcab3d5395b6439ef28b07f56544054 *R/spss-sysfile-methods.R
 ac2f8ab155a2d79722ab2192a13b86e5 *R/stata-methods.R
 e60ad4a01045549d913be17c42ac5ae3 *R/to-things.R
@@ -85,12 +85,12 @@ c42134c6db42c080bb938f970c40e1db *R/wild-codes.R
 8f66b397e9c0282626740d48382f6b3e *R/yz-getSummary-merMod.R
 c4b3e0f5daec4decf7781767dd31bfeb *R/zzz.R
 2880e5235988b7777fc35f954ec4c83e *build/vignette.rds
-2a95d44ceb5fd3d24edfa9d128d42724 *inst/ChangeLog
-e4030f17b5a70696907c4c2bd4d67144 *inst/NEWS.Rd
+b362831008062a961f6c1625826e128c *inst/ChangeLog
+2318a2cd73f4eed0af606f73a28a2e91 *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 0a2be7d09b3f12fc2833744f2f6ab3df *inst/doc/anes48.R
 867d53198d1dc706d252a29cf2d7a72b *inst/doc/anes48.Rmd
-1f73c7cce67bca1659e487583544f9cc *inst/doc/anes48.html
+8878e820b6c605b7962568d9111f32c5 *inst/doc/anes48.html
 c73163804df1a5e9d63247e6d6547514 *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 66ae200c0a8e93c66b314c5280f997de *inst/doc/ftable-matrix.html
@@ -161,13 +161,13 @@ f838417d86ebfd1cb5fd7f1c97cb67e7 *src/dumbswap.c
 41d6e6f2ccd7986833313c4a57e82c58 *src/dumbswap.h
 22c2dbaeb5e9f83d719e352016fb3db6 *src/init-memisc.c
 44d7573ac5cf2636a280f2ba5f8d9591 *src/memisc-win.def
-09a37c1b1d026ffee843c33add0b68e3 *src/memisc.h
+cb048fc7d242444ae2a19ace55920245 *src/memisc.h
 399f9f635feaaea60348a7bcb646572d *src/numeric_if_possible.c
 cbfb0e25383013a94754e162049b62eb *src/ord_union.c
 fff665b0f3e674c4425366244e6acd21 *src/parsehelpers.c
 11c196ed14f5e3f42c329e6d9c0450fe *src/pspp-portableStream-for-R.c
 ccc5a105180896f7a5e35d2568e563ef *src/pspp-system-for-R.c
-c3bfcf2d3c05c2188de4c40c1c507bfe *src/readfixed.c
+89f2ee6c29399c237dc4ced80e0841ec *src/readfixed.c
 996e3421b2d4ab4c68021ca75faac530 *src/rofile.c
 03da5a3346e76f2ba5d692c370eb60a9 *src/rofile.h
 8acf5f2547d2fa84eec70a1a1ac10168 *src/update_data_frame.c
