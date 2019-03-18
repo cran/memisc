@@ -1,8 +1,8 @@
 Package: memisc
 Type: Package
 Title: Management of Survey Data and Presentation of Analysis Results
-Version: 0.99.14.12
-Date: 2018-09-30
+Version: 0.99.17.1
+Date: 2019-03-17
 Author: Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, Jason W. Morgan, Achim Zeileis)
 Maintainer: Martin Elff <memisc@elff.eu>
 Description: An infrastructure for the management of survey data including
@@ -23,6 +23,6 @@ URL:
         http://www.elff.eu/software/memisc/,http://github.com/melff/memisc/
 BugReports: http://github.com/melff/memisc/issues
 NeedsCompilation: yes
-Packaged: 2018-09-30 23:41:57 UTC; elff
+Packaged: 2019-03-17 23:35:44 UTC; elff
 Repository: CRAN
-Date/Publication: 2018-10-01 19:50:02 UTC
+Date/Publication: 2019-03-18 14:40:03 UTC

@@ -149,8 +149,13 @@ setMethod("subset","importer",
         nl <- as.list(1:nvars)
         names(nl) <- names
         cols <- logical(nvars)
-        cols[eval(substitute(select), nl, parent.frame())] <- TRUE
-        select.vars <- sapply(substitute(select)[-1],as.character)
+        if (class(substitute(select)) == 'call') {
+            cols[eval(substitute(select), nl, parent.frame())] <- TRUE
+            select.vars <- sapply(substitute(select)[-1],as.character)
+        } else { # As suggested by Diogo Ferrari (https://dioferrari.com/)
+            select.vars <- select
+            cols[which(names(nl) %in% select.vars )] <- TRUE
+        }
 
     }
     if(nobs < cs) cs <- nobs
@@ -216,9 +221,22 @@ setMethod("subset","importer",
 })
 
 
+setMethod("$",signature(x="importer"),
+function(x,name){
+  x[name]              
+})
+
+setMethod("[[",signature(x="importer"),
+function(x,i,...){
+  x[i]         
+})
+
+
 setMethod("description","importer",function(x){
-  res <- lapply(x,description)
-  structure(res,class="descriptions")
+    res <- lapply(structure(x@.Data,
+                            names=x@names),
+                  description)
+    structure(res,class="descriptions")
 })
 
 setMethod("codebook","importer",function(x){
@@ -228,7 +246,9 @@ setMethod("codebook","importer",function(x){
   m <- nobs %/% cs
   r <- nobs %% cs
   nvar <- ncol(x)
-  res <- lapply(x,initcodebookEntry)
+  res <- lapply(structure(x@.Data,
+                          names=x@names),
+                initcodebookEntry)
   seekData(x)
   for(i in 1:m)
     res <- mapply(updatecodebookEntry,res,readData(x,n=cs))
@@ -238,34 +258,40 @@ setMethod("codebook","importer",function(x){
   new("codebook",res)
 })
 
+# initcodebookEntry <- function(x){
+#   annotation <- annotation(x)
+#   filter <- x@value.filter
+#   spec <- c(
+#     "Storage mode:"=storage.mode(x),
+#     "Measurement:"=measurement(x)
+#   )
+#   if(length(filter)) spec <- c(spec,
+#                                switch(class(filter),
+#                                       missing.values = c("Missing values:" = format(filter)),
+#                                       valid.values   = c("Valid values:"   = format(filter)),
+#                                       valid.range    = c("Valid range:"    = format(filter))
+#                                ))
+#   new("codebookEntry",
+#       spec = spec,
+#       stats = list(),
+#       annotation = annotation
+#   )
+# }
+
 initcodebookEntry <- function(x){
-  annotation <- annotation(x)
-  filter <- x@value.filter
-  spec <- c(
-    "Storage mode:"=storage.mode(x),
-    "Measurement:"=measurement(x)
-  )
-  if(length(filter)) spec <- c(spec,
-                               switch(class(filter),
-                                      missing.values = c("Missing values:" = format(filter)),
-                                      valid.values   = c("Valid values:"   = format(filter)),
-                                      valid.range    = c("Valid range:"    = format(filter))
-                               ))
-  new("codebookEntry",
-      spec = spec,
-      stats = list(),
-      annotation = annotation
-  )
+    codebookEntry(x)
 }
+
 
 updatecodebookEntry <- function(cbe,x){
   res <- if(cbe@spec["Storage mode:"] == "character")
     updatecodebookStatsChar(cbe,x)
   else switch(cbe@spec["Measurement:"],
     nominal=,ordinal=updatecodebookStatsCateg(cbe,x),
-    interval=,ratio=updatecodebookStatsMetric(cbe,x)
+    interval=,ratio=updatecodebookStatsMetric(cbe,x),
+    `Date/time`=updatecodebookStatsDatetime(cbe,x)
   )
-  if(!length(res)) browser()
+  #if(!length(res)) browser()
   res
 }
 
@@ -338,6 +364,23 @@ updatecodebookStatsMetric <- function(cbe,x){
   cbe
 }
 
+updatecodebookStatsDatetime <- function(cbe,x){
+  stats <- cbe@stats
+  miss <- is.missing(x)
+  NAs <- is.na(x@.Data)
+  x <- x@.Data[!miss & !NAs]
+  NAs <- sum(NAs)
+  miss <- sum(miss,na.rm=TRUE)
+  if(length(x)){
+    stats$range <- if(length(stats$range)) range(stats$range,range(x))
+                else range(x)
+  }
+  stats$missings <- if(length(stats$missings)) stats$missings + c(miss,NAs)
+                    else c(miss,NAs)
+  cbe@stats <- stats
+  cbe
+}
+
 
 updatecodebookStatsChar <- function(cbe,x){
   stats <- cbe@stats
@@ -366,7 +409,8 @@ fixupcodebookEntry <- function(cbe){
     fixupcodebookEntryChar(cbe)
   else switch(cbe@spec["Measurement:"],
     nominal=,ordinal=fixupcodebookEntryCateg(cbe),
-    interval=,ratio=fixupcodebookEntryMetric(cbe)
+    interval=,ratio=fixupcodebookEntryMetric(cbe),
+    `Date/time`=fixupcodebookEntryDatetime(cbe)
   )
 }
 
@@ -416,6 +460,28 @@ fixupcodebookEntryMetric <- function(cbe){
   cbe@stats <- list(tab=tab,descr=descr)
   cbe
 }
+
+fixupcodebookEntryDatetime <- function(cbe){
+
+  miss <- cbe@stats$missings[1]
+  NAs <- cbe@stats$missings[2]
+  Min <- cbe@stats$range[1]
+  Max <- cbe@stats$range[2]
+
+  origin <- unname(cbe@spec["Origin:"])
+    
+  descr <- c(
+            Min=format(as.POSIXct(Min,origin=origin)),
+            Max=format(as.POSIXct(Max,origin=origin)),
+            Miss.= if(miss) format(miss) else 0,
+            NAs= if(NAs) format(NAs) else 0
+            )
+
+  cbe@stats <- list(descr=format(descr))
+  cbe
+}
+
+
 
 fixupcodebookEntryChar <- function(cbe){
   tab <- cbe@stats$tab

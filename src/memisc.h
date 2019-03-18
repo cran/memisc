@@ -21,11 +21,11 @@ SEXP read_sysfile_chunk (SEXP SysFile, SEXP what,
 SEXP read_sysfile_slice(SEXP SysFile, SEXP what,
                           SEXP s_vars, SEXP s_cases, SEXP s_types);
 SEXP check_pointer(SEXP ptr);
-SEXP restore_sysfile(SEXP SysFile);
 SEXP read_sysfile_header(SEXP SysFile);
 SEXP read_sysfile_var(SEXP SysFile);
 SEXP test_sysfile_int32(SEXP SysFile);
 SEXP read_sysfile_value_labels (SEXP SysFile);
+SEXP num_to_string8(SEXP num_values);
 SEXP read_sysfile_document(SEXP SysFile);
 SEXP read_sysfile_aux(SEXP SysFile);
 SEXP read_sysfile_dict_term (SEXP SysFile);
@@ -94,7 +94,6 @@ SEXP dta_ftell (SEXP s_file);
 SEXP dta_fseek (SEXP s_file, SEXP s_pos, SEXP s_whence);
 SEXP dta_feof (SEXP s_file);
 SEXP dta_skip_records(SEXP s_dta_file, SEXP s_n);
-SEXP ord_union(SEXP x, SEXP y);
 
 
 static const R_CallMethodDef CallMethods[]  = {
@@ -105,11 +104,11 @@ static const R_CallMethodDef CallMethods[]  = {
   {"read_sysfile_chunk", (DL_FUNC) &read_sysfile_chunk, 5},
   {"read_sysfile_slice", (DL_FUNC) &read_sysfile_slice, 5},
   {"check_pointer", (DL_FUNC) &check_pointer, 1},
-  {"restore_sysfile", (DL_FUNC) &restore_sysfile, 1},
 	{"read_sysfile_header", (DL_FUNC) &read_sysfile_header, 1},
 	{"read_sysfile_var", (DL_FUNC) &read_sysfile_var, 1},
 	{"test_sysfile_int32", (DL_FUNC) &test_sysfile_int32, 1},
 	{"read_sysfile_value_labels", (DL_FUNC) &read_sysfile_value_labels, 1},
+	{"num_to_string8", (DL_FUNC) &num_to_string8, 1},
 	{"read_sysfile_document", (DL_FUNC) &read_sysfile_document, 1},
 	{"read_sysfile_aux", (DL_FUNC) &read_sysfile_aux, 1},
 	{"read_sysfile_dict_term", (DL_FUNC) &read_sysfile_dict_term, 1},
@@ -159,6 +158,5 @@ static const R_CallMethodDef CallMethods[]  = {
 	{"dta_fseek", (DL_FUNC) &dta_fseek, 3},
 	{"dta_feof", (DL_FUNC) &dta_feof, 1},
 	{"dta_skip_records", (DL_FUNC) &dta_skip_records, 2},
-	{"ord_union", (DL_FUNC) &ord_union, 2},
   {NULL, NULL, 0}
 };

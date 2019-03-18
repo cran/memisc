@@ -26,6 +26,9 @@ spss.system.file <- function(
                         ans
                       })
     vallabs <- unlist(vallab.tmp,recursive=FALSE)
+    names.vallabs <- names(vallabs)
+    string.vallabs <- types[names.vallabs] > 0
+    vallabs[string.vallabs] <- lapply(vallabs[string.vallabs],spss.string.vallabs)
     
     missings <- mapply(function(v,r)list(values=v,range=r),
                           data.spec$missings$values,
@@ -37,12 +40,20 @@ spss.system.file <- function(
                           
     missings <- lapply(missings,function(x)if(!length(x$values) & !length(x$range))NULL else x)
     missings <- missings[sapply(missings,length)>0]
+
+    varprintfmt <- lapply(data.spec$variables,"[[",i="print")
+    varprintfmt <- sapply(varprintfmt,"[",i=3)
+    vardatetime <- varprintfmt %in% c(20,22:24,26:30,38,39)
     
     variables <- vector(length(types),mode="list")
     names(variables) <- names(types)
     variables[types==0] <- list(new("double.item"))
     variables[types>0] <- list(new("character.item"))
     variables[types<0] <- NULL
+
+    variables[vardatetime] <- list(new("datetime.item",
+                                       tzone="GMT",
+                                       origin="1582-10-14"))
 
     if(length(varlab.file) && check.file(varlab.file,error=TRUE)){
       message("using ",varlab.file)
@@ -60,7 +71,7 @@ spss.system.file <- function(
     if(length(varlabs))
       variables[names(varlabs)] <- mapply("description<-",variables[names(varlabs)],varlabs)
     if(length(vallabs))
-      variables[names(vallabs)] <- mapply("labels<-",variables[names(vallabs)],vallabs)
+      suppressWarnings(variables[names(vallabs)] <- mapply("labels<-",variables[names(vallabs)],vallabs))
     if(length(missings))
       variables[names(missings)] <- mapply("missing.values<-",variables[names(missings)],missings)
 
@@ -82,6 +93,7 @@ spss.system.file <- function(
       names(variables) <- tolower(names(variables))
     }
     
+    warn_if_duplicate_labels(variables)
     
     new("spss.system.importer",
       variables,
@@ -173,11 +185,3 @@ setMethod("show","spss.system.importer",
     if(length(missval.file)) cat("\twith missing value definitions from file",sQuote(missval.file),"\n")
 })
 
-# restore_sysfile_pointer <- function(ptr){
-#     file.name <- attr(ptr,"file.name")
-#     ptr.attr <- attributes(ptr)
-#     ptr <- .Call("NewSysFile",file.name)
-#     attributes(ptr) <- ptr.attr
-#     warning("restoring ",sQuote(file.name))
-#     .Call("restore_sysfile",ptr)
-# }

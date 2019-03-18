@@ -14,7 +14,9 @@ mtable_format_latex <- function(x,
           sdigits=min(1,ddigits),
           compact=FALSE,
           sumry.multicol=FALSE,
-          toLatex.escape.tex=getOption("toLatex.escape.tex",FALSE),
+          escape.tex=getOption("toLatex.escape.tex",FALSE),
+          signif.notes.type=getOption("toLatex.signif.notes.type","append"),
+          signif.notes.spec=getOption("toLatex.signif.notes.spec","p{.35\\linewidth}"),
           ...)
     pf_mtable_format_latex(preformat_mtable(x),
           useDcolumn=useDcolumn,
@@ -30,7 +32,9 @@ mtable_format_latex <- function(x,
           sdigits=sdigits,
           compact=compact,
           sumry.multicol=sumry.multicol,
-          toLatex.escape.tex=toLatex.escape.tex,
+          escape.tex=escape.tex,
+          signif.notes.type=signif.notes.type,
+          signif.notes.spec=signif.notes.spec,
           ...)
 
 
@@ -50,10 +54,15 @@ pf_mtable_format_latex <- function(x,
           sdigits=min(1,ddigits),
           compact=FALSE,
           sumry.multicol=FALSE,
-          toLatex.escape.tex=getOption("toLatex.escape.tex",FALSE),
+          escape.tex=getOption("toLatex.escape.tex",FALSE),
+          signif.notes.type=getOption("toLatex.signif.notes.type","append"),
+          signif.notes.spec=getOption("toLatex.signif.notes.spec","p{.35\\linewidth}"),
           ...
           ){
 
+    signif.notes.type <- match.arg(signif.notes.type,
+                                           c("append","include","tnotes"))
+    
     colsep <- " & "
     rowsep <- "\n"
     tabcr <- "\\\\"
@@ -110,8 +119,10 @@ pf_mtable_format_latex <- function(x,
                 sh.ij <- set_length(sh.ij,ncol.j/span.j)
                 sh.ij <- if(span.j==1 && !nzchar(sh.ij)) ""
                          else paste0("\n\\multicolumn{",span.j,"}{c}{",sh.ij,"}")
-                if(toLatex.escape.tex)
+                if(escape.tex)
                     sh.ij <- LaTeXcape(sh.ij)
+                else
+                    checkLaTeXcape(sh.ij,"group headings")
                 pt.ij <- rbind(sh.ij,pt.ij)
             }
             pt.ij <- apply(pt.ij,1,paste,collapse=colsep)
@@ -155,8 +166,10 @@ pf_mtable_format_latex <- function(x,
         leaders <- lapply(leaders,ldxp)
         leaders <- do.call(rbind,leaders)
         leaders <- gsub(" x ",interaction.sep,leaders,fixed=TRUE)
-        if(toLatex.escape.tex)
+        if(escape.tex)
             leaders <- LaTeXcape(leaders)
+        else
+            checkLaTeXcape(leaders,"row leaders")
         leaders <- format(leaders,justify="left")
         res <- cbind(leaders,res)
     }
@@ -189,8 +202,10 @@ pf_mtable_format_latex <- function(x,
         for(k in 1:l.headers){
 
             header.k <- unlist(headers[[k]])
-            if(toLatex.escape.tex)
+            if(escape.tex)
                 header.k <- LaTeXcape(header.k)
+            else
+                checkLaTeXcape(header.k,"column headings")
             hspan.k <- hspan[[k]]
             ghspan.k <- (ghspan[[k]]-1)*multip
             hspan.k <- hspan.k + ghspan.k 
@@ -249,7 +264,7 @@ pf_mtable_format_latex <- function(x,
         sectsep.at <- c(sectsep.at, csum)
         csum <- csum + nrow(pt[[i,1]])
     }
-    if(length(sst)){
+    if(length(sst) && any(sapply(sst,length)>0)){
         sectseps   <- c(sectseps,   sectionrule)
         sectsep.at <- c(sectsep.at, csum)
     }
@@ -264,7 +279,7 @@ pf_mtable_format_latex <- function(x,
         res <- .insert(res,hi.rules.at,hi.rules)
     }
     res <- c(toprule,res,bottomrule)
-
+    
     tab.spec <- character()
     
     if(l.leaders)
@@ -272,18 +287,56 @@ pf_mtable_format_latex <- function(x,
     for(j in 1:ncol(pt)){
         if(!compact) tab.spec <- c(tab.spec,"c")
         ncol.j <- ncol(pt[[1,j]])
-        tab.spec <- c(tab.spec,paste(rep(colspec,ncol.j),collapse=""))
+        tab.spec <- c(tab.spec,rep(colspec,ncol.j))
     }
+
+    total.ncol <- length(tab.spec)
     tab.spec <- paste(tab.spec,collapse="")
+
+    signif.symbols <- x$signif.symbols
+    if(length(signif.symbols)){
+        signif.template <- getOption("signif.symbol.toLatex.template",
+                                     signif.symbol.toLatex.default.template)
+        signif.symbols <- format_signif_print(signif.symbols,
+                                              signif.template,
+                                              width=nchar(bottomrule))
+        if(signif.notes.type=="include"){
+            signif.symbols <- paste0("\\multicolumn{",total.ncol,"}{",
+                                     signif.notes.spec,"}{",
+                                     paste0(signif.symbols,collapse="\n"),
+                                 "}\\\\")
+            res <- c(res, signif.symbols)
+        }
+    }
     
     tabbegin <- paste("\\begin{tabular}{",tab.spec,"}",sep="")
     tabend <- "\\end{tabular}"
 
     res <- c(tabbegin,res,tabend)
+    if(length(signif.symbols)){
+        if(signif.notes.type=="append"){
+            signif.symbols <- paste0(signif.symbols,collapse="\n")
+            res <- c(res,signif.symbols)
+        }
+        else if(signif.notes.type=="tnotes"){
+            signif.symbols <- c(
+                "\\begin{tablenotes}",
+                paste0(c("\\item",signif.symbols),collapse="\n"),
+                "\\end{tablenotes}"
+            )
+            res <- c(
+                "\\begin{threeparttable}",
+                res,
+                signif.symbols,
+                "\\end{threeparttable}"
+                )
+        }
+    }
     
     return(res)
     
 }
 
 
+signif.symbol.toLatex.default.template <- c("Significance: ","$$sym \\equiv p < $val$","; ")
 

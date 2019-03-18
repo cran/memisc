@@ -582,7 +582,24 @@ SEXP read_sysfile_value_labels (SEXP SysFile){
   return ans;
 }
 
-
+#define DEBUG
+SEXP num_to_string8(SEXP num_values){
+  char tmp_char[9];
+  int nlabels = length(num_values);
+  R_flt64 tmp_real;
+  int i;
+  SEXP ans;
+  PROTECT(ans = allocVector(STRSXP,nlabels));
+  memset(tmp_char,0,9);
+  for(i = 0; i < nlabels; i++){
+    tmp_real = REAL(num_values)[i];
+    memcpy(tmp_char,&tmp_real,8);
+    SET_STRING_ELT(ans,i,mkChar(tmp_char));
+  }
+  UNPROTECT(1);
+  return ans;
+}
+#undef DEBUG
 
 SEXP read_sysfile_document(SEXP SysFile){
 #ifdef DEBUG
@@ -747,13 +764,13 @@ SEXP read_sysfile_aux(SEXP SysFile){
       };
       PROTECT(auxdata = allocVector(INTSXP,3));
       PROTECT(auxnames = allocVector(STRSXP,3));
-      protectcounter+=2;
       for(j = 0; j < 3; j++){
         sys_read_int(INTEGER(auxdata)+j,s);
         SET_STRING_ELT(auxnames,j,mkChar(_auxnames[j]));
       }
       SET_NAMES(auxdata,auxnames);
       SET_VECTOR_ELT(data,i,auxdata);
+      UNPROTECT(2);
     }
     SET_VECTOR_ELT(ans,1,data);
     SET_STRING_ELT(names,1,mkChar("data"));
@@ -1225,30 +1242,6 @@ SEXP check_pointer(SEXP ptr){
   if(!R_ExternalPtrAddr(ptr))  return ScalarLogical(0);
   return ScalarLogical(1);
 }
-
-SEXP restore_sysfile(SEXP SysFile){
-    PROTECT(SysFile);
-    if(TYPEOF(SysFile) != EXTPTRSXP || R_ExternalPtrTag(SysFile) != install("sys_file"))
-      error("not a SysFile");
-    sys_file *s = R_ExternalPtrAddr(SysFile);
-    SEXP tmp;
-    tmp = sys_file_restore_from_attrib(SysFile,s,"bias");
-    s->bias = (R_flt64) asReal(tmp);
-    tmp = sys_file_restore_from_attrib(SysFile,s,"swap_code");
-    s->swap_code = asInteger(tmp);
-    tmp = sys_file_restore_from_attrib(SysFile,s,"case_size");
-    s->case_size = asInteger(tmp);
-    tmp = sys_file_restore_from_attrib(SysFile,s,"data_pos");
-    s->data_pos = asInteger(tmp);
-    tmp = sys_file_restore_from_attrib(SysFile,s,"sysmis");
-    s->sysmis = (R_flt64) asReal(tmp);
-    tmp = sys_file_restore_from_attrib(SysFile,s,"compressed");
-    s->compressed = asInteger(tmp);
-    s->buf = Calloc(s->case_size,R_flt64);
-    UNPROTECT(1);
-    return SysFile;
-}
-
 
 #define FPREP_IEEE754 754
 #define FPREP FPREP_IEEE754

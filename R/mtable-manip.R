@@ -92,6 +92,7 @@ safe.charidx <- function(nms,i){
     attr.y <- attributes(x)
     attr.y$names <- k
     attr.y$stemplates <- attr.y$stemplates[kk]
+    attr.y$summary.stats <- attr.y$summary.stats[kk]
     attr.y$parameter.names <- i
 
     l.y <- length(y)
@@ -167,7 +168,7 @@ combine_mtables <- function(...){
     parameter.names <- unique(unlist(parameter.names))
     
     summary.stats <- lapply(args,get.summary.stats)
-    summary.stats <- unique(unlist(summary.stats))
+    summary.stats <- unlist(summary.stats,recursive=FALSE)
 
     signif.symbols <- attr(args[[1]],"signif.symbols")       
     factor.style <- attr(args[[1]],"factor.style")
@@ -178,7 +179,7 @@ combine_mtables <- function(...){
     stemplates <- do.call(c,lapply(args,attr,"stemplates"))
     sdigits <- attr(args[[1]],"sdigits")
     show.eqnames <- attr(args[[1]],"show.eqnames")
-
+    
     args <- lapply(args,unclass)
 
     res <- do.call(c,args)

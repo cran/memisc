@@ -160,39 +160,12 @@ nes1948.por &lt;- unzip(system.file(&quot;anes/NES1948.ZIP&quot;,package=&quot;m
                      &quot;NES1948.POR&quot;,exdir=tempfile())</code></pre>
 <p>Now the portable file is in a temporary directory and the path to the file is contained in the string variable <code>nes1948.por</code>. In the next step, the file is declared as a SPSS/PSPP portable file using the function <code>spss.portable.file</code>, which as first argument takes the path to the file. <code>spss.portable.file</code> reads in the information about the variables contained in the data set and counts the number of cases in the file. That is, standard I/O operations are used on the file, but the data read in are just thrown away without allocating core memory for the data. This counting of cases can, of course, be suppressed if it would take too long.</p>
 <pre class="r"><code>nes1948 &lt;- spss.portable.file(nes1948.por)</code></pre>
-<pre><code>Warning: Duplicate labels 'NAME NOT KNOWN'</code></pre>
-<pre><code>Warning: Duplicate labels 'HAVE HEARD OF TAFT-HARTLEY ACT'</code></pre>
-<pre><code>Warning: Duplicate labels 'DID NOT CONSIDER ANYONE ELSE' 'CONSIDERED
-WALLACE' 'CONSIDERED OTHER' 'NA' 'CONSIDERED TRUMAN'</code></pre>
-<pre><code>Warning: Duplicate labels 'DISAGREED WITH PLATFORM OR POLICY - TO'
-
-Warning: Duplicate labels 'DISAGREED WITH PLATFORM OR POLICY - TO'</code></pre>
-<pre><code>Warning: Duplicate labels 'RENT CONTROL' 'PRICE CONTROL' 'TAFT-HARTLEY'
-'FARM PRICES AND SUPPORT' 'LOWER INCOME TAX' 'CIVIL RIGHTS' 'BALANCE
-BUDGET' '(GOVERNMENT) HOUSING' 'DEFENSE ACTIVITY' 'GOVERNMENT ATOMIC
-CONTROL' 'NEW DEAL' 'MARSHALL PLAN' 'FIRM RUSSIAN POLICY' 'HELP ISRAEL
-(PALESTINE)' 'PROMOTE PEACE'
-
-Warning: Duplicate labels 'RENT CONTROL' 'PRICE CONTROL' 'TAFT-HARTLEY'
-'FARM PRICES AND SUPPORT' 'LOWER INCOME TAX' 'CIVIL RIGHTS' 'BALANCE
-BUDGET' '(GOVERNMENT) HOUSING' 'DEFENSE ACTIVITY' 'GOVERNMENT ATOMIC
-CONTROL' 'NEW DEAL' 'MARSHALL PLAN' 'FIRM RUSSIAN POLICY' 'HELP ISRAEL
-(PALESTINE)' 'PROMOTE PEACE'
-
-Warning: Duplicate labels 'RENT CONTROL' 'PRICE CONTROL' 'TAFT-HARTLEY'
-'FARM PRICES AND SUPPORT' 'LOWER INCOME TAX' 'CIVIL RIGHTS' 'BALANCE
-BUDGET' '(GOVERNMENT) HOUSING' 'DEFENSE ACTIVITY' 'GOVERNMENT ATOMIC
-CONTROL' 'NEW DEAL' 'MARSHALL PLAN' 'FIRM RUSSIAN POLICY' 'HELP ISRAEL
-(PALESTINE)' 'PROMOTE PEACE'
-
-Warning: Duplicate labels 'RENT CONTROL' 'PRICE CONTROL' 'TAFT-HARTLEY'
-'FARM PRICES AND SUPPORT' 'LOWER INCOME TAX' 'CIVIL RIGHTS' 'BALANCE
-BUDGET' '(GOVERNMENT) HOUSING' 'DEFENSE ACTIVITY' 'GOVERNMENT ATOMIC
-CONTROL' 'NEW DEAL' 'MARSHALL PLAN' 'FIRM RUSSIAN POLICY' 'HELP ISRAEL
-(PALESTINE)' 'PROMOTE PEACE'</code></pre>
+<pre><code>Warning: 9 variables have duplicated labels:
+  v480004, v480012, v480020, v480021a, v480021b, v480033a,
+  v480033b, v480034a, v480034b</code></pre>
 <pre class="r"><code>print(nes1948)</code></pre>
 <pre><code>
-SPSS portable file '/tmp/RtmpDaQ7Za/file731548013b73/NES1948.POR' 
+SPSS portable file '/tmp/RtmpnBiuaE/file72c83972ee35/NES1948.POR' 
     with 67 variables and 662 observations</code></pre>
 <p>At this stage, the data are not loaded into the memory yet. But we can see which variables exist inside the data set:</p>
 <pre class="r"><code>names(nes1948)</code></pre>
@@ -5786,7 +5759,8 @@ model3: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + total.income, fam
   Deviance                                 404.190     524.433     390.551     
   AIC                                      412.190     538.433     410.551     
   N                                        344         398         340         
-===============================================================================</code></pre>
+===============================================================================
+  Significance: *** = p &lt; 0.001; ** = p &lt; 0.01; * = p &lt; 0.05  </code></pre>
 <p><code>mtable</code> returns an object of class <code>&quot;mtable&quot;</code>. When formatted it looks close to the requirements of typical social science publications. Yet at least we want to change the technical variable names into non-technical ones, for which we can use <code>relabel</code>:</p>
 <pre class="r"><code>relabel(mtable(
             &quot;Model 1&quot;=model1,
@@ -5836,7 +5810,8 @@ Model 3: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + total.income, fa
   Deviance                                      404.190     524.433     390.551     
   AIC                                           412.190     538.433     410.551     
   N                                             344         398         340         
-====================================================================================</code></pre>
+====================================================================================
+  Significance: *** = p &lt; 0.001; ** = p &lt; 0.01; * = p &lt; 0.05  </code></pre>
 <p>The comparison of the pseudo-R-Square values of model 1 and 2 suggests that occupational class has a stronger influence on a preference for Truman than household income. Indeed, if occupational class is taken into account, the effect of income is no longer statistically significant as the column corresponding to model 3 indicates.</p>
 <p>Second, we compare the effect of occupational class and religious denomination on the preference for Truman along the same lines as above. We use <code>mtable</code> to collect the estimates of <code>model1</code>, <code>model4</code>, and <code>model5</code> into a common table.</p>
 <pre class="r"><code>relabel(mtable(
@@ -5877,7 +5852,8 @@ Model 5: glm(formula = (vote3 == &quot;Truman&quot;) ~ occup4 + relig3, family =
   Deviance                                      404.190     537.711     393.105     
   AIC                                           412.190     543.711     405.105     
   N                                             344         402         344         
-====================================================================================</code></pre>
+====================================================================================
+  Significance: *** = p &lt; 0.001; ** = p &lt; 0.01; * = p &lt; 0.05  </code></pre>
 <p>A comparison of the pseudo-R-squared values suggests that also the effect of religious denomination is weaker than that of occupational class. However, as the third column in the above table indicates the effect of religious denomination remains statistically significant.</p>
 </div>
 </div>

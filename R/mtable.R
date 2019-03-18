@@ -77,6 +77,25 @@ setSummaryTemplate <- function(...){
   return(invisible(OldSummaryTemplates))
 }
 
+selectSummaryStats <- function(x,n) {
+    if(is.character(n)){
+        n
+    }
+    else if(isTRUE(n)){
+        cls <- class(x)
+        sumstats.name <- paste0("summary.stats.",cls)
+        sumstats <- lapply(sumstats.name,getOption)
+        if(length(sumstats)){
+            sumstats <- unlist(sumstats)
+            sumstats[1]
+        }
+        else
+            sumstats <- getOption("summary.stats.default")
+        sumstats
+    }
+    else FALSE
+}
+
 prettyNames <- function(coefnames,
                         contrasts,
                         xlevels,
@@ -214,7 +233,7 @@ mtable <- function(...,
     args <- args[[1]]
   argnames <- names(args)
   if(!length(argnames)) {
-    m<-match.call(expand.dots=FALSE)
+    m <- match.call(expand.dots=FALSE)
     argnames <- sapply(m$...,paste)
   }
   n.args <- length(args)
@@ -246,7 +265,20 @@ mtable <- function(...,
   parameter.names <- unique(unlist(parmnames))
   
   stemplates <- lapply(args,getSummaryTemplate)
-  
+  if(isTRUE(summary.stats))
+      summary.stats <- lapply(args,selectSummaryStats,TRUE)
+  else if(is.character(summary.stats))
+      summary.stats <- lapply(args,selectSummaryStats,summary.stats)
+  else if(is.list(summary.stats)){
+      tmp.summary.stats <- summary.stats
+      summary.stats <- vector(mode="list",length=length(args))
+      summary.stats[] <- tmp.summary.stats
+  } else {
+      summary.stats <- vector(mode="list",length=length(args))
+      summary.stats[] <- list(FALSE)
+  }
+      
+      
   structure(summaries,
             names=argnames,
             class="memisc_mtable",
@@ -348,7 +380,8 @@ rowexpand <- function(x,nr){
 dimnames3 <- function(x)dimnames(x)[[3]]
 
 getRows <- function(x,r){
-    r <- intersect(r,rownames(x))
+    if(is.character(r))
+        r <- intersect(r,rownames(x))
     x[r,,drop=FALSE]
 }
 get_rows <- function(x,i)try(x[i,,drop=FALSE])
@@ -453,7 +486,8 @@ preformat_mtable <- function(x){
     digits <- attr(x,"digits")
     stemplates <- attr(x,"stemplates")
     sdigits <- attr(x,"sdigits")
-
+    show.eqnames <- attr(x,"show.eqnames")
+    
     allcompo <- unique(unlist(lapply(x,names)))
     nonparnames <- c("sumstat","contrasts","xlevels","call")
     partypes <- setdiff(allcompo,nonparnames)
@@ -519,7 +553,6 @@ preformat_mtable <- function(x){
             parmnames[[m]] <- tmp.pn
         }
         
-        
         for(n in 1:ncol(parmtab)){
             mod <- parms[[n]]
             for(m in rownames(parmtab)){
@@ -540,10 +573,6 @@ preformat_mtable <- function(x){
             }
             maxncol <- max(unlist(lapply(parmtab[,n],ncol)) )
             parmtab[,n] <- lapply(parmtab[,n],colexpand,maxncol)
-
-            sh <- sect.headers[,n]
-            maxl <- max(unlist(lapply(sh,length)))
-            sh <- lapply(sh,`length<-`,maxl)
         }
 
         for(m in rownames(sect.headers)){
@@ -588,12 +617,9 @@ preformat_mtable <- function(x){
                                 }),
                              names=rownames(parmtab))
 
-    if(isTRUE(summary.stats) || is.character(summary.stats) && length(summary.stats)) {
+    if(length(summary.stats)) {
         sumstats <- Map(applyTemplate,sumstats,stemplates,digits=sdigits)
-        if(is.character(summary.stats))
-            sst <- lapply(sumstats,getRows,summary.stats)
-        else
-            sst <- sumstats
+        sst <- Map(getRows,sumstats,summary.stats)
 
         snames <- unique(unlist(lapply(sst,rownames)))
         nc <- lapply(parmtab[1,],ncol)
@@ -605,13 +631,38 @@ preformat_mtable <- function(x){
     }
     else summary.stats <- NULL
 
+    needs.signif <- any(grepl("$p",ctemplate,fixed=TRUE))
+    if(needs.signif){
+        signif.symbols <- signif.symbols
+    }
+    else
+        signif.symbols <- NULL
+    
     structure(list(parmtab=parmtab,
                    leaders=leaders,
                    headers=headers,
                    sect.headers=sect.headers,
-                   summary.stats = summary.stats),
+                   summary.stats = summary.stats,
+                   signif.symbols=signif.symbols),
               class="preformatted.memisc_mtable")
     }
+
+
+format_signif <- function(syms,tmpl){
+    title <- tmpl[1]
+    clps <- tmpl[3]
+    tmpl <- tmpl[2]
+    res <- c()
+    for(i in seq_along(syms)){
+        sym <- names(syms)[i]
+        thrsh <- unname(syms[i])
+        res.i <- sub("$sym",sym,tmpl,fixed=TRUE)
+        res.i <- sub("$val",thrsh,res.i,fixed=TRUE)
+        res <- c(res,res.i)
+    }
+    res <- paste(res,collapse=clps)
+    paste0(title,res)
+}
 
 
 format.memisc_mtable <- function(x,

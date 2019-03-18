@@ -1,3 +1,57 @@
+2019-03-16:
+   - Added syntactical sugar to manipulate annotations and attributes.
+
+2019-03-16:
+   - Fixed import of value labels for string variables in 'spss.system.file'
+   - Fixed codebook representation of datetime items in SPSS system and portable files
+   - Support for date or datetime import added to 'spss.portable.file' 
+
+2019-03-15:
+   - Support for date or datetime import added to 'spss.system.file' 
+   - Minor bugfix in printing of 'datetime.item's - added bracket method for
+     this class of objects
+
+2018-11-17:
+   - Added 'dublicated_labels()' function to show and and describe duplicated
+     labels
+   - Let importers give more useful warnings about duplicated labels  
+
+2018-11-01:
+   - Fix formatting of results of 'mtable' without summary statistics
+   - Warn if 'toLatex' output of 'mtable' results creates unescaped TeX specials
+   - Define sensible defaults for the selection of summary statistics in 'mtable'
+
+2018-10-26:
+   - Allow to select summary statistics for models in 'mtable' via options or
+     list arguments.
+
+2018-10-23:
+   - Handle visibility of binary code symbols correctly for R releases 3.3.0 through 3.3.3
+
+2018-10-22:
+   - Defined dollar and double-bracket operators for 'importer' objects to facilitate
+     creating codebooks for individual variables.
+
+2018-10-20:
+   - The 'subset' method for 'importer' objects now accepts the names of
+     variables to be selected also as a character vector.
+   - Fixed 'format_html' for codebooks of data frames with factors.
+
+2018-10-15:
+   - A 'setCodeplan' and 'codeplan<-' assignment function is created that
+     can be used to copy the "item structure" or code plan from one object
+     to another.
+
+2018-10-14:
+   - A 'codeplan' function creates a data frame that
+     describes the structure of an "importer" or "data.set" object.
+
+2018-10-05:
+   - 'mtable' objects exported to HTML now include a legend for significance symbols.
+
+2018-10-04:
+   - 'mtable' objects exported to LaTeX now include a legend for significance symbols.
+
 2018-09-30:
    - Adapt 'spss.fixed.file' to data files with lines that are "too long".
    - Export C-function 'readfixedslice'.
@@ -31,6 +85,9 @@
 2017-11-19:
    - Fixed obscure bug affecting import of spss system files under 32bit Windows.
      This bug was caused by excessive optimisation of for loops by the C compiler.
+
+2017-11-11:
+   - 'print' method for 'mtable' objects now shows a legend for significance symbols.
 
 2017-11-05:
    - Made the display of left-hand sides of model equations optional in the

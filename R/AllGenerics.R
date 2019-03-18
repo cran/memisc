@@ -63,3 +63,10 @@ Write <- function(x,...) UseMethod("Write")
 # setGeneric("Write",
 #            function(object,...)
 #              standardGeneric("Write"))
+
+setGeneric("codeplan",
+           function(x) standardGeneric("codeplan"))
+
+setGeneric("setCodeplan",function(x,value)
+  standardGeneric("setCodeplan"))
+
