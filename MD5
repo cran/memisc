@@ -1,4 +1,4 @@
-9b31e9b6131c9c736e6108ba2abffa31 *DESCRIPTION
+b186562c5e0bb2df4f9a7120c0d078ea *DESCRIPTION
 55226821e74a37e9a77460d0497e959e *NAMESPACE
 d2d762c36beadb0653388c9ed38b3100 *R/AllClasses.R
 4677177e276c068168f6065d76a6dce7 *R/AllGenerics.R
@@ -161,7 +161,7 @@ a64e3021f0ab1c1341bd9f719a14fe4f *man/syntactic-sugar.Rd
 8eafe2c7595ef9b390c0b9cb22489df5 *man/value-filters.Rd
 000669f172e7c53b25a5608195cd5a65 *man/wild.codes.Rd
 29dcc964c62d3cf27c79c858add24baa *man/withVCov.Rd
-3a6bcca01369cd5acbda1b700b993285 *src/Makevars
+a84ff979fcebdfd681f7bacc511a9dc3 *src/Makevars
 f59a7a1308a111747228c6c94fd5c98a *src/dta-for-R.c
 f838417d86ebfd1cb5fd7f1c97cb67e7 *src/dumbswap.c
 41d6e6f2ccd7986833313c4a57e82c58 *src/dumbswap.h
