@@ -86,7 +86,8 @@ setClass("importer",
   contains=c("item.list","named.list","list"),
   representation(
     ptr="externalptr",
-    document = "character"
+    document = "character",
+    encoded = "character"
   )
 )
 
@@ -127,6 +128,13 @@ setClass("Stata.importer",
   representation(
     data.spec = "list"
   )
+)
+
+setClass("Stata_new.importer",
+         contains="importer",
+         representation(
+             types = "integer"
+         )
 )
 
 setClass("codebook",

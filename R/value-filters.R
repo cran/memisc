@@ -37,6 +37,10 @@ is.missing2 <- function(x,filter){
 
 setMethod("value.filter",signature(x="item"),function(x)x@value.filter)
 
+setMethod("value.filter<-",signature(x="ANY",value="NULL"),function(x,value){
+  x
+})
+
 setMethod("value.filter<-",signature(x="item",value="NULL"),
   function(x,value){
     x@value.filter <- NULL
@@ -87,6 +91,11 @@ setMethod("valid.range",signature(x="item.vector"),function(x){
   new("valid.range",filter=range(vals))
 })
 
+setReplaceMethod("missing.values",signature(x="ANY",value="NULL"),
+  function(x,value){
+    x
+})
+
 
 setReplaceMethod("missing.values",signature(x="item",value="NULL"),
   function(x,value){
@@ -119,6 +128,10 @@ setReplaceMethod("missing.values",signature(x="atomic",value="missing.values"),
     else as.item(x,value.filter=value)
 })
 
+setReplaceMethod("valid.values",signature(x="ANY",value="NULL"),
+  function(x,value){
+    x
+})
 
 setReplaceMethod("valid.values",signature(x="ANY",value="atomic"),
   function(x,value){
@@ -138,6 +151,11 @@ setReplaceMethod("valid.values",signature(x="atomic",value="valid.values"),
       x
     }
     else as.item(x,value.filter=value)
+})
+
+setReplaceMethod("valid.range",signature(x="ANY",value="NULL"),
+  function(x,value){
+    x
 })
 
 setReplaceMethod("valid.range",signature(x="ANY",value="atomic"),
@@ -212,22 +230,22 @@ is.valid <- function(x) !is.missing(x) & !is.na(x)
 nvalid <- function(x) sum(is.valid(x))
 
 
-format.valid.values <- function(x,...){
-  paste(as.character(x@filter),collapse=", ")
+format.valid.values <- function(x,digits=3,...){
+  paste(trimws(format(x@filter,digits=digits,...)),collapse=", ")
 }
-format.valid.range <- function(x,...){
-  paste(as.character(x@filter[1:2]),collapse="-")
+format.valid.range <- function(x,digits=3,...){
+  paste(trimws(format(x@filter[1:2],digits=digits,...)),collapse=" - ")
 }
-format.missing.values <- function(x,...){
+format.missing.values <- function(x,digits=3,...){
   if(length(x@filter) && length(x@range))
     paste(
-      paste(as.character(x@filter),collapse=", "),
-      paste(as.character(x@range[1:2]),collapse="-"),
+      paste(trimws(format(x@filter,digits=digits,...)),collapse=", "),
+      paste(trimws(format(x@range[1:2],digits=digits,...)),collapse=" - "),
       sep=", ")
   else if(length(x@filter))
-    paste(as.character(x@filter),collapse=", ")
+    paste(trimws(format(x@filter,digits=digits,...)),collapse=", ")
   else if(length(x@range))
-    paste(as.character(x@range[1:2]),collapse="-")
+    paste(trimws(format(x@range[1:2],digits=digits,...)),collapse=" - ")
 }
 
 # setMethod("format","valid.values",format.valid.values) 

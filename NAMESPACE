@@ -260,7 +260,9 @@ exportMethods(
     sample,
     query,
     "[[",
-    "$"
+    "$",
+    head,
+    tail
     )
 S3method(as.data.frame,character.item)
 S3method(as.data.frame,double.item)
@@ -277,6 +279,7 @@ S3method(as.data.frame,data.set)
 S3method(cbind,data.set)
 S3method(fapply,data.set)
 S3method(print,descriptions)
+S3method(as.data.frame,descriptions)
 S3method(Iconv,item)
 S3method(Iconv,value.labels)
 S3method(Iconv,annotation)
@@ -404,3 +407,32 @@ export(
     "%@%",
     "%@%<-"
 )
+export(List)
+
+export(Groups)
+exportMethods(Groups)
+
+S3method(with,grouped.data)
+S3method(within,grouped.data)
+S3method(names,grouped.data)
+S3method(print,grouped.result)
+export(recombine)
+S3method(recombine,grouped.data)
+export(withGroups,withinGroups)
+
+export(Reshape)
+export(spss.file)
+
+export(as_tibble.data.set)
+# S3method("as_tibble",data.set)
+# exportMethods(as_tibble)
+export(as_haven)
+exportMethods(as_haven)
+
+export(view)
+export(viewPrep)
+S3method(viewPrep,data.set)
+S3method(viewPrep,data.frame)
+S3method(viewPrep,descriptions)
+S3method(viewPrep,codeplan)
+S3method(viewPrep,importer)

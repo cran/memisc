@@ -449,6 +449,11 @@ Write.descriptions <- function(x,file=stdout(),...){
   writeLines(out,con=file)
 }
 
+as.data.frame.descriptions <- function(x,...){
+  data.frame(variable=names(x),
+             description=as.character(x))
+}
+
 setMethod("unique","data.set",function(x, incomparables = FALSE, ...){
   frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
   new("data.set",
@@ -484,45 +489,45 @@ setMethod("merge",signature(x="data.set","data.set"),function(x,y,...){
 setMethod("merge",signature(x="data.set","data.frame"),function(x,y,...){
   x <- new("data.frame",as.list(x),row.names=x@row_names)
   z <- merge(x,y,...)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("merge",signature(x="data.frame","data.set"),function(x,y,...){
   y <- new("data.frame",as.list(y),row.names=y@row_names)
   z <- merge(x,y,...)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("rbind2",signature(x="data.set",y="data.set"),function(x,y){
   x <- asS4(new("data.frame",as.list(x),row.names=x@row_names),FALSE)
   y <- asS4(new("data.frame",as.list(y),row.names=y@row_names),FALSE)
   z <- rbind(x,y)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("rbind2",signature(x="data.set",y="data.frame"),function(x,y){
   x <- asS4(new("data.frame",as.list(x),row.names=x@row_names),FALSE)
   z <- cbind(x,y)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("cbind2",signature(x="data.set",y="data.set"),function(x,y){
   x <- asS4(new("data.frame",as.list(x),row.names=x@row_names),FALSE)
   y <- asS4(new("data.frame",as.list(y),row.names=y@row_names),FALSE)
   z <- cbind(x,y)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("cbind2",signature(x="data.frame",y="data.set"),function(x,y){
   y <- asS4(new("data.frame",as.list(y),row.names=y@row_names),FALSE)
   z <- cbind(x,y)
-  data.set(z)
+  new("data.set",z)
 })
 
 setMethod("cbind2",signature(x="data.set",y="data.frame"),function(x,y){
   x <- asS4(new("data.frame",as.list(x),row.names=x@row_names),FALSE)
   z <- cbind(x,y)
-  data.set(z)
+  new("data.set",z)
 })
 
 rbind.data.set <- function(...,deparse.level=1){
@@ -544,17 +549,25 @@ rbind.data.set <- function(...,deparse.level=1){
 
 dsView <- function(x){
   
-  title <- paste("Data set:", deparse(substitute(x))[1])
+    title <- paste("Data set:", deparse(substitute(x))[1])
 
-  Data <- lapply(x@.Data,format,justify="left")
-  document <- x@document
-  row.names <- x@row_names
-  .names <- x@names
-  frame <- structure(Data,row.names=row.names,names=x@names,
-                          class="data.frame")
-  #View.call <- call("View",x=frame,title=title)
-  #eval(View.call,globalenv())
-  View(x=frame,title=title)
+    Data <- lapply(x@.Data,format,justify="left")
+    
+    document <- x@document
+    row.names <- x@row_names
+    .names <- x@names
+    frame <- structure(Data,row.names=row.names,names=x@names,
+                       class="data.frame")
+    for(n in names(frame)){
+        d <- description(x[[n]])
+        if(length(d))
+            attr(frame[[n]],"label") <- d
+    }
+    
+    View.call <- call("View",x=frame,title=title)
+    eval(View.call,globalenv())
+  #View(x=frame,title=title)
+  # do.call("View",list(x=frame,title=title))
 }
 
 
@@ -650,3 +663,16 @@ setMethod("summary","data.set",
 
 ## as.list() method
 as.list.item.list <- function(x,...)structure(x@.Data,names=x@names)
+
+setMethod("head",signature(x="data.set"),
+          function(x,n=20,...){
+              y <- utils::head.matrix(x,n=n,...)
+              rownames(y) <- rownames(x)[1:n]
+              return(y)
+          })
+setMethod("tail",signature(x="data.set"),
+          function(x,n=20,...){
+              y <- utils::tail.matrix(x,n=n,...)
+              rownames(y) <- rownames(x)[seq.int(to=nrow(x),length.out=n)]
+              return(y)
+          })

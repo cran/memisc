@@ -7,6 +7,7 @@
 #include <Rinternals.h>
 #include "memisc.h"
 #include "dumbswap.h"
+#include "dta-for-R.h"
 
 #define asString(x) CHAR(asChar(x))
 
@@ -18,39 +19,16 @@
 #define MY_DTA_ENDIAN dta_LOHI
 #endif
 
-#define DTA_MAXSTR    244
-#define DTA_BYTE      251
-#define DTA_SHORT     252
-#define DTA_LONG      253
-#define DTA_FLOAT     254
-#define DTA_DOUBLE    255
-
-#define DTA_NA_BYTE   0x7f
-#define DTA_NA_SHORT  0x7fff
-#define DTA_NA_LONG   0x7fffffff
-#define DTA_NA_FLOAT  dta_na_float
-#define DTA_NA_DOUBLE dta_na_double
-
-typedef struct {
-  FILE *f;
-  int start_data;
-  int l_record;
-  int n_records;
-  int swap;
-} dta_file;
-
-static double dta_na_float;
-static double dta_na_double;
-
 char headbuf[109];
 
-SEXP dta_file_finalize(SEXP);
+SEXP dta_file_close(SEXP);
 SEXP dta_file_open (SEXP name){
   dta_file *dtaf = Calloc(1,dta_file);
   dtaf->swap = 0;
   dtaf->start_data = 0;
   dtaf->l_record = 0;
   dtaf->n_records = 0;
+  dtaf->version = 0;
   dtaf->f = fopen(asString(name),"r+b");
   if (dtaf->f == NULL){
       Free(dtaf);
@@ -58,43 +36,36 @@ SEXP dta_file_open (SEXP name){
       }
   SEXP ans = R_MakeExternalPtr(dtaf, install("dta_file"), R_NilValue);
 	PROTECT(ans);
-  R_RegisterCFinalizer(ans, (R_CFinalizer_t) dta_file_finalize);
+  R_RegisterCFinalizer(ans, (R_CFinalizer_t) dta_file_close);
   setAttrib(ans,install("file.name"),name);
 	UNPROTECT(1);
   return ans;
 }
 
-SEXP dta_file_finalize(SEXP s_file)
+SEXP dta_file_close(SEXP s_file)
 {
     if(TYPEOF(s_file) != EXTPTRSXP || R_ExternalPtrTag(s_file) != install("dta_file")) error("not a Stata file");
     dta_file *dtaf = R_ExternalPtrAddr(s_file);
-    Rprintf("closing file %s\n",asString(getAttrib(s_file,install("filename"))));
-    if (dtaf->f != NULL)
+    if(dtaf != NULL){
+      /* Rprintf("closing file %s\n",asString(getAttrib(s_file,install("file.name")))); */
+      if (dtaf->f != NULL)
         fclose(dtaf->f);
-    R_ClearExternalPtr(s_file);
+      R_ClearExternalPtr(s_file);
+    }
     return R_NilValue;
 }
 
 dta_file *get_dta_file(SEXP s_file){
   if(TYPEOF(s_file) != EXTPTRSXP || R_ExternalPtrTag(s_file) != install("dta_file")) error("not an Stata file");
   dta_file *dtaf = R_ExternalPtrAddr(s_file);
-  if (dtaf == NULL){
-    dta_file *dtaf = Calloc(1,dta_file);
-    dtaf->swap = 0;
-    R_SetExternalPtrAddr(s_file,dtaf);
-    SEXP name = getAttrib(s_file,install("filename"));
-    if(name == R_NilValue || name == NULL){
+  if (dtaf == NULL || dtaf->f == NULL){
+    SEXP name = getAttrib(s_file,install("file.name"));
+    if(dtaf != NULL){
       Free(dtaf);
-      error("need filename to reopen file");
-      }
-    dtaf->f = fopen(CHAR(STRING_ELT(name, 0)),"r+b");
-    if(dtaf->f == NULL){
-      Free(dtaf);
-      error("cannot reopen file -- does it still exist?");
     }
-    Rprintf("File '%s' reopened\n\n",asString(name));
+   error("external pointer is NULL, you need to recreate this object");
   }
-  return(dtaf);
+  return dtaf;
 }
 
 
@@ -102,7 +73,8 @@ int dta_read_byte(dta_file *dtaf){
   char target;
   size_t read_len = fread(&target,1,1,dtaf->f);
   if(!read_len) return NA_INTEGER;
-  if(target == DTA_NA_BYTE) return NA_INTEGER;
+  if(target == DTA_NA_BYTE && dtaf->version < 113 && dtaf->version > 0)
+    return NA_INTEGER;
   else return (int)target;
 }
 
@@ -111,7 +83,8 @@ int dta_read_short(dta_file *dtaf){
   size_t read_len = fread(&target,2,1,dtaf->f);
   if(!read_len) return NA_INTEGER;
   sswap_if(target,dtaf->swap);
-  if(target == DTA_NA_SHORT) return NA_INTEGER;
+  if(target == DTA_NA_SHORT && dtaf->version < 113 && dtaf->version > 0)
+    return NA_INTEGER;
   return (int)target;
 }
 
@@ -120,7 +93,8 @@ int dta_read_int(dta_file *dtaf){
   size_t read_len = fread(&target,4,1,dtaf->f);
   if(!read_len) return NA_INTEGER;
   iswap_if(target,dtaf->swap);
-  if(target == DTA_NA_LONG) return NA_INTEGER;
+  if(target == DTA_NA_LONG && dtaf->version < 113 && dtaf->version > 0)
+    return NA_INTEGER;
   return (int)target;
 }
 
@@ -129,7 +103,8 @@ double dta_read_float(dta_file *dtaf){
   size_t read_len = fread(&target,4,1,dtaf->f);
   if(!read_len) return NA_REAL;
   fswap_if(target,dtaf->swap);
-  if(target == DTA_NA_FLOAT) return NA_REAL;
+  if(target == DTA_NA_FLOAT && dtaf->version < 113 && dtaf->version > 0)
+    return NA_REAL;
   return (double)target;
 }
 
@@ -138,7 +113,8 @@ double dta_read_double(dta_file *dtaf){
   size_t read_len = fread(&target,8,1,dtaf->f);
   if(!read_len) return NA_REAL;
   dswap_if(target,dtaf->swap);
-  if(target == DTA_NA_DOUBLE) return NA_REAL;
+  if(target == DTA_NA_DOUBLE && dtaf->version < 113 && dtaf->version > 0)
+    return NA_REAL;
   return target;
 }
 
@@ -192,7 +168,8 @@ SEXP dta_read_version(SEXP s_dta_file){
   char ds_format;
   dta_file *dtaf = get_dta_file(s_dta_file);
   rewind(dtaf->f);
-  fread(&ds_format,1,1,dtaf->f);
+  int ret = fread(&ds_format,1,1,dtaf->f);
+  dtaf->version = ds_format;
   return ScalarInteger(ds_format);
 }
 
@@ -209,9 +186,9 @@ SEXP dta_read_header(SEXP s_dta_file, SEXP s_lablen){
   SEXP ans, names;
   dta_file *dtaf = get_dta_file(s_dta_file);
   fseek(dtaf->f,1,SEEK_SET);
-  fread(&byteorder,1,1,dtaf->f);
+  int ret = fread(&byteorder,1,1,dtaf->f);
   if(byteorder != MY_DTA_ENDIAN) dtaf->swap = 1;
-  fread(&filetype,1,1,dtaf->f);
+  ret = fread(&filetype,1,1,dtaf->f);
   dta_read_byte(dtaf);
   nvar = dta_read_short(dtaf);
   nobs = dta_read_int(dtaf);
@@ -527,6 +504,7 @@ SEXP dta_read_labels (SEXP s_dta_file, SEXP s_lbl_len, SEXP s_padding){
   return ans;
 }
 
+/* Old test version */
 SEXP _dta_read_labels (SEXP s_dta_file, SEXP s_lbl_len, SEXP s_padding){
   dta_file *dtaf = get_dta_file(s_dta_file);
   int l_lbl = asInteger(s_lbl_len) + 1 + asInteger(s_padding);

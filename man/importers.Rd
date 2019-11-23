@@ -1,6 +1,7 @@
 \name{importers}
 \alias{importer}
 \alias{importer-class}
+\alias{spss.file}
 \alias{spss.portable.file}
 \alias{spss.portable.importer-class}
 \alias{show,spss.portable.importer-method}
@@ -13,6 +14,8 @@
 \alias{Stata.file}
 \alias{Stata.importer-class}
 \alias{show,Stata.importer-method}
+\alias{Stata_new.importer-class}
+\alias{show,Stata_new.importer-method}
 \alias{as.data.set,importer-method}
 \alias{subset,importer-method}
 \alias{dim,importer-method}
@@ -23,10 +26,13 @@
 \alias{[,importer,missing,missing,ANY-method}
 \alias{[[,importer-method}
 \alias{$,importer-method}
+\alias{head,importer-method}
+\alias{tail,importer-method}
 \alias{initialize,spss.portable.importer-method}
 \alias{initialize,spss.system.importer-method}
 \alias{initialize,spss.fixed.importer-method}
 \alias{initialize,Stata.importer-method}
+\alias{initialize,Stata_new.importer-method}
 
 \title{Object Oriented Interface to Foreign Files}
 \description{
@@ -47,6 +53,8 @@ Most importantly, importer objects support the
 and \code{\link{description}}s, provided by this package.
 }
 \usage{
+spss.file(file,\dots)
+
 spss.fixed.file(file,
   columns.file,
   varlab.file=NULL,
@@ -61,16 +69,24 @@ spss.portable.file(file,
   codes.file=NULL,
   missval.file=NULL,
   count.cases=TRUE,
-  to.lower=TRUE)
+  to.lower=getOption("spss.por.to.lower",FALSE),
+  iconv=TRUE,
+  encoded=getOption("spss.por.encoding","cp1252"))
 
 spss.system.file(file,
   varlab.file=NULL,
   codes.file=NULL,
   missval.file=NULL,
   count.cases=TRUE,
-  to.lower=TRUE)
+  to.lower=getOption("spss.sav.to.lower",FALSE),
+  iconv=TRUE,
+  encoded=getOption("spss.sav.encoding","cp1252"))
 
-Stata.file(file)
+Stata.file(file,
+           iconv=TRUE,
+           encoded=if(new_format)
+                        getOption("Stata.new.encoding","utf-8")
+                   else getOption("Stata.old.encoding","cp1252"))
 
 ## The most important methods for "importer" objects are:
 \S4method{subset}{importer}(x, subset, select, drop = FALSE, \dots)
@@ -78,11 +94,15 @@ Stata.file(file)
 \S4method{as.data.set}{importer}(x,row.names=NULL,optional=NULL,
                     compress.storage.modes=FALSE,\dots)
 
+\S4method{head}{importer}(x,n=20,\dots)
+\S4method{tail}{importer}(x,n=20,\dots)
 }
 \arguments{
-    \item{x}{an object that inherits from class \code{"importer"}.}
     \item{file}{character string; the path to the file containing
-        the data}
+      the data}
+    \item{\dots}{Other arguments. \code{spss.file()} passes them on to
+        \code{spss.portable.file()} of  \code{spss.system.file()}. Other
+        function ignore further arguments.}
     \item{columns.file}{character string; the path to an
         SPSS/PSPP syntax file with a \code{DATA LIST FIXED} statement}
     \item{varlab.file}{character string; the path to an
@@ -94,7 +114,14 @@ Stata.file(file)
     \item{count.cases}{logical; should cases in file be counted? This
       takes effect only if the data file does not already contain information
       about the number of cases.}
-    \item{to.lower}{logical; should variable names changed to lower case?}
+    \item{to.lower}{logical; should variable names changed to lower
+      case?}
+    \item{iconv}{logical; should strings (in labels and
+      variables) changed into encoding of the platform?}
+    \item{encoded}{a cacharacter string; the way characters are encoded
+      in the improrted file. For the available encoding options
+      see \code{?iconvlist}.}
+    \item{x}{an object that inherits from class \code{"importer"}.}
     \item{subset}{a logical vector or an expression containing variables
         from the external data file that evaluates to logical. }
     \item{select}{a vector of variable names from the external data file.
@@ -109,15 +136,18 @@ Stata.file(file)
     \item{optional}{ignored, present only for compatibility.}
     \item{compress.storage.modes}{logical value; if TRUE floating point values
       are converted to integers if possible without loss of information.}
-    \item{\dots}{other arguments; ignored.}
+    \item{n}{integer; the number of rows to be shown by \code{head} or \code{tail}}
 }
 \value{
 \code{spss.fixed.file}, \code{spss.portable.file},
 \code{spss.system.file}, and \code{Stata.file}
 return, respectively, objects of class
 \code{"spss.fixed.importer"}, \code{"spss.portable.importer"},
-\code{"spss.system.importer"}, or \code{"Stata.importer"},
+\code{"spss.system.importer"}, \code{"Stata.importer"}, or \code{"Stata_new.importer"},
 which, by inheritance, are also objects of class \code{"importer"}.
+\code{"Stata.importer"} is for files in the format of Stata versions up
+    to 12, while \code{"Stata_new.importer"} is for files in the newer
+    format of Stata versions from 13.
 
 Objects of class \code{"importer"} have at least the following two slots:
 
@@ -193,43 +223,43 @@ description(nes1948)
 # Now a subset of the data is loaded:
 vote.socdem.48 <- subset(nes1948,
               select=c(
-                  v480018,
-                  v480029,
-                  v480030,
-                  v480045,
-                  v480046,
-                  v480047,
-                  v480048,
-                  v480049,
-                  v480050
+                  V480018,
+                  V480029,
+                  V480030,
+                  V480045,
+                  V480046,
+                  V480047,
+                  V480048,
+                  V480049,
+                  V480050
                   ))
 
 # Let's make the names more descriptive:
 vote.socdem.48 <- rename(vote.socdem.48,
-                  v480018 = "vote",
-                  v480029 = "occupation.hh",
-                  v480030 = "unionized.hh",
-                  v480045 = "gender",
-                  v480046 = "race",
-                  v480047 = "age",
-                  v480048 = "education",
-                  v480049 = "total.income",
-                  v480050 = "religious.pref"
+                  V480018 = "vote",
+                  V480029 = "occupation.hh",
+                  V480030 = "unionized.hh",
+                  V480045 = "gender",
+                  V480046 = "race",
+                  V480047 = "age",
+                  V480048 = "education",
+                  V480049 = "total.income",
+                  V480050 = "religious.pref"
         )
 
 # It is also possible to do both
 # in one step:
 # vote.socdem.48 <- subset(nes1948,
 #              select=c(
-#                  vote           = v480018,
-#                  occupation.hh  = v480029,
-#                  unionized.hh   = v480030,
-#                  gender         = v480045,
-#                  race           = v480046,
-#                  age            = v480047,
-#                  education      = v480048,
-#                  total.income   = v480049,
-#                  religious.pref = v480050
+#                  vote           = V480018,
+#                  occupation.hh  = V480029,
+#                  unionized.hh   = V480030,
+#                  gender         = V480045,
+#                  race           = V480046,
+#                  age            = V480047,
+#                  education      = V480048,
+#                  total.income   = V480049,
+#                  religious.pref = V480050
 #                  ))
 
 

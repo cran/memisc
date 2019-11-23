@@ -258,83 +258,163 @@ setMethod("codebook","importer",function(x){
   new("codebook",res)
 })
 
-# initcodebookEntry <- function(x){
-#   annotation <- annotation(x)
-#   filter <- x@value.filter
-#   spec <- c(
-#     "Storage mode:"=storage.mode(x),
-#     "Measurement:"=measurement(x)
-#   )
-#   if(length(filter)) spec <- c(spec,
-#                                switch(class(filter),
-#                                       missing.values = c("Missing values:" = format(filter)),
-#                                       valid.values   = c("Valid values:"   = format(filter)),
-#                                       valid.range    = c("Valid range:"    = format(filter))
-#                                ))
-#   new("codebookEntry",
-#       spec = spec,
-#       stats = list(),
-#       annotation = annotation
-#   )
-# }
-
 initcodebookEntry <- function(x){
-    codebookEntry(x)
+  annotation <- annotation(x)
+  filter <- x@value.filter
+  spec <- c(
+    "Storage mode:"=storage.mode(x),
+    "Measurement:"=measurement(x)
+  )
+  if(length(filter)) spec <- c(spec,
+                               switch(class(filter),
+                                      missing.values = c("Missing values:" = format(filter)),
+                                      valid.values   = c("Valid values:"   = format(filter)),
+                                      valid.range    = c("Valid range:"    = format(filter))
+                               ))
+  stats <- switch(spec["Measurement:"],
+                  nominal=,ordinal=initcodebookStatsCateg(x),
+                  interval=,ratio=initcodebookStatsMetric(x),
+                  `Date/time`=initcodebookStatsDatetime(x)
+  )
+  new("codebookEntry",
+      spec = spec,
+      stats = stats,
+      annotation = annotation
+  )
 }
 
 
 updatecodebookEntry <- function(cbe,x){
-  res <- if(cbe@spec["Storage mode:"] == "character")
-    updatecodebookStatsChar(cbe,x)
-  else switch(cbe@spec["Measurement:"],
-    nominal=,ordinal=updatecodebookStatsCateg(cbe,x),
-    interval=,ratio=updatecodebookStatsMetric(cbe,x),
-    `Date/time`=updatecodebookStatsDatetime(cbe,x)
+  switch(cbe@spec["Measurement:"],
+         nominal=,ordinal=updatecodebookStatsCateg(cbe,x),
+         interval=,ratio=updatecodebookStatsMetric(cbe,x),
+         `Date/time`=updatecodebookStatsDatetime(cbe,x)
   )
-  #if(!length(res)) browser()
-  res
 }
 
 
+initcodebookStatsCateg <- function(x) {
+    vl <- labels(x)
+    ic <- inherits(x,"character")
+    if(length(vl) || !ic){
+        list(tab=list())
+    } else {
+        list()
+    }
+    
+} 
+
+cbTable1 <- function(x){
+    vl <- labels(x)
+    vvl <- vl@values
+    lvl <- vl@.Data
+    valid <- !is.missing2(vvl,x@value.filter)
+    i <- match(x@.Data,vvl,nomatch=0L)
+    tab <- tabulate(i,nbins=length(lvl))
+    names(tab) <- as.character(lvl)
+    is.m <- is.missing(x)
+    isNA <- is.na(x)
+    vl <- labels(x)
+    if(length(vl)){
+        vvl <- vl@values
+        lvl <- vl@.Data
+        valid <- !is.missing2(vvl,x@value.filter)
+        i <- match(x@.Data,vvl,nomatch=0L)
+        tab <- tabulate(i,nbins=length(vvl))
+        names(tab) <- as.character(vl@values)
+        lab <- sQuote(vl@.Data) 
+    }
+    else {
+        valid <- logical(0)
+        tab <- c()
+        lab <- c()
+        i <- logical(length(x))
+    }
+
+    ovld <- sum(!is.m & !i)
+    omiss <- sum(is.m & !i & !isNA)
+    NAs <- sum(isNA)
+
+    list(tab=tab,
+         ovld=ovld,
+         omiss=omiss,
+         NAs=NAs,
+         value.labels=vl,
+         value.filter=x@value.filter)
+}
+
+update_cbTable1 <- function(current,update){
+    if(length(current)){ 
+        if(length(current$tab) > length(update$tab)) {
+            ii <- match(names(update$tab),names(current$tab))
+            current$tab[ii] <- current$tab[ii] + update$tab
+        }
+        else if(length(current$tab) < length(update$tab)){
+            ii <- match(names(current$tab),names(update$tab))
+            update$tab[ii] <- current$tab + update$tab[ii]
+            current$tab <- update$tab
+        }
+        else
+            current$tab <- current$tab + update$tab
+        current$ovld <- current$ovld + update$ovld
+        current$omiss <- current$nomiss + update$omiss
+        current$NAs <- current$NAs + update$NAs
+        return(current)
+    }
+    else return(update)
+}
+
 updatecodebookStatsCateg <- function(cbe,x){
-  tab <- Table(x,style="codebook")
-  stats <- cbe@stats
-  stats$tab <- if(length(stats$tab)){ 
-                                    if(nrow(stats$tab) > nrow(tab)) {
-                                      ii <- match(trimws(rownames(tab)),trimws(rownames(stats$tab)))
-                                      stats$tab[ii,] <- stats$tab[ii,] + tab
-                                      }
-                                    else if(nrow(stats$tab) < nrow(tab)){
-                                      ii <- match(trimws(rownames(stats$tab)),trimws(rownames(tab)))
-                                      tab[ii,] <- stats$tab + tab[ii,]
-                                      tab
-                                      }
-                                    else
-                                      stats$tab + tab
-                                    }
-             else tab
-  cbe@stats <- stats
-  cbe
+    vl <- labels(x)
+    ic <- inherits(x,"character")
+    stats <- cbe@stats
+
+    if(length(vl) || !ic){
+        tab <- cbTable1(x)
+        stats$tab <- update_cbTable1(stats$tab,tab)
+    } else {
+        stats1 <- cbChar1(x)
+        stats <- update_cbChar1(stats,stats1)
+    }
+    
+    cbe@stats <- stats
+    cbe
+}
+
+cbChar1 <- function(x){
+    isna <- is.na(x)
+    NAs <- sum(isna)
+    descr <- structure(range(x),names=c("Min","Max"))
+    list(descr=descr,
+         NAs = NAs)
+}
+
+update_cbChar1 <- function(current,update){
+    if(!length(current)) return(update)
+    else {
+        list(
+            descr = range(c(current$descr,update$descr)),
+            NAs = current$NAs + update$NAs
+        )
+    }
+}
+
+
+initcodebookStatsMetric <- function(x){
+    stats <- list()
+    if(length(x@value.labels))
+        stats$tab <- list()
+    stats$moments <- numeric(0)
+    stats$range <- numeric(0)
+    stats$missings <- integer(0)
+    stats
 }
 
 updatecodebookStatsMetric <- function(cbe,x){
   stats <- cbe@stats
   if(length(x@value.labels)){
-    tab <- Table(x,style="codebook")
-    stats$tab <- if(length(stats$tab)){ 
-                                    if(nrow(stats$tab) > nrow(tab)) {
-                                      ii <- match(trimws(rownames(tab)),trimws(rownames(stats$tab)))
-                                      stats$tab[ii,] <- stats$tab[ii,] + tab
-                                      }
-                                    else if(nrow(stats$tab) < nrow(tab)){
-                                      ii <- match(trimws(rownames(stats$tab)),trimws(rownames(tab)))
-                                      tab[ii,] <- stats$tab + tab[ii,]
-                                      tab
-                                      }
-                                    else
-                                      stats$tab + tab
-                                    }
-              else tab
+      tab <- cbTable1(x)
+      stats$tab <- update_cbTable1(stats$tab,tab)
   }
   miss <- is.missing(x)
   NAs <- is.na(x@.Data)
@@ -364,6 +444,15 @@ updatecodebookStatsMetric <- function(cbe,x){
   cbe
 }
 
+initcodebookStatsDatetime <- function(x){
+    stats <- list()
+    stats$moments <- numeric(0)
+    stats$range <- numeric(0)
+    stats$missings <- integer(0)
+    stats
+}
+
+
 updatecodebookStatsDatetime <- function(cbe,x){
   stats <- cbe@stats
   miss <- is.missing(x)
@@ -382,83 +471,117 @@ updatecodebookStatsDatetime <- function(cbe,x){
 }
 
 
-updatecodebookStatsChar <- function(cbe,x){
-  stats <- cbe@stats
-  if(length(x@value.labels)){
-    tab <- Table(x,style="codebook")
-    stats$tab <- if(length(stats$tab)) stats$tab + tab
-              else tab
-  }
-  miss <- is.missing(x)
-  NAs <- is.na(x@.Data)
-  x <- x@.Data[!miss & !NAs]
-  NAs <- sum(NAs)
-  miss <- sum(miss,na.rm=TRUE)
-  if(length(x)){
-    stats$range <- if(length(stats$range)) range(stats$range,range(x))
-                    else range(x)
-  }
-  stats$missings <- if(length(stats$missings)) stats$missings + c(miss,NAs)
-                    else c(miss,NAs)
-  cbe@stats <- stats
-  cbe
-}
-
 fixupcodebookEntry <- function(cbe){
-  if(cbe@spec["Storage mode:"] == "character")
-    fixupcodebookEntryChar(cbe)
-  else switch(cbe@spec["Measurement:"],
+    switch(cbe@spec["Measurement:"],
     nominal=,ordinal=fixupcodebookEntryCateg(cbe),
     interval=,ratio=fixupcodebookEntryMetric(cbe),
     `Date/time`=fixupcodebookEntryDatetime(cbe)
   )
 }
 
+fixupCodebookTable <- function(x,drop.unlabelled=FALSE){
+    vl <- x$value.labels
+    if(length(vl)){
+        vvl <- vl@values
+        lvl <- vl@.Data
+        valid <- !is.missing2(vvl,x$value.filter)
+        tab <- rep(0,length=length(vvl))
+        names(tab) <- as.character(vvl)
+        tab[names(x$tab)] <- x$tab
+        lab <- sQuote(vl@.Data) 
+        tab.title <- "Values and labels"
+    }
+    else {
+        valid <- logical(0)
+        tab <- c()
+        lab <- c()
+        tab.title <- "Values"
+    }
+    
+    ovld <- x$ovld
+    omiss <- x$omiss
+    NAs <- x$NAs
+
+    if(length(ovld) && ovld){
+        tab <- c(tab," "=ovld)
+        lab <- c(lab,"(unlab.val.)")
+        valid <- c(valid,TRUE)
+    }
+
+    if(length(omiss) && omiss){
+        tab <- c(tab," "=omiss)
+        lab <- c(lab,"(unlab.mss.)")
+        valid <- c(valid,FALSE)
+    }
+    if(length(NAs) && NAs){
+        tab <- c(tab,"NA"=NAs)
+        lab <- c(lab,"")
+        valid <- c(valid,FALSE)
+    }
+    
+    missing.marker <- "M"
+    valid.marker <- paste(rep(" ",nchar(missing.marker)),collapse="")
+    lab <- paste(ifelse(valid,valid.marker,missing.marker),lab)
+    tab.nonzero <- tab>0
+    tab <- tab[valid | tab.nonzero]
+    lab <- lab[valid | tab.nonzero]
+    valid <- valid[valid | tab.nonzero]
+    vperc <- rep(NA,length(tab))
+    vtab <- tab[valid]
+    Nvalid <- sum(vtab)
+    if(Nvalid) vperc[valid] <- 100 * vtab/Nvalid
+    else vperc[valid] <- 0
+    tperc <- 100 * tab/sum(tab)
+    tab <- cbind(N=tab,Valid=vperc,Total=tperc)
+    rownames(tab) <- names(tperc)
+    if(drop.unlabelled){
+        drp <- match("(unlab.val.)",trimws(lab),nomatch=0L)
+        tab <- tab[-drp,,drop=FALSE]
+        lab <- lab[-drp]
+    }
+    if(!length(tab))
+        tab <- NULL
+    else {
+        rownames(tab) <- paste(format(rownames(tab),justify="right"),format(lab,justify="left"))
+        attr(tab,"title") <- tab.title
+    }
+    return(tab)
+}
+
 fixupcodebookEntryCateg <- function(cbe){
-  tab <- cbe@stats$tab
-  valid <- !is.na(tab[,2])
-  Nvalid <- sum(tab[valid,1])
-  if(Nvalid)
-    tab[valid,2] <- 100*tab[valid,1]/Nvalid
-  tab[,3] <- 100*tab[,1]/sum(tab[,1])
-  cbe@stats$tab <- tab
-  cbe
+    tab <- cbe@stats$tab
+    descr <- cbe@stats$descr
+    if(length(tab))
+        cbe@stats$tab <- fixupCodebookTable(tab,drop.unlabelled=FALSE)
+    # else if(length(descr))
+    cbe
 }
 
 fixupcodebookEntryMetric <- function(cbe){
-  tab <- cbe@stats$tab
-  if(length(tab)){
-    valid <- !is.na(tab[,2])
-    Nvalid <- sum(tab[valid,1])
-    if(Nvalid)
-      tab[valid,2] <- 100*tab[valid,1]/Nvalid
-    tab[,3] <- 100*tab[,1]/sum(tab[,1])
-    cbe@stats$tab <- tab
-  }
-  
-  moments <- unname(cbe@stats$moments)
-  m.1 <- moments[1]
-  m.2 <- moments[2] - m.1^2
-  m.3 <- moments[3] - 3*moments[2]*m.1 + 2*m.1^3
-  m.4 <- moments[4] - 4*moments[3]*m.1 + 6*moments[2]*m.1^2 - 3*m.1^4
-  miss <- cbe@stats$missings[1]
-  NAs <- cbe@stats$missings[2]
-  Min <- cbe@stats$range[1]
-  Max <- cbe@stats$range[2]
+    tab <- cbe@stats$tab
+    if(length(tab))
+        tab <- fixupCodebookTable(tab,drop.unlabelled=TRUE)
 
-  descr <- c(
-            Mean=m.1,
-            Variance=m.2,
-            Skewness=m.3/m.2^(3/2),
-            Kurtosis=m.4/m.2^2-3,
-            Min=Min,
-            Max=Max,
-            Miss.= if(miss) miss else NULL,
-            NAs= if(NAs) NAs else NULL
-            )
+    moments <- unname(cbe@stats$moments)
+    m.1 <- moments[1]
+    m.2 <- moments[2] - m.1^2
+    m.3 <- moments[3] - 3*moments[2]*m.1 + 2*m.1^3
+    m.4 <- moments[4] - 4*moments[3]*m.1 + 6*moments[2]*m.1^2 - 3*m.1^4
 
-  cbe@stats <- list(tab=tab,descr=descr)
-  cbe
+    Min <- cbe@stats$range[1]
+    Max <- cbe@stats$range[2]
+
+    descr <- c(
+        Mean=m.1,
+        Variance=m.2,
+        Skewness=m.3/m.2^(3/2),
+        Kurtosis=m.4/m.2^2-3,
+        Min=Min,
+        Max=Max
+    )
+
+    cbe@stats <- list(tab=tab,descr=descr)
+    cbe
 }
 
 fixupcodebookEntryDatetime <- function(cbe){
@@ -472,40 +595,22 @@ fixupcodebookEntryDatetime <- function(cbe){
     
   descr <- c(
             Min=format(as.POSIXct(Min,origin=origin)),
-            Max=format(as.POSIXct(Max,origin=origin)),
-            Miss.= if(miss) format(miss) else 0,
-            NAs= if(NAs) format(NAs) else 0
+            Max=format(as.POSIXct(Max,origin=origin))
             )
 
   cbe@stats <- list(descr=format(descr))
   cbe
 }
 
-
-
-fixupcodebookEntryChar <- function(cbe){
-  tab <- cbe@stats$tab
-  if(length(tab)){
-    valid <- !is.na(tab[,2])
-    Nvalid <- sum(tab[valid,1])
-    if(Nvalid)
-      tab[valid,2] <- 100*tab[valid,1]/Nvalid
-    tab[,3] <- 100*tab[,1]/sum(tab[,1])
-    cbe@stats$tab <- tab
-  }
-  
-  miss <- cbe@stats$missings[1]
-  NAs <- cbe@stats$missings[2]
-  Min <- cbe@stats$range[1]
-  Max <- cbe@stats$range[2]
-
-  descr <- c(
-            Min=Min,
-            Max=Max,
-            Miss.= if(miss) miss else NULL,
-            NAs= if(NAs) NAs else NULL
-            )
-
-  cbe@stats <- list(tab=tab,descr=descr)
-  cbe
-}
+setMethod("head",signature(x="importer"),
+          function(x,n=20,...){
+              y <- utils::head.matrix(x,n=n,...)
+              rownames(y) <- 1:n
+              return(y)
+          })
+setMethod("tail",signature(x="importer"),
+          function(x,n=20,...){
+              y <- utils::tail.matrix(x,n=n,...)
+              rownames(y) <- seq.int(to=nrow(x),length.out=n)
+              return(y)
+          })
