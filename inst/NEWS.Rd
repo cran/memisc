@@ -74,6 +74,12 @@
           "codeplan", "decriptions", "data.set", and "inporter" are
           provided, which allow to conviently inspect the contents of
           these objects in RStudio.
+    \item An "as.data.table" for coercing "data.set" objects directly
+          into "data.table" objects.
+    \item It is now possible to specify the measurement level for a set
+          of variables in a "data.set" objects, either by using the
+          assignment operator with \code{measurement()} or by using
+          the new function \code{set_measurement()}. 
     }
   }
   \subsection{IMPROVEMENTS}{
@@ -115,7 +121,23 @@
       \item The function \code{recode} behaves more coherently:  If a labelled
             vector is the result of 'recode' it gets the measurement level
             "nominal". Factor levels explictly created first come first in the order of
-            factor levels. 
+            factor levels.
+      \item The function \code{spss.system.file} now handles buggy SPSS
+            system files that lack information about the number of
+            variables in their header. (These files are typically
+            created by the library ReadStat, used e.g. by the R package
+            'haven'.)
+      \item SPSS syntax files are now converted to the encoding of
+            the host system if they have a different one. By default,
+            the original encoding is assumed to be Codepage 1252 (extended
+            Latin-1).
+      \item \code{codebook}, \code{codeplan}, \code{labels},
+            \code{value.filter}, and related functions return \code{NULL} 
+            for \code{NULL} arguments.
+      \item \code{codebook} works also with data frames (or "tibbles")
+            imported with the \emph{haven} package.
+      \item \code{codebook} now makes use of the "label" attribute of variables if the
+            attribute is present.
     }
   }
   \subsection{BUGFIXES}{

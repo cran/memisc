@@ -5,13 +5,13 @@
 
 \title{Write Codebooks and Variable Descriptions into a Text File}
 \description{
-   This is a conventience function to facilitate the creation of data set documents
+   This is a convenience function to facilitate the creation of data set documents
    in text files.
   }
 \usage{
-  Write(x,\dots)
-  \S3method{Write}{codebook}(x,file=stdout(),\dots)
-  \S3method{Write}{descriptions}(x,file=stdout(),\dots)
+Write(x,\dots)
+\S3method{Write}{codebook}(x,file=stdout(),\dots)
+\S3method{Write}{descriptions}(x,file=stdout(),\dots)
 }
 \arguments{
   \item{x}{a "codebook" or "descriptions" object.}
