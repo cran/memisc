@@ -410,14 +410,25 @@ export(
 export(List)
 
 export(Groups)
-exportMethods(Groups)
+S3method(Groups,data.frame)
+S3method(Groups,data.set)
+S3method(Groups,grouped.data)
 
 S3method(with,grouped.data)
 S3method(within,grouped.data)
-S3method(names,grouped.data)
-S3method(print,grouped.result)
+
+S3method(print,grouped.data.frame)
+S3method(print,grouped.data.set)
 export(recombine)
-S3method(recombine,grouped.data)
+S3method(recombine,grouped.data.frame)
+S3method(recombine,grouped.data.set)
+
+S3method(as.data.frame,grouped.data)
+# S3method(as.data.set,grouped.data.frame)
+# S3method(as.data.set,grouped.data.set)
+
+
+S3method(print,grouped.result)
 export(withGroups,withinGroups)
 
 export(Reshape)
@@ -444,3 +455,6 @@ S3method(as.data.table,data.set)
 # exportMethods(as.data.table) 
 
 export(set_measurement)
+
+export(Mean,Median,Min,Max,Weighted.Mean,
+       Var,StdDev,Cov,Cor,Range)

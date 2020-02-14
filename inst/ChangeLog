@@ -1,3 +1,23 @@
+2019-01-02:
+   - Added convenience wrappers 'Mean()', 'Var()', etc. to basic stats
+     functions such as 'mean()', 'var()', etc.
+   - 'rename()', 'relabel()', 'dimrename()', etc. now also work without
+     quoting the new labels, i.e. 'rename(x,a=A)' now works like 'rename(x,a="A")'.
+
+2019-12-31:
+   - Changed 'Groups' from S4-generic to S3-generic
+
+2019-12-30:
+   - 'n_', 'N_', and 'i_'are  available in 'with(Groups)' and 'within(Groups())'
+   - 'N_' is available in 'within' for data.sets
+
+2019-12-29:
+   - 'genTable' and 'Aggregate' now internally use 'with(Groups(...),...)
+
+2019-12-24:
+   - 'withGroups', 'withinGroups', as well as 'with' and 'within' for
+     grouped data is now considerably more time efficient. 
+
 2019-12-17:
    - 'codebook' now makes use of the "label" attribute of variables if the
      attribute is present.

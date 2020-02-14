@@ -43,111 +43,270 @@ as_factor <- function(x){
     }
 }
 
-Groups.data.set.formula <- function(data,by,...){
-    varn <- all.vars(by)
-    vars <- data[varn]
-    factors <- lapply(vars,as_factor)
-    ii <- 1:nrow(data)
-    orig.id <- split(ii,factors)
-    structure(tapply(ii,factors,getRows_,data=data),
-              orig.id=orig.id,
-              row.names=attr(data,"row.names"),
-              spec=vars[0,,drop=FALSE],
-              class=c(paste("grouped",class(data)[1],sep="."),"grouped.data"))
+get_all_vars <- function(formula,data,inherits=TRUE){
+    formula.vars <- all.vars(formula)
+    data.vars <- names(data)
+    if(all(formula.vars %in% data.vars))
+        return(data[formula.vars])
+    else {
+        other.vars <- setdiff(formula.vars,data.vars)
+        data.vars <- intersect(formula.vars,data.vars)
+        res <- data[data.vars]
+        other.vars <- mget(other.vars,inherits=inherits)
+        res[names(other.vars)] <- other.vars
+        return(res)
+    }
 }
 
-setMethod("Groups",signature(data="data.set",by="formula"),
-          Groups.data.set.formula)
-setMethod("Groups",signature(data="data.frame",by="formula"),
-          Groups.data.set.formula)
+Groups <- function(data,by,...) UseMethod("Groups")
+    
+Groups.data.frame <- function(data,by,...){
+    by.vars <- get_all_vars(by,data)
+    factors <- lapply(by.vars,as_factor)
+    ii <- 1:nrow(data)
+    ii <- tapply(ii,factors,I)
+    n.ii <- sapply(ii,length)
+    dim(n.ii) <- dim(ii)
+    extra.attr <- list(groups=ii,
+                       sizes=n.ii,
+                       spec=by.vars[0,,drop=FALSE],
+                       class=c(paste("grouped",class(data)[1],sep="."),"grouped.data",class(data)))
+    attributes(data) <- c(attributes(data),extra.attr)
+    data
+}
+
+
+Groups.data.set <- function(data,by,...){
+    by.vars <- get_all_vars(by,data)
+    factors <- lapply(by.vars,as_factor)
+    data <- structure(data@.Data,
+                      names=names(data),
+                      row.names=data@row_names,
+                      class="data.frame")
+    ii <- 1:nrow(data)
+    ii <- tapply(ii,factors,I)
+    n.ii <- sapply(ii,length)
+    dim(n.ii) <- dim(ii)
+    extra.attr <- list(groups=ii,
+                       sizes=n.ii,
+                       spec=by.vars[0,,drop=FALSE],
+                       class=c("grouped.data.set","grouped.data",class(data)))
+    attributes(data) <- c(attributes(data),extra.attr)
+    data
+}
+
+Groups.grouped.data <- function(data,by,...)Groups(recombine(data),by,...)
+
+ngroups <- function(x){
+    sum(attr(x,"sizes") > 0)
+}  
 
 eval1call <- function(data,call,envir){
     call$data <- data
     eval(call,envir=envir)
 }
 
+mklen <- function(x,n){
+    y <- vector(length=n,mode=mode(x))
+    y[] <- x
+    return(y)
+}
+
+first <- function(x) x[[1]]
+last <- function(x) x[[length(x)]]
+set_first <- function(x,value){
+    x[[1]] <- value
+    x
+}
+set_last <- function(x,value){
+    x[[length(x)]] <- value
+    x
+}
+
+fill_dimnames2 <- function(dn,d){
+    isn <- sapply(dn,length) == 0
+    dn[isn] <- lapply(d[isn],seq.int)
+    dn
+}
+
+within1.grouped.data <- function(ii,data,expr,N_,parent=parent.frame(),...){
+    if(!length(ii)) return(NULL)
+    encl <- new.env(parent=parent)
+    n <- length(ii)
+    assign("n_",n,envir=encl)
+    assign("N_",N_,envir=encl)
+    assign("i_",ii,envir=encl)
+    e <- evalq(environment(),data[ii,,drop=FALSE],encl)
+    eval(expr,e)
+    l <- as.list(e,all.names=TRUE)
+    # l[!vapply(l, is.null, NA, USE.NAMES = FALSE)]
+    ll <- vapply(l,length,0,USE.NAMES=FALSE)
+    ll1 <- which(ll==1)
+    l[ll1] <- lapply(l[ll1],mklen,n)
+    wrongl <- which(ll != n)
+    l[wrongl] <- NULL
+    return(l)                
+}
+
+rbind1col <- function(i,mat){
+    do.call(c,mat[,i])
+}
+
+reorder1 <- function(x,ii){
+    x[ii] <- x
+    return(x)
+}
+
 within.grouped.data <- function(data,expr,recombine=FALSE,...){
-    non.null <- sapply(data,length) > 0
-    data_ <- data[non.null]
-    call_ <- match.call()
-    call_[[1]] <- as.name("within")
-    # for(i in 1:length(data_)){
-    #     call_$data=data_[[i]]
-    #     data_[[i]] <- eval(call_,envir=parent.frame())
-    # }
-    data_ <- lapply(data_,eval1call,call=call_,envir=parent.frame())
-    data[non.null] <- data_
+
+    parent <- parent.frame()
+    mc <- match.call()
+
+    groups <- attr(data,"groups")
+    sizes <- attr(data,"sizes")
+    non_empty <- as.vector(sizes) > 0
+    ii <- groups[non_empty]
+
+    av <- all.vars(mc$expr)
+    av <- intersect(av,names(data))
+
+    res <- lapply(ii,within1.grouped.data,data[av],mc$expr,N_=nrow(data),parent=parent.frame())
+
+    n <- length(res)
+    m <- length(res[[1]])
+    nms <- names(res[[1]])
+    res <- unlist(res,recursive=FALSE)
+
+    dim(res) <- c(m,n)
+
+    res <- t(res)
+    res <- lapply(1:m,FUN=rbind1col,mat=res)
+
+    names(res) <- nms
+
+    ii <- unlist(ii)
+
+    res <- lapply(res,FUN=reorder1,ii=ii)
+    res <- rev(res)
+
+    data[names(res)] <- res
+    
     if(recombine)
-        recombine(data)
-    else
-        data
+        return(recombine(data))
+    else 
+        return(data)
+}
+
+with1 <- function(ii,data,expr,N_,parent=parent.frame(),...){
+    encl <- new.env(parent=parent)
+    assign("n_",length(ii),envir=encl)
+    assign("N_",N_,envir=encl)
+    assign("i_",ii,envir=encl)
+    eval(expr, data[ii,,drop=FALSE], enclos = encl)
+}
+
+add_tags <- function(expr,taggables=c("c","list","cbind","rbind")){
+    is_taggable <- as.character(expr[[1]]) %in% taggables
+    if(is_taggable){
+        expr_1 <- expr[-1]
+        n <- length(expr_1)
+        if(!length(names(expr_1))){
+            untagged <- rep(TRUE,n)
+            names(expr) <- c("",letters[seq.int(n)])
+        }
+        else
+            untagged <- !nzchar(names(expr_1))
+        if(any(untagged)){
+            names(expr)[-1][untagged] <- sapply(expr_1[untagged],deparse)
+        }
+    }
+    expr
 }
 
 with.grouped.data <- function(data,expr,...){
-    non.null <- sapply(data,length) > 0
-    res_ <- data[non.null]
+    mc <- match.call()
+    expr <- mc$expr
+    groups <- attr(data,"groups")
+    sizes <- attr(data,"sizes")
+    non_empty <- as.vector(sizes) > 0
+    av <- all.vars(mc$expr)
+    av <- intersect(av,names(data))
+    #with1. <- function(ii) eval(mc$expr,data[ii,av,drop=FALSE],enclos=parent.frame())
+    expr <- add_tags(expr)
+    
+    ii <- groups[non_empty]
+    res_ <- lapply(ii,with1,data[av],expr,N_=nrow(data),parent=parent.frame())
+    #system.time(res_ <- lapply(ii,with1.))#,data[av],mc$expr)
     spec_ <- attr(data,"spec")
-    call_ <- match.call()
-    call_[[1]] <- as.name("with")
-    # for(i in 1:length(res_)){
-    #     call_$data=res_[[i]]
-    #     res_[[i]] <- eval(call_,envir=parent.frame())
-    # }
-    res_ <- lapply(res_,eval1call,call=call_,envir=parent.frame())
-    if(all(non.null)){
-        res_len <- sapply(res_,length)
-        if(length(unique(res_len))==1) {
-            # All results have the same length
-            if(length(dim(res_[[1]]))){
-                newdim <- c(dim(res_[[1]]),dim(data))
-                newdimnames <- c(dimnames(res_[[1]]),dimnames(data))
-            } else if(length(res_[[1]]) > 1){
-                newdim <- c(length(res_[[1]]),dim(data))
-                newdimnames <- c(list(names(res_[[1]])),dimnames(data))
-            } else {
-                newdim <- c(dim(data))
-                newdimnames <- c(dimnames(data))
+
+    res_len <- sapply(res_,length)
+
+    if(length(unique(res_len))==1) {
+        # All results have the same length
+        res_len <- res_len[1]
+        if(length(dim(res_[[1]]))){
+            dim_res <- dim(res_[[1]])
+            newdim <- c(dim_res,dim(groups))
+            if(length(res_dimnames <- dimnames(res_[[1]]))){
+                newdimnames <- c(res_dimnames,dimnames(groups))
             }
-            if(all(sapply(res_,is.atomic))) {
-                data <- unlist(res_)
-            } else {
-                data <- unlist(res_,recursive=FALSE)
+            else
+                newdimnames <- c(rep(list(NULL),length(dim_res)),
+                                 dimnames(groups))
+        } else if(length(res_[[1]]) > 1){
+            newdim <- c(length(res_[[1]]),dim(groups))
+            newdimnames <- c(list(names(res_[[1]])),dimnames(groups))
+        } else {
+            newdim <- dim(groups)
+            newdimnames <- dimnames(groups)
+        }
+        if(all(sapply(res_,is.atomic))) {
+            if(all(non_empty)){
+                res <- unlist(res_)
             }
-            dim(data) <- newdim
-            dimnames(data) <- newdimnames
-        } 
+            else {
+                res <- rep(NA,length(groups)*res_len)
+                res[rep(non_empty,each=res_len)] <- unlist(res_)
+            }
+            
+        } else {
+            res <- vector(mode="list",length=length(groups)*res_len)
+            res[rep(non_empty,each=res_len)] <- unlist(res_,recursive=FALSE)
+        }
+        dim(res) <- newdim
+        dimnames(res) <- fill_dimnames2(newdimnames,newdim)
     }
-    else{
-        data[non.null] <- res_
-        attr(data,"orig.id") <- NULL
+    else {
+        res <- vector(mode="list",length=length(groups))
+        res[non_empty] <- unlist(res_,recursive=FALSE)
+        dim(res) <- dim(groups)
+        dimnames(res) <- dimnames(groups)
     }
-    class(data) <- "grouped.result"
-    if(!inherits(spec_,"data.frame")){
-        attr(data,"spec") <- spec_
+
+    if(length(dim(res)) >= 2){
+        if(is.null(rownames(res))){
+            if(nrow(res)==1) rownames(res) <- deparse(expr)
+            else if( as.character(expr[[1]]) %in% c("c","cbind","rbind")
+                    && length(expr[-1]) == nrow(res))
+                rownames(res) <- paste(expr[-1])
+            else if(as.character(expr[[1]]) %in% c("range"))
+                rownames(res) <- c("Min","Max")
+        }
     }
-    data
+    
+    class(res) <- "grouped.result"
+    attr(res,"spec") <- spec_
+    attr(res,"sizes") <- sizes
+    if(is.atomic(res))
+        class(res) <- c(class(res),"table")
+    res
 }
 
 print.grouped.result <- function(x,...){
     attr(x,"spec") <- NULL
-    class(x) <- NULL
+    attr(x,"sizes") <- NULL
+    class(x) <- NULL #setdiff(class(x),"grouped.result")
     print.default(x)
-}
-
-names.grouped.data <- function(x){
-    names(x[[1]])
-}
-
-
-recombine <- function(x,...) UseMethod("recombine")
-
-recombine.grouped.data <- function(x,...) {
-    orig.id <- attr(x,"orig.id")
-    row.names <- attr(x,"row.names")
-    y <- do.call(rbind,x)
-    ii <- unlist(orig.id)
-    y[ii,] <- y
-    structure(y,row.names=row.names)
 }
 
 withGroups <- function(data,by,expr,...) {
@@ -160,9 +319,49 @@ withGroups <- function(data,by,expr,...) {
 withinGroups <- function(data,by,expr,recombine=TRUE,...) {
     data <- Groups(data=data,by=by)
     call_ <- match.call()
-    call_[[1]] <- within.grouped.data
+    call_[[1]] <- within
     call_$data <- data
     call_$recombine <- recombine
     eval(call_,envir=parent.frame())
 }
 
+recombine <- function(x,...) UseMethod("recombine")
+
+recombine.grouped.data.frame <- function(x,...) {
+    attributes(x)[c("spec","sizes","groups")] <- NULL
+    class(x) <- "data.frame"
+    return(x)
+}
+
+recombine.grouped.data.set <- function(x,...) {
+    attributes(x)[c("spec","sizes","groups")] <- NULL
+    class(x) <- NULL
+    return(new("data.set",x))
+}
+
+
+print.grouped.data.frame <- function(x,...){
+  ngrps <- ngroups(x)  
+  cat("\nGrouped data frame with",nrow(x), "observations in",ngrps,"groups of",ncol(x),"variables\n\n")
+  print_frame_internal(x,max.obs=getOption("show.max.obs"),width=getOption("width"),...)
+}
+
+print.grouped.data.set <- function(x,...){
+  ngrps <- ngroups(x)  
+  cat("\nGrouped data frame with",nrow(x), "observations in",ngrps,"groups of",ncol(x),"variables\n\n")
+  print_frame_internal(x,max.obs=getOption("show.max.obs"),width=getOption("width"),...)
+}
+
+
+as.data.set.grouped.data <- function(x,...){
+    as.data.set(recombine(x),...)
+}
+
+as.data.frame.grouped.data <- function(x,...){
+    as.data.frame(recombine(x),...)
+}
+
+setOldClass("grouped.data.set")
+setOldClass("grouped.data.frame")
+setMethod("as.data.set","grouped.data.set",as.data.set.grouped.data)
+setMethod("as.data.set","grouped.data.frame",as.data.set.grouped.data)
