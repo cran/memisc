@@ -1,4 +1,57 @@
-2019-01-02:
+2020-06-19:
+   - Added documentation about coercion of items into vectors, etc.
+
+2020-06-18:
+   - Fixed 'as.data.frame()' method for extended tables of percentages (i.e.
+     those that include standard errors or confidence intervals).
+
+2020-06-17:
+   - Add 'include.missings' option to 'as.character()' coercion method for
+     "item.vector" objects.
+
+2020-06-16:
+   - Added an explicit 'as.data.set()' method for "tibbles", which seems to be
+     necessary, because under some circumstances method dispatch via inheritence
+     does not seem to work.
+   - Added methods to apply 'codeplan()' to individual survey items and to set
+     'codeplan()' to NULL.
+
+2020-06-09:
+   - 'as.item()' and 'codebookEntry()' methods are added for objects of class
+     "labelled" as they occur in some imported tibbles.
+   - 'as.item()' now drops non-unique labelled values when applied to a
+     "labelled", "haven_labelled", or "haven_labelled_spss" object.
+	
+2020-06-05:
+   - With 'codebook()' it is now possible to disable the display of unweighted
+     data summaries.
+   - In accordance to future deprecation of the function
+     'default.stringsAsFactors()' the default value of the 'stringsAsFactor'
+     argument is now FALSE.
+
+2020-05-26:
+   - The character set encoding in an SPSS file is now detected (if information
+     is available) and used to translate the variable labels and value labels.
+
+2020-05-25:
+   - Added support for weighted codebooks from importer objects
+   - Added documentation about use of weights
+   - Added support for subsetting codebooks with '$', '[', and  '[['
+   - Fixed a bug that prevented 'genTable' and 'Aggregate' to work as expected
+     with data.set objects
+   - Measurement levels of variables in 'data.set' objects are now obtained from
+     the metadata in the SPSS file (if available)
+
+2020-05-24:
+   - Drop skewness and kurtosis from codebook output
+
+2020-05-19:
+   - Added support for weighted codebooks from in-memory data.set objects
+
+2020-03-14:
+   - Added 'deduplicate_labels()' function to deal with duplicated value labels.
+
+2020-01-02:
    - Added convenience wrappers 'Mean()', 'Var()', etc. to basic stats
      functions such as 'mean()', 'var()', etc.
    - 'rename()', 'relabel()', 'dimrename()', etc. now also work without

@@ -1,9 +1,9 @@
-## ----echo=FALSE,message=FALSE--------------------------------------------
+## ----echo=FALSE,message=FALSE-------------------------------------------------
 knitr::opts_chunk$set(comment=NA,
                fig.align="center",
                results="markup")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 tab.Class.Age <- xtabs(Freq~Class+Age,data=Titanic)
 tab.Survived.Class.Age <- xtabs(Freq~Survived+Class+Age,data=Titanic)
 tab.Survived.Class.Sex <- xtabs(Freq~Survived+Class+Sex,data=Titanic)
@@ -12,36 +12,36 @@ tab.Survived.Sex <- xtabs(Freq~Survived+Sex,data=Titanic)
 tab.Survived.Age <- xtabs(Freq~Survived+Age,data=Titanic)
 tab.Survived <- xtabs(Freq~Survived,data=Titanic)
 
-## ----message=FALSE-------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 library(memisc)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 (ftab.Survived.Age <- ftable(tab.Survived.Age))
 (ftab.Survived.Sex <- ftable(tab.Survived.Sex))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 cbind(ftab.Survived.Age,
       ftab.Survived.Sex)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 cbind(ftab.Survived.Age,
       ftab.Survived.Sex,
       Total=tab.Survived)
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(ftab.Survived.Age)
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(ftab.Survived.Sex)
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(
   cbind(ftab.Survived.Age,
       ftab.Survived.Sex,
       Total=tab.Survived)
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 knit_print.ftable_matrix <-function(x,options,...)
   knitr::asis_output(
     format_html(x,
@@ -50,15 +50,15 @@ knit_print.ftable_matrix <-function(x,options,...)
                        else 0,
                 ...))
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 cbind(ftab.Survived.Age,
       ftab.Survived.Sex,
       Total=tab.Survived)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 rm(knit_print.ftable_matrix)
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(
   cbind(ftab.Survived.Age,
       ftab.Survived.Sex,
@@ -66,7 +66,7 @@ show_html(
   varinfront=FALSE
 )
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(
   cbind(ftab.Survived.Age,
       ftab.Survived.Sex,
@@ -74,7 +74,7 @@ show_html(
   varontop=FALSE
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 ftab.Age.Survived <- ftable(tab.Survived.Age,col.vars=1)
 ftab.Sex.Survived <- ftable(tab.Survived.Sex,col.vars=1)
 ftab.Class.Survived <- ftable(tab.Survived.Class,col.vars=1)
@@ -86,7 +86,7 @@ rbind(
   Total=tab.Survived
 )
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(
   rbind(
     ftab.Age.Survived,
@@ -96,7 +96,7 @@ show_html(
   )
 )
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 ptab.Survived.Age<-percentages(Survived~Age,data=Titanic)
 ptab.Survived.Sex<-percentages(Survived~Sex,data=Titanic)
 ptab.Survived.Class<-percentages(Survived~Class,data=Titanic)
@@ -114,7 +114,7 @@ show_html(
   digits=1
 )
 
-## ----results='asis'------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 tab.Age <- xtabs(Freq~Age,data=Titanic)
 tab.Sex <- xtabs(Freq~Sex,data=Titanic)
 tab.Class <- xtabs(Freq~Class,data=Titanic)
@@ -130,7 +130,7 @@ show_html(
                 # no digits for total counts.
 )
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 toLatex(
   rbind(
     cbind(fptab.Age.Survived,Total=tab.Age),

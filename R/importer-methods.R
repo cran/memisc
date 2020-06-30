@@ -239,7 +239,14 @@ setMethod("description","importer",function(x){
     structure(res,class="descriptions")
 })
 
-setMethod("codebook","importer",function(x){
+setMethod("codebook","importer",function(x, weights=NULL, unweighted=TRUE, ...){
+  if(!missing(weights))
+    weights <- deparse(substitute(weights))
+  if(length(weights)){
+      cat("Weights are from ",weights,"\n")
+      # warning("Weights for codebooks of 'importer' objects are not yet supported.")
+  }
+  
   cs <- getOption("codebook.chunk.size")
   nobs <- nrow(x)
   if(nobs < cs) cs <- nobs
@@ -250,15 +257,31 @@ setMethod("codebook","importer",function(x){
                           names=x@names),
                 initcodebookEntry)
   seekData(x)
-  for(i in 1:m)
-    res <- mapply(updatecodebookEntry,res,readData(x,n=cs))
-  if(r > 0)
-    res <- mapply(updatecodebookEntry,res,readData(x,n=r))
-  res <- lapply(res,fixupcodebookEntry)
+  w <- NULL
+  w.idx <- match(weights,names(x))
+  for(i in 1:m){
+    chunk <- readData(x,n=cs)
+    if(length(weights)){
+      w <- as.numeric(chunk[[w.idx]])
+      w[is.na(w)] <- 0
+    }
+    res <- mapply(updatecodebookEntry,res,chunk,
+                  MoreArgs=list(weights=w))
+  }
+  if(r > 0){
+    chunk <- readData(x,n=r)
+    if(length(weights)){
+      w <- as.numeric(chunk[[w.idx]])
+      w[is.na(w)] <- 0
+    }
+    res <- mapply(updatecodebookEntry,res,chunk,
+                  MoreArgs=list(weights=w))
+  }
+  res <- lapply(res,fixupcodebookEntry,unweighted=unweighted)
   new("codebook",res)
 })
 
-initcodebookEntry <- function(x){
+initcodebookEntry <- function(x,weighted){
   annotation <- annotation(x)
   filter <- x@value.filter
   spec <- c(
@@ -272,8 +295,8 @@ initcodebookEntry <- function(x){
                                       valid.range    = c("Valid range:"    = format(filter))
                                ))
   stats <- switch(spec["Measurement:"],
-                  nominal=,ordinal=initcodebookStatsCateg(x),
-                  interval=,ratio=initcodebookStatsMetric(x),
+                  nominal=,ordinal=initcodebookStatsCateg(x,weights),
+                  interval=,ratio=initcodebookStatsMetric(x,weights),
                   `Date/time`=initcodebookStatsDatetime(x)
   )
   new("codebookEntry",
@@ -284,94 +307,50 @@ initcodebookEntry <- function(x){
 }
 
 
-updatecodebookEntry <- function(cbe,x){
+updatecodebookEntry <- function(cbe,x,weights=NULL){
   switch(cbe@spec["Measurement:"],
-         nominal=,ordinal=updatecodebookStatsCateg(cbe,x),
-         interval=,ratio=updatecodebookStatsMetric(cbe,x),
+         nominal=,ordinal=updatecodebookStatsCateg(cbe,x,weights),
+         interval=,ratio=updatecodebookStatsMetric(cbe,x,weights),
          `Date/time`=updatecodebookStatsDatetime(cbe,x)
   )
 }
 
 
-initcodebookStatsCateg <- function(x) {
+initcodebookStatsCateg <- function(x,weights=NULL) {
     vl <- labels(x)
     ic <- inherits(x,"character")
     if(length(vl) || !ic){
-        list(tab=list())
+        if(length(weights))
+            list(tab=list(),wtab=list())
+        else
+            list(tab=list())
     } else {
         list()
     }
     
 } 
 
-cbTable1 <- function(x){
-    vl <- labels(x)
-    vvl <- vl@values
-    lvl <- vl@.Data
-    valid <- !is.missing2(vvl,x@value.filter)
-    i <- match(x@.Data,vvl,nomatch=0L)
-    tab <- tabulate(i,nbins=length(lvl))
-    names(tab) <- as.character(lvl)
-    is.m <- is.missing(x)
-    isNA <- is.na(x)
-    vl <- labels(x)
-    if(length(vl)){
-        vvl <- vl@values
-        lvl <- vl@.Data
-        valid <- !is.missing2(vvl,x@value.filter)
-        i <- match(x@.Data,vvl,nomatch=0L)
-        tab <- tabulate(i,nbins=length(vvl))
-        names(tab) <- as.character(vl@values)
-        lab <- sQuote(vl@.Data) 
-    }
-    else {
-        valid <- logical(0)
-        tab <- c()
-        lab <- c()
-        i <- logical(length(x))
-    }
-
-    ovld <- sum(!is.m & !i)
-    omiss <- sum(is.m & !i & !isNA)
-    NAs <- sum(isNA)
-
-    list(tab=tab,
-         ovld=ovld,
-         omiss=omiss,
-         NAs=NAs,
-         value.labels=vl,
-         value.filter=x@value.filter)
-}
-
-update_cbTable1 <- function(current,update){
-    if(length(current)){ 
-        if(length(current$tab) > length(update$tab)) {
-            ii <- match(names(update$tab),names(current$tab))
-            current$tab[ii] <- current$tab[ii] + update$tab
-        }
-        else if(length(current$tab) < length(update$tab)){
-            ii <- match(names(current$tab),names(update$tab))
-            update$tab[ii] <- current$tab + update$tab[ii]
-            current$tab <- update$tab
-        }
-        else
-            current$tab <- current$tab + update$tab
-        current$ovld <- current$ovld + update$ovld
-        current$omiss <- current$nomiss + update$omiss
-        current$NAs <- current$NAs + update$NAs
-        return(current)
-    }
-    else return(update)
-}
-
-updatecodebookStatsCateg <- function(cbe,x){
+updatecodebookStatsCateg <- function(cbe,x,weights=NULL){
     vl <- labels(x)
     ic <- inherits(x,"character")
     stats <- cbe@stats
 
     if(length(vl) || !ic){
-        tab <- cbTable1(x)
-        stats$tab <- update_cbTable1(stats$tab,tab)
+        tab <- codebookTable_item(x,drop.empty=FALSE)
+        tab.title <- attr(tab,"title")
+        if(length(stats$tab)){
+          stats$tab <- stats$tab + tab
+        }
+        else 
+            stats$tab <- tab
+        attr(stats$tab,"title") <- tab.title
+        if(length(weights)){
+            wtab <- codebookTable_item(x,weights=weights,drop.empty=FALSE)
+            if(length(stats$wtab))
+                stats$wtab <- stats$wtab + wtab
+            else 
+                stats$wtab <- wtab
+        }
     } else {
         stats1 <- cbChar1(x)
         stats <- update_cbChar1(stats,stats1)
@@ -400,41 +379,67 @@ update_cbChar1 <- function(current,update){
 }
 
 
-initcodebookStatsMetric <- function(x){
-    stats <- list()
-    if(length(x@value.labels))
-        stats$tab <- list()
-    stats$moments <- numeric(0)
+initcodebookStatsMetric <- function(x,weights=NULL){
+    if(length(labels(x))){
+        if(length(weights))
+            stats <- list(tab=list(),wtab=list())
+        else
+            stats <- list(tab=list())
+    }
+    else stats <- list()
+    stats$descr <- numeric(0)
     stats$range <- numeric(0)
     stats$missings <- integer(0)
     stats
 }
 
-updatecodebookStatsMetric <- function(cbe,x){
+cb_descr <- function(x,w=NULL){
+  m <- c(n     = length(x),
+         sum.x = sum(x),
+         sum.x2 = sum(x^2))
+  if(length(w)){
+    wm <- c(sum(w),
+            sum(w*x),
+            sum(w*x^2))
+    m <- cbind(Unweighted=m,Weighted=wm)
+  }
+  else m <- as.matrix(m)
+  return(m)
+}
+
+updatecodebookStatsMetric <- function(cbe,x,weights=NULL){
   stats <- cbe@stats
   if(length(x@value.labels)){
-      tab <- cbTable1(x)
-      stats$tab <- update_cbTable1(stats$tab,tab)
+    tab <- codebookTable_item(x,drop.empty=FALSE)
+    tab.title <- attr(tab,"title")
+    if(length(stats$tab)){
+      stats$tab <- stats$tab + tab
+    }
+    else 
+      stats$tab <- tab
+    attr(stats$tab,"title") <- tab.title
+    if(length(weights)){
+      wtab <- codebookTable_item(x,weights=weights,drop.empty=FALSE)
+      if(length(stats$wtab))
+        stats$wtab <- stats$wtab + wtab
+      else 
+        stats$wtab <- wtab
+    }
   }
-  miss <- is.missing(x)
-  NAs <- is.na(x@.Data)
-  x <- x@.Data[!miss & !NAs]
-  NAs <- sum(NAs)
-  miss <- sum(miss,na.rm=TRUE)
+  ismiss <- is.missing(x)
+  isna <- is.na(x@.Data)
+  x <- x@.Data[!ismiss & !isna]
+  NAs <- sum(isna)
+  miss <- sum(ismiss,na.rm=TRUE)
   if(length(x)){
-    moments <- Moments(x)
-    stats$moments <- if(length(stats$moments)) {
-                      N1 <- stats$moments[5]
-                      N2 <- moments[5]
-                      N <- N1 + N2
-                      w1 <- N1/N
-                      w2 <- N2/N
-                      c(
-                        w1*stats$moments[-5] + w2*moments[-5],
-                        N = N
-                        )
-                      }
-                  else moments
+    if(length(weights))
+      w <- weights[!ismiss & !isna]
+    else
+      w <- NULL
+    descr <- cb_descr(x,w=w)
+    stats$descr <- if(length(stats$descr)) stats$descr + descr
+                     else descr
+    
     stats$range <- if(length(stats$range)) range(stats$range,range(x))
                 else range(x)
   }
@@ -453,7 +458,7 @@ initcodebookStatsDatetime <- function(x){
 }
 
 
-updatecodebookStatsDatetime <- function(cbe,x){
+updatecodebookStatsDatetime <- function(cbe,x,weights=NULL){
   stats <- cbe@stats
   miss <- is.missing(x)
   NAs <- is.na(x@.Data)
@@ -471,115 +476,109 @@ updatecodebookStatsDatetime <- function(cbe,x){
 }
 
 
-fixupcodebookEntry <- function(cbe){
+fixupcodebookEntry <- function(cbe,unweighted=TRUE){
     switch(cbe@spec["Measurement:"],
-    nominal=,ordinal=fixupcodebookEntryCateg(cbe),
-    interval=,ratio=fixupcodebookEntryMetric(cbe),
+    nominal=,ordinal=fixupcodebookEntryCateg(cbe,unweighted=unweighted),
+    interval=,ratio=fixupcodebookEntryMetric(cbe,unweighted=unweighted),
     `Date/time`=fixupcodebookEntryDatetime(cbe)
   )
 }
 
-fixupCodebookTable <- function(x,drop.unlabelled=FALSE){
-    vl <- x$value.labels
-    if(length(vl)){
-        vvl <- vl@values
-        lvl <- vl@.Data
-        valid <- !is.missing2(vvl,x$value.filter)
-        tab <- rep(0,length=length(vvl))
-        names(tab) <- as.character(vvl)
-        tab[names(x$tab)] <- x$tab
-        lab <- sQuote(vl@.Data) 
-        tab.title <- "Values and labels"
-    }
-    else {
-        valid <- logical(0)
-        tab <- c()
-        lab <- c()
-        tab.title <- "Values"
-    }
-    
-    ovld <- x$ovld
-    omiss <- x$omiss
-    NAs <- x$NAs
-
-    if(length(ovld) && ovld){
-        tab <- c(tab," "=ovld)
-        lab <- c(lab,"(unlab.val.)")
-        valid <- c(valid,TRUE)
-    }
-
-    if(length(omiss) && omiss){
-        tab <- c(tab," "=omiss)
-        lab <- c(lab,"(unlab.mss.)")
-        valid <- c(valid,FALSE)
-    }
-    if(length(NAs) && NAs){
-        tab <- c(tab,"NA"=NAs)
-        lab <- c(lab,"")
-        valid <- c(valid,FALSE)
-    }
-    
-    missing.marker <- "M"
-    valid.marker <- paste(rep(" ",nchar(missing.marker)),collapse="")
-    lab <- paste(ifelse(valid,valid.marker,missing.marker),lab)
-    tab.nonzero <- tab>0
-    tab <- tab[valid | tab.nonzero]
-    lab <- lab[valid | tab.nonzero]
-    valid <- valid[valid | tab.nonzero]
-    vperc <- rep(NA,length(tab))
-    vtab <- tab[valid]
-    Nvalid <- sum(vtab)
-    if(Nvalid) vperc[valid] <- 100 * vtab/Nvalid
-    else vperc[valid] <- 0
-    tperc <- 100 * tab/sum(tab)
-    tab <- cbind(N=tab,Valid=vperc,Total=tperc)
-    rownames(tab) <- names(tperc)
-    if(drop.unlabelled){
-        drp <- match("(unlab.val.)",trimws(lab),nomatch=0L)
-        tab <- tab[-drp,,drop=FALSE]
-        lab <- lab[-drp]
-    }
-    if(!length(tab))
-        tab <- NULL
-    else {
-        rownames(tab) <- paste(format(rownames(tab),justify="right"),format(lab,justify="left"))
-        attr(tab,"title") <- tab.title
-    }
-    return(tab)
+prc <- function(x){
+  s <- sum(x,na.rm=TRUE)
+  100*x/s
 }
 
-fixupcodebookEntryCateg <- function(cbe){
+fixupcodebookEntryCateg <- function(cbe,unweighted=TRUE){
     tab <- cbe@stats$tab
-    descr <- cbe@stats$descr
-    if(length(tab))
-        cbe@stats$tab <- fixupCodebookTable(tab,drop.unlabelled=FALSE)
-    # else if(length(descr))
+    wtab <- cbe@stats$wtab
+    if(length(tab)){
+        tab.title <- attr(tab,"title")
+        if(length(wtab)){
+            if(unweighted)
+                tab <- collect(Unweighted=tab,
+                               Weighted=wtab)
+            else
+                tab <- array(wtab,
+                             dim=c(dim(tab),1),
+                             dimnames=c(dimnames(tab),
+                                        list(NULL)))
+        } else {
+            tab <- array(tab,
+                         dim=c(dim(tab),1),
+                         dimnames=c(dimnames(tab),
+                                    list(NULL)))
+        }
+        rn <- rownames(tab)
+        ii <- (grepl("(unlab.val.)",rn,fixed=TRUE) | grepl("(unlab.mss.)",rn,fixed=TRUE) |
+               grepl("NA M ",rn,fixed=TRUE))
+        ii <- ii & tab[,1,1] == 0
+        tab <- tab[!ii,,,drop=FALSE]
+        d <- dim(tab)
+        dn <- dimnames(tab)
+        tab[,-1,] <- apply(tab[,-1,,drop=FALSE],2:3,prc)
+        dim(tab) <- d
+        dimnames(tab) <- dn
+        attr(tab,"title") <- tab.title
+        cbe@stats <- list(tab=tab)
+    }
     cbe
 }
 
-fixupcodebookEntryMetric <- function(cbe){
-    tab <- cbe@stats$tab
-    if(length(tab))
-        tab <- fixupCodebookTable(tab,drop.unlabelled=TRUE)
-
-    moments <- unname(cbe@stats$moments)
-    m.1 <- moments[1]
-    m.2 <- moments[2] - m.1^2
-    m.3 <- moments[3] - 3*moments[2]*m.1 + 2*m.1^3
-    m.4 <- moments[4] - 4*moments[3]*m.1 + 6*moments[2]*m.1^2 - 3*m.1^4
-
-    Min <- cbe@stats$range[1]
-    Max <- cbe@stats$range[2]
-
-    descr <- c(
-        Mean=m.1,
-        Variance=m.2,
-        Skewness=m.3/m.2^(3/2),
-        Kurtosis=m.4/m.2^2-3,
-        Min=Min,
-        Max=Max
-    )
-
+fixupcodebookEntryMetric <- function(cbe,unweighted=TRUE){
+    stats <- cbe@stats
+    tab <- stats$tab
+    wtab <- stats$wtab
+    if(length(tab)){
+        tab.title <- attr(tab,"title")
+        if(length(wtab)){
+            if(unweighted)
+                tab <- collect(Unweighted=tab,
+                               Weighted=wtab)
+            else
+                tab <- array(wtab,
+                             dim=c(dim(tab),1),
+                             dimnames=c(dimnames(tab),
+                                        list(NULL)))
+        } else {
+            tab <- array(tab,
+                         dim=c(dim(tab),1),
+                         dimnames=c(dimnames(tab),
+                                    list(NULL)))
+        }
+        rn <- rownames(tab)
+        ii <- (grepl("(unlab.val.)",rn,fixed=TRUE) | grepl("(unlab.mss.)",rn,fixed=TRUE) |
+               grepl("NA M ",rn,fixed=TRUE))
+        ii <- ii & tab[,1,1] == 0
+        tab <- tab[!ii,,,drop=FALSE]
+        d <- dim(tab)
+        dn <- dimnames(tab)
+        tab[,-1,] <- apply(tab[,-1,,drop=FALSE],2:3,prc)
+        dim(tab) <- d
+        dimnames(tab) <- dn
+        attr(tab,"title") <- tab.title
+    }
+    descr <- stats$descr
+    if(length(descr)){
+        # if(length(dim(descr))!=2) browser()
+        cn.d <- colnames(descr)
+        descr <- t(t(descr[-1,,drop=FALSE])/descr[1,]) # From sums to (weighted) means ...
+        descr[2,] <- sqrt(descr[2,] - descr[1,]^2)
+        
+        rnge <- stats$range
+        if(ncol(descr)==2){
+            if(unweighted)
+                descr <- rbind(cbind(rnge,rnge),descr)
+            else{
+                descr <- as.matrix(c(rnge,descr[,2]))
+                cn.d <- cn.d[2]
+            }
+        }
+        else
+            descr <- as.matrix(c(rnge,descr))
+        rownames(descr) <- c("Min","Max","Mean","Std.Dev.")
+        colnames(descr) <- cn.d
+    }
     cbe@stats <- list(tab=tab,descr=descr)
     cbe
 }
@@ -596,9 +595,11 @@ fixupcodebookEntryDatetime <- function(cbe){
   descr <- c(
             Min=format(as.POSIXct(Min,origin=origin)),
             Max=format(as.POSIXct(Max,origin=origin))
-            )
+  )
+  descr[] <- format(descr[])
+  descr <- as.matrix(descr)
 
-  cbe@stats <- list(descr=format(descr))
+  cbe@stats <- list(descr=descr)
   cbe
 }
 

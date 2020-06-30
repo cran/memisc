@@ -1,5 +1,6 @@
 \name{codebook}
 \alias{codebook}
+\alias{codebook,ANY-method}
 \alias{codebook,item-method}
 \alias{codebook,data.set-method}
 \alias{codebook,importer-method}
@@ -11,6 +12,9 @@
 \alias{format,codebookEntry-method}
 \alias{show,codebook-method}
 \alias{as.character,codebook-method}
+\alias{$,codebook-method}
+\alias{[,codebook,atomic,missing,ANY-method}
+\alias{[[,codebook-method}
 \title{Generate a Codebook of a Data Set}
 \description{
   Function \code{codebook} collects documentation about an item,
@@ -19,16 +23,22 @@
   in a nicely formatted way. 
 }
 \usage{
-codebook(x)
-\S4method{codebook}{item}(x)
-\S4method{codebook}{atomic}(x)
-\S4method{codebook}{factor}(x)
-\S4method{codebook}{data.set}(x)
-\S4method{codebook}{data.frame}(x)
-\S4method{codebook}{importer}(x)
+codebook(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{item}(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{atomic}(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{factor}(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{data.set}(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{data.frame}(x, weights = NULL, unweighted = TRUE, \dots)
+\S4method{codebook}{importer}(x, weights = NULL, unweighted = TRUE, \dots)
 }
 \arguments{
-  \item{x}{an \code{\link{item}}, numeric or character vector, factor, \code{\link{data.set}}, \code{\link{data.frame}} or \code{\link{importer}} object for \code{codebook()}}
+  \item{x}{an \code{\link{item}}, numeric or character vector, factor,
+    \code{\link{data.set}}, \code{\link{data.frame}} or \code{\link{importer}} object for \code{codebook()}}
+  \item{weights}{an optional vector of weights.}
+  \item{unweighted}{an optional logical vector; if weights are given, it
+    determines of only summaries of weighted data are show or also summaries of
+    unweighted data.}
+  \item{\dots}{other arguments, currently ignored.}
 }
 \value{
   An object of class "codebook", for which a \code{\link{show}} method exists that
@@ -79,6 +89,11 @@ description(Data)
 
 codebook(Data)
 
+codebook(Data)$vote
+codebook(Data)[2]
+
+codebook(Data[2])
+    
 \dontrun{
 Write(description(Data),
            file="Data-desc.txt")

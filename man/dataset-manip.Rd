@@ -10,7 +10,7 @@
 \description{
   Like data frames, \code{data.set} objects have
   \code{\link[base]{subset}}, \code{\link[base]{unique}},
-  \code{\link[base]{cbind}}, \code{\link[base]{rbind}},
+  \code{\link[base]{cbind}}, \code{\link[base:cbind]{rbind}},
   \code{\link[base]{merge}} methods defined for them.
 
   The semantics are basically the same as the methods defined
@@ -58,7 +58,7 @@
   }
   \item{deparse.level}{an argument retained for
     reasons of compatibility of the default methods
-    of \code{\link[base]{cbind}} and \code{\link[base]{rbind}}.
+    of \code{\link[base]{cbind}} and \code{\link[base:cbind]{rbind}}.
   }
 }
 \examples{
