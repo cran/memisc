@@ -1,4 +1,4 @@
-e8fe9c9fd75458dd3c547246e0a9cace *DESCRIPTION
+dbec77801fe08ab50e73ac85fca35a92 *DESCRIPTION
 ad541da332c38a3f2f256d481ce3dc03 *NAMESPACE
 160d1ef0551a201f24298a6ee50ee44d *R/AllClasses.R
 67ed7fd76480b479ab406571d7b0d258 *R/AllGenerics.R
@@ -17,13 +17,13 @@ e9dfcb730fc3f000d8bbfd0421c03de8 *R/annotation.R
 bef050693f66d825c3d6839dbbcfcbaa *R/applyTemplate.R
 f68fc4dd7c12b7b7b5bad3097824ea35 *R/cases.R
 f7ad68b4d6077687d6c2f13475684d3e *R/codebook-format-html.R
-5434a7aea1a2ae572c54d262f25c07c9 *R/codebook-methods.R
+57996d220aef985315ab3396f6c5e5b7 *R/codebook-methods.R
 22fd04ccd3fd21eafd6a5171cc169731 *R/codeplan.R
 b26ecf717c444857d1c033406ab6a92c *R/collect.R
 e1c96c86ee9161293bc5f8a5695f3ce1 *R/compress-storage-modes.R
 3ef4f165259ad45763d4afc581f2f3e9 *R/contrasts.R
 6eea04179cd1d9fc304a9baed6779c75 *R/dataset-methods.R
-16d1c3d8224c2898e20f0059e9fb0364 *R/dedup-labels.R
+cdcc35c86ec73aed9ec5a852eeee62c9 *R/dedup-labels.R
 470c925ddaaf2a0fd124260301d51dd9 *R/fapply.R
 5205d745c7a9b424ad8a762351947589 *R/format-html-dataframe.R
 40dd160453f592aeeac7dd15b5879548 *R/format-html-ftable-matrix.R
@@ -96,12 +96,12 @@ c42134c6db42c080bb938f970c40e1db *R/wild-codes.R
 8f66b397e9c0282626740d48382f6b3e *R/yz-getSummary-merMod.R
 14d08c2e584066ea3f68768e4016aac7 *R/zzz.R
 4b112ad5b9869bb9955b603700f722b0 *build/vignette.rds
-b8e8f7dccb3977f0db8b6edd5b6dbca8 *inst/ChangeLog
+b9ad812802098e67cef2e18be0c76ba3 *inst/ChangeLog
 bf24e433de9a829fd346bdd3259fb74c *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 89be272a4d69d221485c2f7a1d81eb4b *inst/doc/anes48.R
 d67d2afd51f57aef655b493c16c9edec *inst/doc/anes48.Rmd
-1e215ca199266ae9bfbeb8e1243af7b8 *inst/doc/anes48.html
+ed76153bab34b056e0a741bff1419b0e *inst/doc/anes48.html
 be2a0dc08d9fe4e0566e4885e3c2eb7b *inst/doc/ftable-matrix.R
 5cb0a874850641fdba4b1119a95c2def *inst/doc/ftable-matrix.Rmd
 6d4f6a7af3e50b6bb1ae4eccc0534aeb *inst/doc/ftable-matrix.html
