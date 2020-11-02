@@ -370,7 +370,7 @@ summary {
 <h1>Analysing the American National Election Study of 1948 with <em>memisc</em></h1>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette gives an example for the analysis of a typical social science data set. It is the data file of the <em>American National Election Study</em> of 1948<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> available from the <a href="http://www.electionstudies.org">American National Election Studies website</a>. The data file contains data from to USA-wide surveys conducted October and November 1948 by the Survey Research Centre, University Michigan (principal investigators: Angus Campbell and Robert L. Kahn). The total number of cases in the data set is 662 and the number of variables is 65 (more details about this data set can be found at <a href="http://www.electionstudies.org/studypages/1948prepost/1948prepost.htm" class="uri">http://www.electionstudies.org/studypages/1948prepost/1948prepost.htm</a>).</p>
+<p>This vignette gives an example for the analysis of a typical social science data set. It is the data file of the <em>American National Election Study</em> of 1948<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> available from the <a href="https://electionstudies.org">American National Election Studies website</a>. The data file contains data from to USA-wide surveys conducted October and November 1948 by the Survey Research Centre, University Michigan (principal investigators: Angus Campbell and Robert L. Kahn). The total number of cases in the data set is 662 and the number of variables is 65 (more details about this data set can be found at <a href="https://electionstudies.org/studypages/1948prepost/1948prepost.htm" class="uri">https://electionstudies.org/studypages/1948prepost/1948prepost.htm</a>).</p>
 <p>With 662 cases and 65 variables, the 1948 ANES data set is relatively small as compared to current social science data sets. Such larger data sets can be processed along the same lines as in this vignette. Unlike the 1948 ANES data, their size as well as, in some cases, legal restrictions prohibit the inclusion of such a data set into the package, however.</p>
 <p>This vignette starts with a demonstration how a data file can be examined before loading it and how a subset of the data can be loaded into memory. After loading this subset into memory, some descriptive analyses are conducted that showcase the construction of contingency tables and of general tables of descriptive statistics using the <code>genTable</code> function. In addition, a logit analysis is demonstrated and the collection of several logit coefficients into a comprehensive table by the <code>mtable</code> function.</p>
 <p>It should be noted that the analyses reported in the following are conducted only for purpose of demonstrating the features of the package and are not to be considered of conclusive scientific evidence of any kind.</p>
@@ -409,7 +409,7 @@ nes1948.por &lt;- unzip(system.file(&quot;anes/NES1948.ZIP&quot;,package=&quot;m
   V480034A, V480034B</code></pre>
 <pre class="r"><code>print(nes1948)</code></pre>
 <pre><code>
-SPSS portable file &#39;/tmp/Rtmpmiaxti/file60f546e24ac2/NES1948.POR&#39; 
+SPSS portable file &#39;/tmp/RtmpAXJX8Y/file13c435064a21/NES1948.POR&#39; 
     with 67 variables and 662 observations</code></pre>
 <p>At this stage, the data are not loaded into the memory yet. But we can see which variables exist inside the data set:</p>
 <pre class="r"><code>names(nes1948)</code></pre>

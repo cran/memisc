@@ -226,7 +226,10 @@ mtable <- function(...,
                    digits=min(3,getOption("digits")),
                    sdigits=digits,
                    show.eqnames=getOption("mtable.show.eqnames",NA),
-                   gs.options=NULL
+                   gs.options=NULL,
+                   controls=NULL,
+                   collapse.controls=FALSE,
+                   control.var.indicator=getOption("control.var.indicator",c("Yes","No"))
                    ){
   args <- list(...)
   if(length(args)==1 && inherits(args[[1]],"by"))
@@ -278,7 +281,18 @@ mtable <- function(...,
       summary.stats[] <- list(FALSE)
   }
       
-      
+  if(length(controls)){
+      if(is.character(controls))
+          controls <- asOneSidedFormula(controls)
+      if(inherits(controls,"formula")){
+          control.coefs <- lapply(args,formula2coefs,fo=controls)
+          control.terms <- lapply(args,formula2termlabs,fo=controls)
+      }
+      else
+          stop("'controls=' must be a formula or a character vector.")
+      controls <- list(coefs=control.coefs,terms=control.terms)
+  } 
+  
   structure(summaries,
             names=argnames,
             class="memisc_mtable",
@@ -293,12 +307,26 @@ mtable <- function(...,
             digits=digits,
             stemplates=stemplates,
             sdigits=sdigits,
-            show.eqnames=show.eqnames
+            show.eqnames=show.eqnames,
+            controls=controls,
+            collapse.controls=collapse.controls,
+            control.var.indicator=control.var.indicator
             )
   
 }
 
-prefmt1 <- function(parm,template,float.style,digits,signif.symbols){
+prefmt1 <- function(parm,template,float.style,digits,signif.symbols,controls){
+    
+    rn <- rownames(parm)
+    if(length(intersect(rn,controls))){
+        controls <- intersect(rn,controls)
+        rn <- setdiff(rn,controls)
+        if(length(dim(parm))==2)
+            parm <- parm[rn,,drop=FALSE]
+        else
+            parm <- parm[rn,,,drop=FALSE]
+    }
+    else controls <- NULL
     adims <- if(length(dim(parm))==2) 1 else c(1,3)
     if(length(parm)){
         
@@ -344,6 +372,7 @@ prefmt1 <- function(parm,template,float.style,digits,signif.symbols){
     } else rownames(ans) <- names(template)
 
     ans[ans=="()"] <- ""
+    attr(ans,"controls") <- controls
     return(ans)
 }
 
@@ -452,7 +481,7 @@ do_prettyfy <- function(pn,
     for(m in names(contrasts)){
         contrasts.m <- contrasts[[m]]
         xlevels.m <- xlevels[[m]]
-
+        if(all(done)) break
         pn.tmp <- pn[!done]
         pn.tmp  <- prettyNames(pn.tmp,
                                contrasts=contrasts.m,
@@ -472,6 +501,11 @@ nzchar_row <- function(x){
     apply(nzch,1,any)
 }
 
+dropnull <- function(x) {
+    ii <- sapply(x,is.null)
+    x[!ii]
+}
+ni <- function(tab,x) x%in%tab
 preformat_mtable <- function(x){
 
     x <- unclass(x)
@@ -497,6 +531,7 @@ preformat_mtable <- function(x){
     xlevels <- lapply(x,`[[`,"xlevels")
     calls <- lapply(x,`[[`,"call")
     parms <- lapply(x,`[`,partypes)
+    parms <- lapply(parms,dropnull)
 
     ctemplate <- getCoefTemplate(coef.style)
     if(!length(ctemplate)) stop("invalid coef.style argument")
@@ -512,22 +547,62 @@ preformat_mtable <- function(x){
 
     force.header <- isTRUE(attr(x,"force.header")) # Document that later ...
     show.eqnames <- attr(x,"show.eqnames")
+
+    all.control.terms <- NULL
+    control.terms <- NULL
+    control.coefs <- NULL
+    controls <- attr(x,"controls")
+    collapse.controls <- attr(x,"collapse.controls")
+    if(length(controls)){
+        control.terms <- controls$terms
+        control.coefs <- controls$coefs
+        control.coefs <- unique(unlist(control.coefs))
+
+        all.control.terms <- unique(unlist(control.terms))
+    }
     
     parmtab <- NULL
     sect.headers <- NULL
+
+    ct.indicator <- attr(x,"control.var.indicator")
+    if(!length(ct.indicator)) ct.indicator <- c("X","")
+    
     if(length(partypes)){
 
         for(n in 1:length(parms)){
 
             parms.n <- parms[[n]]
-            parms[[n]] <- lapply(parms.n,
-                                 prefmt1,
-                                 template=ctemplate,
-                                 float.style=float.style,
-                                 digits=digits,
-                                 signif.symbols=signif.symbols)
+            parms.n<- lapply(parms.n,
+                             prefmt1,
+                             template=ctemplate,
+                             float.style=float.style,
+                             digits=digits,
+                             signif.symbols=signif.symbols,
+                             controls=control.coefs)
+            if(length(control.terms)){
+                ct <- control.terms[[n]]
+                ct <- all.control.terms %in% ct
+                if(collapse.controls) {
+                    if(all(ct))
+                        ct <- ct.indicator[1]
+                    else if(!any(ct))
+                        ct <- ct.indicator[2]
+                    else
+                        ct <- as.character(NA)
+                    dim(ct) <- c(1,1,1,1)
+                    dimnames(ct) <- list(1,2,"Controls",3)
+                }
+                else {
+                    ct <- ifelse(ct,ct.indicator[1],ct.indicator[2])
+                    dim(ct) <- c(1,1,length(ct),1)
+                    dimnames(ct) <- list(1,2,all.control.terms,3)
+                }
+                parms.n <- append(parms.n,list(Controls=ct),after=1)
+            }
+            parms[[n]] <- parms.n
         }
-        
+        if(length(control.terms))
+            partypes <- append(partypes,"Controls",after=1)
         sect.headers <- parmtab <-
             array(list(),
                   dim=c(length(partypes),length(parms)),
@@ -540,7 +615,6 @@ preformat_mtable <- function(x){
                 mod.m <- mod[[m]]
                 parmtab[[m,n]] <- mod.m
             }
-            
         }
 
         parameter.names <- attr(x,"parameter.names")
@@ -552,7 +626,13 @@ preformat_mtable <- function(x){
             tmp.pn <- parameter.names[parameter.names %in% tmp.pn]
             parmnames[[m]] <- tmp.pn
         }
-        
+        if(length(all.control.terms)){
+            if(collapse.controls)
+                parmnames$Controls <- "Controls"
+            else
+                parmnames$Controls <- all.control.terms
+        }
+        # Make sure that columns and rows match across models
         for(n in 1:ncol(parmtab)){
             mod <- parms[[n]]
             for(m in rownames(parmtab)){
@@ -560,8 +640,8 @@ preformat_mtable <- function(x){
                 if(length(parmnames[[m]])){
                     parmtab.mn <- coefxpand(parmtab.mn,parmnames[[m]])
                     parmtab.mn <- prefmt2(parmtab.mn)
+                    parmtab[[m,n]] <- parmtab.mn
                 }
-                parmtab[[m,n]] <- parmtab.mn
                 modm <- mod[[m]]
                 if(length(dim(modm))>3){
                     nc.mn <- max(ncol(parmtab.mn),1)
@@ -574,6 +654,17 @@ preformat_mtable <- function(x){
             maxncol <- max(unlist(lapply(parmtab[,n],ncol)) )
             parmtab[,n] <- lapply(parmtab[,n],colexpand,maxncol)
         }
+        # Drop empty rows
+        for(n in 1:nrow(parmtab)){
+            maxnrow <- max(unlist(lapply(parmtab[n,],nrow)) )
+            parmtab[n,] <- lapply(parmtab[n,],rowexpand,maxnrow)
+            nz <- lapply(parmtab[n,],nzchar_row)
+            if(length(nz)>1)
+                nz <- reduce(nz,`|`)
+            else
+                nz <- nz[[1]]
+            parmtab[n,] <- lapply(parmtab[n,],get_rows,i=nz)
+        }
 
         for(m in rownames(sect.headers)){
             sh <- sect.headers[m,]
@@ -585,7 +676,6 @@ preformat_mtable <- function(x){
             sect.headers[m,] <- sh
         }
     }
-
     headers <- list()
     if(length(modelnames) > 1 || length(modelnames) == 1 && force.header) {
         modelnames <- do_subs(modelnames,relab.attr)
@@ -597,25 +687,27 @@ preformat_mtable <- function(x){
             headers <- c(list(h),headers)
         }
     }
-
-    leaders <- character(0)
-    if(length(partypes))
-        leaders <- structure(lapply(rownames(parmtab),
-                                function(m){
-                                    pn <- parmnames[[m]]
-                                    pn <- do_prettyfy(pn,
-                                                      contrasts=contrasts,     
-                                                      xlevels=xlevels,         
-                                                      factor.style=factor.style,    
-                                                      show.baselevel=show.baselevel,
-                                                      baselevel.sep=baselevel.sep)  
-                                    pn <- do_subs(pn,relab.attr)
-                                    span <- nrow(parmtab[[m,1]])/length(pn)
-                                    if(span < 1) NULL
-                                    else
-                                        lapply(pn,structure,span=span)
-                                }),
-                             names=rownames(parmtab))
+    leaders <- list()
+    if(length(partypes)){
+      i <- 0 
+      for(m in rownames(parmtab)){
+        i <- i + 1
+        pn <- parmnames[[m]]
+        pn <- do_prettyfy(pn,
+                          contrasts=contrasts,     
+                          xlevels=xlevels,         
+                          factor.style=factor.style,    
+                          show.baselevel=show.baselevel,
+                          baselevel.sep=baselevel.sep)  
+        pn <- do_subs(pn,relab.attr)
+        span <- nrow(parmtab[[m,1]])/length(pn)
+        if(span < 1)
+          leaders[[i]] <- NULL
+        else
+          leaders[[i]] <- lapply(pn,structure,span=span)
+      }
+      names(leaders) <- rownames(parmtab)
+    }
 
     if(length(summary.stats)) {
         sumstats <- Map(applyTemplate,sumstats,stemplates,digits=sdigits)
@@ -637,13 +729,22 @@ preformat_mtable <- function(x){
     }
     else
         signif.symbols <- NULL
+
+    outtypes <- array("num",
+                      dim=dim(parmtab),
+                      dimnames=dimnames(parmtab))
+    if(length(controls)){
+        outtypes["Controls",] <- "text"
+    }
     
     structure(list(parmtab=parmtab,
                    leaders=leaders,
                    headers=headers,
                    sect.headers=sect.headers,
                    summary.stats = summary.stats,
-                   signif.symbols=signif.symbols),
+                   signif.symbols=signif.symbols,
+                   controls=controls,
+                   outtypes=outtypes),
               class="preformatted.memisc_mtable")
     }
 

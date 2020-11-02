@@ -34,10 +34,11 @@ export(
       getSummary.weibreg,
       getSummary.merMod,
       getSummary_expcoef,
-      getSummary_expcoef.glm,
+      getSummary_expcoef.default,
       getSummary.ivreg,
       getSummary.tobit,
       getSummary.hurdle,
+      getSummary.zeroinfl,
       getSummary.betareg,
       getSummary.multinom,
       applyTemplate,
@@ -132,6 +133,7 @@ S3method(getSummary,clm)
 S3method(getSummary,coxph)
 S3method(getSummary,glm)
 S3method(getSummary,hurdle)
+S3method(getSummary,zeroinfl)
 S3method(getSummary,ivreg)
 S3method(getSummary,lm)
 S3method(getSummary,merMod)
@@ -142,7 +144,9 @@ S3method(getSummary,simex)
 S3method(getSummary,survreg)
 S3method(getSummary,tobit)
 S3method(getSummary,weibreg)
-S3method(getSummary_expcoef,glm)
+S3method(getSummary_expcoef,default)
+S3method(getSummary,clm)
+S3method(getSummary,clmm)
 S3method(sort,data.frame)
 S3method(sort,data.set)
 S3method(print,memisc_mtable)
@@ -288,6 +292,13 @@ S3method(Iconv,data.set)
 S3method(Iconv,importer)
 S3method(Write,descriptions)
 S3method(Write,codebook)
+
+S3method(as.data.frame,spss.system.importer)
+S3method(as.data.frame,spss.portable.importer)
+S3method(as.data.frame,spss.fixed.importer)
+S3method(as.data.frame,Stata.importer)
+S3method(as.data.frame,Stata_new.importer)
+
 
 S3method(format_html,memisc_mtable)
 S3method(format_html,ftable)

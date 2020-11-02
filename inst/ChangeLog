@@ -1,7 +1,53 @@
+2020-11-01:
+   - Fix 'as.item()' methods for "haven_labelled" objects etc.
+   - Variance component estimates of "merMod" and "clmm" objects are reported
+     as distinct statistics.
+   - An attempt to coerce an "importer" object into a data frame directly is now flagged
+     as an error.
+   - Change some http-urls in the DESCRRIPTION and the documentation to https-urls. 
+
+2020-10-10:
+   - 'codebook()' better handles character variables in SPSS system files.
+   - 'spss.system.file()' uses information in the file about the intended
+     measurement level of the variables, however, this is optional and can be
+     switched off.
+
+2020-08-21:
+   - Added new option 'fold.leaders' to 'toLatex' method for 'ftable' objects
+
+2020-08-16:
+   - Added support for compressing output regarding control variables in 'mtable()'.
+
+2020-08-12:
+   - Some 'setOldClass()' calls are now conditional on the absence of certain
+     packages.
+   - A general 'getSummary_expcoef()' default method is now provided,
+     which is widely applicable as it builds on 'getSummary()'.
+
+2020-08-10:
+   - Minor fix in documentation for 'collect()'.
+
+2020-08-05:
+   - Bugfix: 'genTable()' and 'Aggregate()' now correctly handle implicit
+     frequency weights
+
+2020-07-30:
+   - Bugfix: Make 'codebook()' work with factors that have empty levels (i.e. no
+     observations for certain levels).
+
+2020-07-28:
+   - Added 'mtable' support for 'clmm' objects (package "ordinal"") and improved
+     support for 'merMod' objects (package "lme4").
+
+2020-07-14:
+   - Made sure that variable labels are retained by 'as.vector' and
+     'as.data.frame' even for items with 'interval' or 'ratio' level of
+     measurement.
+
 2020-07-05:
    - Made 'deduplicate_labels' methods for "data.set"-objects a bit more
      resilient
-     
+
 2020-07-05:
    - Fixed bug in the creation of codebooks
 
@@ -32,7 +78,7 @@
      "labelled" as they occur in some imported tibbles.
    - 'as.item()' now drops non-unique labelled values when applied to a
      "labelled", "haven_labelled", or "haven_labelled_spss" object.
-	
+
 2020-06-05:
    - With 'codebook()' it is now possible to disable the display of unweighted
      data summaries.
