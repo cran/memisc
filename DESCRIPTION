@@ -1,8 +1,8 @@
 Package: memisc
 Type: Package
 Title: Management of Survey Data and Presentation of Analysis Results
-Version: 0.99.27.3
-Date: 2020-11-18
+Version: 0.99.30.7
+Date: 2021-10-07
 Author: Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, Jason W. Morgan, Achim Zeileis)
 Maintainer: Martin Elff <memisc@elff.eu>
 Description: An infrastructure for the management of survey data including
@@ -19,10 +19,9 @@ Suggests: splines, knitr, rmarkdown, sandwich
 Enhances: AER, car, eha, lme4, ordinal, simex, tibble, haven
 Imports: grid, repr, data.table
 VignetteBuilder: knitr
-URL:
-        http://www.elff.eu/software/memisc/,https://github.com/melff/memisc/
+URL: http://memisc.elff.eu,https://github.com/melff/memisc/
 BugReports: https://github.com/melff/memisc/issues
 NeedsCompilation: yes
-Packaged: 2020-11-18 20:38:39 UTC; elff
+Packaged: 2021-10-07 22:19:47 UTC; elff
 Repository: CRAN
-Date/Publication: 2020-11-18 23:10:06 UTC
+Date/Publication: 2021-10-08 19:30:02 UTC

@@ -1,6 +1,6 @@
 mat_format_stdstyle <- c(
   "padding-top"="3px",
-  "padding-bottom"="0px",
+  "padding-bottom"="3px",
   "padding-left"="0.5ex",
   "padding-right"="0.5ex",
   "margin-top"="0px",
@@ -45,7 +45,7 @@ format_html.matrix <- function(x,
   #body <- matrix(nrow=nrow(x),ncol=ncol(x))
   if(is.integer(x)){
     tmp <- formatC(x,format="d")
-    body <- html_td(tmp,vectorize=TRUE)
+    body <- html_td(tmp,vectorize=TRUE,style=css(style))
     colspan <- 1L
     }
   else if(is.numeric(x)){
@@ -78,10 +78,9 @@ format_html.matrix <- function(x,
     
   body[1,] <- lapply(body[1,],setStyle,toprule)
   body[n,] <- lapply(body[n,],setStyle,bottomrule)
-  
   body <- apply(body,1,html_tr,style=as.css(row_style))
   
-  if(length(colnames(x)) && FALSE){
+  if(length(colnames(x))){
     
     hdr <- colnames(x)
     if(length(rownames(x))){

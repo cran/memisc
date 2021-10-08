@@ -92,7 +92,13 @@
     \item A new \code{deduplicate_labels()} function allows to deal with
           duplicate labels (where several codes have the same label)
     \item It is now possible to create codebooks for weighted data.
-        }       
+    \item The function \code{trim_labels()} allows to trim codes from
+          value labels.
+    \item The function \code{reverse()} allows to reorder the
+          codes of a survey item in reverse order.
+    \item The generic function \code{Means()} allows to conveniently obtain
+          group means, optionally with standard errors and/or confidence intervals.
+    }
   }
   \subsection{IMPROVEMENTS}{
     \itemize{
@@ -104,6 +110,8 @@
             superscript symbols. This can be set either by an explicit
             (new) argument \code{toLatex.escape.tex} or by a global option
             with the same name.
+      \item The \code{toLatex()} method for "ftable" objects has a new
+            option \code{fold.leaders}. 
       \item \code{spss.system.file()} now translates numeric variables with any SPSS
             date format into a "datetime.item"
       \item The function \code{List()} adds names to the elements of the
@@ -186,8 +194,20 @@
            observations is shown).
      \item Variance component estimates of "merMod" and "clmm" objects are reported
            as distinct statistics.
-         }
-  }
+     \item \code{recode()} has a new optional argument \code{code=}. If
+           \code{TRUE}, existing codes (and labels) are retained.
+     \item \code{recode()} now allows to recode factors into numeric vectors.
+     \item If the change in codes done by \code{recode()} merely
+           reorders codes, labels are reordered accordingly, unless
+           labels are explicitly given.
+     \item \code{subset()} is S3-generic again, as this allows for lazy
+           evaluation of its arguments.
+    \item \code{cases()} handles \code{NAs} more sensibly - if a
+          case condition is \code{TRUE} this leads to a non-\code{NA} 
+          result even if other conditions evaluate to \code{FALSE}, if
+          \code{cases()} is called with \code{na.rm=TRUE} (the default). 
+    }
+ }
   \subsection{BUGFIXES}{
   \itemize{
     \item \code{str} and \code{ls.str} are imported from the 
@@ -230,7 +250,7 @@
     \item \code{as.data.set} works for "tibbles" also when method dispatch
           via class inheritance does not work.
     \item \code{codebook()} now handles character variables in SPSS
-           system files correclty.
+    system files correclty.
         }
     }
   \subsection{USER-VISIBLE CHANGES}{

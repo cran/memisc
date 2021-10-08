@@ -1,7 +1,54 @@
+2021-10-07:
+   - 'unclass' "item.vector" objects in 'as.character()' to
+     avoid infinite recursion and stack overflow (as suggested by Kurt Hornik)
+
+2021-08-01:
+   - Improved handling of labels in 'recode()'
+   - Corrected counting of cases in SPSS fixed format files
+
+2021-07-31:
+   - Enable recoding from factor (or character) to numeric
+
+2021-07-26:
+   - Fixed handling of missing values in 'Means()'
+   - Handle 'cbind()' in 'Means()' nicely
+
+2021-05-24:
+   - Fixed use of file-supplied encoding information.
+
+2021-05-03:
+   - Fixed handling of missing values (NA) in 'cases()'.
+
+2021-04-06:
+   - Added a new 'Means()' generic function for the convenient computation of 
+     group means.
+
+2021-02-14:
+   - Renamed 'reverse_codes()' to 'reversed()', which now leaves missing
+     values unchanged.
+
+2021-01-25:
+   - Made function 'reorder_codes()' redundant and memoved it.
+
+2021-01-23:
+   - Made the subset methods use S3-methods (again).
+
+2021-01-17:
+   - Make copying of labels while recoding work again.
+   - Make 'recode()' warn about NAs being created.
+   - Add a new optional '.default' and '.complete' arguments to 'cases()'.
+
+2021-01-16:
+   - Added functions 'reorder_codes()' and 'trim_labels()'.
+
+2020-12-15:
+   - Fixed creation of codebooks for character vectors.
+
 2020-11-18:
    - Fixed error caused by a change in 'getS3method()' introduced by R r79435:
      'getS3method()' now enforces a the hitherto undocumented restriction that
      the 'cls' argument must have length 1.
+   - Added 'title' metadata to Rmarkdown vignettes.
 
 2020-11-01:
    - Fixed 'as.item()' methods for "haven_labelled" objects etc.

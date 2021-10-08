@@ -124,35 +124,32 @@ setGeneric("as_haven",function(x,...)standardGeneric("as_haven"))
 setMethod("as_haven",signature(x="data.set"),function(x,user_na=FALSE,...){
     y <- lapply(x@.Data,as_haven,user_na=user_na,...)
     names(y) <- names(x)
+    names(y) <- gsub(".","_",names(y),fixed=TRUE)
     attr(y,"row.names") <- x@row_names
     class(y) <- c("tbl_df","tbl","data.frame")
     return(y)
 })
 setMethod("as_haven",signature(x="item.vector"),function(x,user_na=FALSE,...){
     y <- x@.Data
-    attr(y,"label") <- description(x)
-    attr(y,"labels") <- as.vector(labels(x))
-    ms <- missing.values(x)
-    if(user_na && length(ms)){
-        attr(y,"na_values") <- ms@filter
-        attr(y,"na_range") <- ms@range
-        class(y) <- "haven_labelled_spss"
-    } else {
-        ism <- is.missing(x)
-        y[ism] <- NA
-        class(y) <- "haven_labelled"
+    if(length(description(x)))
+        attr(y,"label") <- description(x)
+    if(is.character(x))
+        labels(x) <- NULL
+    if(length(labels(x))){
+        l <- as.vector(labels(x))
+        storage.mode(y) <- "integer"
+        storage.mode(l) <- "integer"
+        attr(y,"labels") <- l
+        ms <- missing.values(x)
+        if(user_na && length(ms)){
+            attr(y,"na_values") <- as.integer(ms@filter)
+            attr(y,"na_range") <- as.integer(ms@range)
+            class(y) <- "haven_labelled_spss"
+        } else {
+            ism <- is.missing(x)
+            y[ism] <- NA
+            class(y) <- "haven_labelled"
+        }
     }
     return(y)
-})
-
-if(!requireNamespace("tibble",quietly = TRUE)) setOldClass("tbl_df")
-setMethod("as.data.set","tbl_df",function(x,row.names=NULL,...){
-  class(x) <- "data.frame"
-  if(length(row.names)){
-    if(length(row.names)!=nrow(x)) stop("row.names argument has wrong length")
-    attr(x,"row.names") <- row.names
-  }
-  else
-    attr(x,"row.names") <- seq_len(nrow(x))
-  new("data.set",x)
 })
