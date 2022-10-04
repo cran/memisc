@@ -82,7 +82,12 @@ setLength <- function(x,n){
 setMethod("initialize","data.set",function(.Object,...,row.names=NULL,document=character()){
 
   args <- list(...)
-  if(is.list(args[[1]])) args <- unclass(args[[1]])
+  if(inherits(args[[1]],"data.frame") && missing(row.names)){
+      row.names <- rownames(args[[1]])
+  }
+  if(is.list(args[[1]])) {
+      args <- unclass(args[[1]])
+  }
   nr <- max(sapply(args,length))
   args <- lapply(args,setLength,n=nr)
   args <- lapply(args,as.item)
@@ -294,6 +299,16 @@ setMethod("annotation","data.set",function(x){
 })
 
 
+format.data.set <- function(x,...){
+    y <- structure(x@.Data,
+                   row.names=x@row_names,
+                   names=x@names,
+                   class="data.frame")
+    y[] <- lapply(y[],format,justify="right")
+    y
+}
+#setMethod("format","data.set",format.data.set)
+
 print.data.set <- function(x,max.obs=Inf,width=Inf,...){
   frame <- structure(x@.Data,row.names=x@row_names,names=x@names,class="data.frame")
   print_frame_internal(frame,max.obs=max.obs,width=width,...)
@@ -476,13 +491,16 @@ fapply.data.set <- function(formula,data,...)
   fapply.default(formula,data=as.data.frame(data,optional=TRUE),...)
   
 setMethod("as.data.set","list",function(x,row.names=NULL,...){
+  n_row <- unique(sapply(x,length))
+  if(length(n_row)>1)
+      stop("list elements must have same length")
   class(x) <- "data.frame"
   if(length(row.names)){
     if(length(row.names)!=nrow(x)) stop("row.names argument has wrong length")
     attr(x,"row.names") <- row.names
   }
   else
-    attr(x,"row.names") <- seq_len(nrow(x))
+    attr(x,"row.names") <- 1:n_row
   new("data.set",x)
 })
 
@@ -577,47 +595,6 @@ dsView <- function(x){
     eval(View.call,globalenv())
   #View(x=frame,title=title)
   # do.call("View",list(x=frame,title=title))
-}
-
-
-
-collect.data.set <- function(...,
-  names=NULL,inclusive=TRUE,fussy=FALSE,warn=TRUE,
-  sourcename=".origin"){
-  args <- list(...)
-  subst <- substitute(list(...))
-  if(length(names)) {
-    if(length(names)!=length(args)) stop("names argument has wrong length")
-  }
-  else {
-    if(length(names(args))) names <- names(args)
-    else {
-      names <- sapply(lapply(subst[-1],deparse),paste,collapse=" ")
-    }
-  }
-  all.vars <- lapply(args,names)
-  common.vars <- reduce(all.vars,intersect)
-  all.vars <- reduce(all.vars,union)
-  other.vars <- setdiff(all.vars,common.vars)
-  source <- rep(seq_along(args),sapply(args,nrow))
-  nrow.items <- sapply(args,nrow)
-  nrow.total <- sum(nrow.items)
-  ix <- split(seq_len(nrow.total),source)
-  res <- lapply(common.vars,function(var){
-                vecs <- lapply(args,function(x)x[[var]])
-                collOne(vecs,source=source,nrow.items=nrow.items,varname=var,fussy=fussy)
-                })
-  names(res) <- common.vars
-  if(inclusive){
-    res1 <- lapply(other.vars,function(var){
-                  vecs <- lapply(args,function(x)x[[var]])
-                  collOne(vecs,source=source,nrow.items=nrow.items,varname=var,fussy=fussy)
-                  })
-    names(res1) <- other.vars
-    res <- c(res,res1)
-  }
-  res[[sourcename]] <- factor(source,labels=names)
-  as.data.set(res)
 }
 
 

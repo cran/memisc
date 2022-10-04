@@ -97,8 +97,23 @@
     \item The function \code{reverse()} allows to reorder the
           codes of a survey item in reverse order.
     \item The generic function \code{Means()} allows to conveniently obtain
-          group means, optionally with standard errors and/or confidence intervals.
-    }
+          group means, optionally with standard errors and/or confidence
+          intervals.
+    \item The colon operator (\code{:}) can be used to refer to ranges of
+          variables in \code{foreach()}
+    \item Code plans (objects in class "codeplan") can now be exported
+          to and imported from YAML and JSON files.
+    \item A new generic function \code{format_md()}
+          (contributed by Mael Astrud-Le Souder) allows to format R
+          objects in Markdown. Currently, methods for codebooks (and entries
+          in codebooks) are implemented.
+    \item A new generic function \code{coarsen()} allows to coarsen
+          numeric vectors into factors, based on a given number of
+          categories.
+    \item A new generic function \code{measurement_autolevel()} that
+          allows to automatically select the appropriate measurement
+          level for survey items.
+  }  
   }
   \subsection{IMPROVEMENTS}{
     \itemize{
@@ -205,7 +220,24 @@
     \item \code{cases()} handles \code{NAs} more sensibly - if a
           case condition is \code{TRUE} this leads to a non-\code{NA} 
           result even if other conditions evaluate to \code{FALSE}, if
-          \code{cases()} is called with \code{na.rm=TRUE} (the default). 
+          \code{cases()} is called with \code{na.rm=TRUE} (the
+          default). 
+    \item The result of \code{subset} and of the bracket-operator (\code{[]})
+          applied to importer objects has row names that indicate the rows
+          selected from the full data.
+    \item A method of \code{format} for data set objects is added.
+    \item The row names of subsets fo importer objects reflect the row numbers in
+          the original data.
+    \item \code{collect.data.frame} and \code{collect.data.set} gain a 
+          \code{use_last} and a \code{detailed_warnings} option
+          to improve handling of variables with different attributes
+          in different objects being collected.
+    \item \code{spss.system.file()}, \code{spss.portable.file()}, and \code{Stata.file()} get
+          an optional \code{negative2missing} argument.
+    \item \code{recode()} keeps \code{NA}s as \code{NA}s when an
+          \code{otherwise} argument is given and \code{NA}s are not
+          recoded explicitly.
+    \item \code{codebook()} now fully supports logical vectors.      
     }
  }
   \subsection{BUGFIXES}{
@@ -250,9 +282,11 @@
     \item \code{as.data.set} works for "tibbles" also when method dispatch
           via class inheritance does not work.
     \item \code{codebook()} now handles character variables in SPSS
-    system files correclty.
-        }
+          system files correclty.
+    \item \code{codebook()} uses the appropriate logical operator in checking
+          for missings.
     }
+  }
   \subsection{USER-VISIBLE CHANGES}{
    \itemize{
      \item All vignettes are now using \emph{knitr}.

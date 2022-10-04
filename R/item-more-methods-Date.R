@@ -45,7 +45,7 @@ str.Date.item <- function(object,give.head=TRUE,width=getOption("width"),...){
 format.Date.item <- function(x,...){
   format(as.Date.numeric.item(x),...)
 }
-setMethod("format","Date.item",format.Date.item)
+#setMethod("format","Date.item",format.Date.item)
 
 print.Date.item <- function(x,
     width=getOption("width"),
@@ -113,7 +113,7 @@ setMethod("codebookEntry","Date.item",function(x){
   ism <- is.missing(x)
   isna <- is.na(x)
 
-  if(any(ism || isna)){
+  if(any(ism | isna)){
       tab <- missNAtab(ism,isna)
     if(length(weights)){
       wtab <- missNAtab(ism,isna,weights)
@@ -148,7 +148,11 @@ setMethod("codebookEntry","Date.item",function(x){
   )
 })
 
+## Methods for auxiliar functions
+
 xtfrm.Date.item <- function(x) x@.Data
+mtfrm.Date.item <- function(x) x@.Data
+
 setMethod("as.character","Date.item",function(x,...)
    format(as.Date.numeric.item(x))
 )

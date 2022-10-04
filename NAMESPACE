@@ -93,6 +93,10 @@ export(
       is.ordinal,
       is.interval,
       is.ratio,
+      as.nominal,
+      as.ordinal,
+      as.interval,
+      as.ratio,
       contrasts,
       "contrasts<-",
       data.set,
@@ -100,6 +104,7 @@ export(
       is.data.set,
       retain,
       foreach,
+      xapply,
       syms,
       as.symbols,
       Substitute,
@@ -230,7 +235,6 @@ exportMethods(
     Math,
     Math2,
     Summary,
-    format,
     print,
     show,
     unique,
@@ -323,6 +327,17 @@ S3method(xtfrm,double.item)
 S3method(xtfrm,character.item)
 S3method(xtfrm,datetime.item)
 S3method(xtfrm,Date.item)
+
+if (getRversion() >= "4.2.0") {
+    
+    S3method(mtfrm,integer.item)
+    S3method(mtfrm,double.item)
+    S3method(mtfrm,character.item)
+    S3method(mtfrm,datetime.item)
+    S3method(mtfrm,Date.item)
+}
+
+
 S3method(unique,integer.item)
 S3method(unique,double.item)
 S3method(unique,character.item)
@@ -334,6 +349,9 @@ S3method(toLatex,data.set)
 
 S3method(percentages,table)
 S3method(percentages,formula)
+S3method(percentages,default)
+S3method(percentages,list)
+S3method(percentages,data.frame)
 S3method(as.data.frame,percentage.table)
 S3method(as.data.frame,xpercentage.table)
 
@@ -391,17 +409,6 @@ S3method(withVCov,lm)
 S3method(vcov,withVCov)
 S3method(summary,withVCov)
 S3method(summary,withVCov.lm)
-
-importFrom(repr,
-           repr_html,
-           repr_latex)
-S3method(repr_html,memisc_mtable)
-S3method(repr_html,ftable)
-S3method(repr_html,ftable_matrix)
-S3method(repr_html,html_elem)
-S3method(repr_html,html_group)
-
-S3method(repr_latex,memisc_mtable)
 
 export(codeplan,
        setCodeplan,
@@ -496,3 +503,23 @@ S3method(as.data.frame,xmeans.table)
 export(contract)
 S3method(contract,data.frame)
 S3method(contract,data.set)
+
+S3method(format,data.set)
+S3method(format,codebookEntry)
+S3method(format,Date.item)
+S3method(format,datetime.item)
+S3method(format,item.vector)
+
+importFrom(yaml,as.yaml,read_yaml,write_yaml)
+importFrom(jsonlite,read_json,write_json)
+export(read_codeplan,write_codeplan)
+
+export(format_md)
+S3method(format_md, codebook)
+S3method(format_md, codebookEntry)
+
+export(coarsen)
+S3method(coarsen,numeric)
+
+export(measurement_autolevel)
+exportMethods(measurement_autolevel)

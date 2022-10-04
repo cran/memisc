@@ -472,7 +472,7 @@ format.item.vector <- function(x,use.labels=getOption("print.use.value.labels"),
   x[ism] <- paste("*",x[ism],sep="")
   format(x,justify=justify,...)
 }
-setMethod("format","item.vector",format.item.vector)
+#setMethod("format","item.vector",format.item.vector)
 
 print.item.vector <- function(x,
     use.labels=isTRUE(getOption("print.use.value.labels")),
@@ -524,17 +524,25 @@ setMethod("Compare",signature(e1="numeric.item",e2="character"),
     if(length(e1@value.labels))
       switch(.Generic,
         "=="=,
-        "!="=Compare_lvc1(.Generic,e1,e2),
-        callNextMethod()
+        "!="=,
+        ">"=,
+        "<"=,
+        ">="=,
+        "<="=Compare_lvc1(.Generic,e1,e2),
+        stop("Comparison not supported")
         )
      else callNextMethod()
 })
 setMethod("Compare",signature(e1="character",e2="numeric.item"),
   function(e1,e2){
-    if(length(e1@value.labels))
+    if(length(e2@value.labels))
       switch(.Generic,
         "=="=,
         "!="=Compare_lvc1(.Generic,e2,e1),
+        ">"=Compare_lvc1("<",e2,e1),
+        "<"=Compare_lvc1(">",e2,e1),
+        ">="=Compare_lvc1("<=",e2,e1),
+        "<="=Compare_lvc1(">=",e2,e1),
         callNextMethod()
         )
      else callNextMethod()
@@ -582,12 +590,19 @@ setMethod("%in%",signature(x="numeric.item",table="character"),function(x,table)
    x %in% table
 })
 
-## Methods for the auxiliary helper function for 'sort' and 'order'
+## Methods for the auxiliary function for 'sort' and 'order'
 
 xtfrm.integer.item <- function(x) x@.Data
 xtfrm.numeric.item <- function(x) x@.Data
 xtfrm.double.item <- function(x) x@.Data
 xtfrm.character.item <- function(x) as.integer(as.factor(x@.Data))
+
+## Methods for the auxiliary function for 'match'
+
+mtfrm.integer.item <- function(x) x@.Data
+mtfrm.numeric.item <- function(x) x@.Data
+mtfrm.double.item <- function(x) x@.Data
+mtfrm.character.item <- function(x) as.integer(as.factor(x@.Data))
 
 ## rep
 

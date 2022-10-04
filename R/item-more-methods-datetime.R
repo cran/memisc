@@ -91,7 +91,7 @@ format.datetime.item <- function(x,justify="right",format="",tz="",usetz=FALSE,.
   if(!nzchar(tz)) tz <- "UTC"
   format(as.POSIXct.datetime.item(x),format=format,tz=tz,usetz=usetz,...)
 }
-setMethod("format","datetime.item",format.datetime.item)
+#setMethod("format","datetime.item",format.datetime.item)
 
 print.datetime.item <- function(x,
     width=getOption("width"),
@@ -181,7 +181,7 @@ setMethod("codebookEntry","datetime.item",function(x,weights,...){
   ism <- is.missing(x)
   isna <- is.na(x)
 
-  if(any(ism || isna)){
+  if(any(ism | isna)){
       tab <- missNAtab(ism,isna)
     if(length(weights)){
       wtab <- missNAtab(ism,isna,weights)
@@ -216,8 +216,11 @@ setMethod("codebookEntry","datetime.item",function(x,weights,...){
   )
 })
 
+## Methods for auxiliar functions
 
 xtfrm.datetime.item <- function(x) x@.Data
+mtfrm.datetime.item <- function(x) x@.Data
+
 setMethod("as.character","datetime.item",function(x,...)
    format(as.POSIXct.datetime.item(x))
 )

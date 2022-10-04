@@ -1,3 +1,74 @@
+2022-10-02:
+   - Added 'as.nominal()', 'as.ordinal()', 'as.interval()', and 'as.ratio()'
+     functions.
+   - Improved comparison of labelled survey items.
+
+2022-10-01:
+   - Removed dependency on 'repr' package.
+	
+2022-09-29:
+   - Added new 'mtfrm' methods for compatibility with changes in 'match' as
+     suggested by Kurt Hornik
+   - Removed extraneous backslashes from documentation
+
+2022-08-28:
+   - Several extensions of the 'foreach()' function: 
+     (1) The colon-argument is better handled, which can be controlled
+         with a new argument '.sorted'
+     (2) It is now possible to select variables using regular expressions.
+   - The function 'xapply()' is similarly extended and exported.  
+   - Both 'foreach()' and 'xapply()' can be used like an "outer product", 
+     by setting the argument '.outer' to TRUE.
+
+2022-08-27:
+   - Improved the order of variables of the result of 'Reshape(...,direction="wide")'
+   - Added 'description()' methods for data frames and tibbles.
+   - Added a 'codebook()' method for tibbles.
+
+2022-08-26:
+   - Added methods for factors, vectors, lists, and data frames of the
+     'percentages()' generic.
+
+2022-08-20:
+   - Refactored 'format_md()' to integrate it better to the existing codebase of
+     the package.
+
+2022-08-19:
+   - Defined new generic 'measurement_autolevel()' to automatically select the
+     most suitable measurement level for survey items.
+
+2022-08-17:
+   - Added 'format_md()' S3-generic function to format codebooks in Markdown
+   - Defined a new generic 'coarsen()' function.
+
+2022-08-13:
+   - 'codebook()' now fully supports logical vectors.
+
+2022-08-11:
+   - 'recode()' now keeps NAs as NAs unless they are recoded explicitly.
+     (However, this makes a difference only when the 'otherwise' argument is given.)
+
+2022-07-01:
+   - Impremented YAML and JSON import and export of "codeplan" objects.
+
+2022-06-28:
+   - 'trim_labels()' now handles items without labels gracefully.
+   - 'spss.system.file()', 'spss.portable.file()', and 'Stata.file()' get
+     a 'negative2missing' option.
+   - 'collect.data.frame()' and 'collect.data.frame()' gain a 'use_last'
+     and a 'detailed_warnings' option.
+
+2022-05-24:
+   - item-more-methods-...: any(ism | isna) not 'any(ism || isna)'
+
+2022-02-25:
+   - Export S3 methods instead of S4 methods for 'format()'.
+   - Allow ':'-operator for ranges of variables in 'foreach()'
+
+2022-01-06:
+   - Add format method for "data.set" objects.
+   - Fix row names of subsets of importer objects.
+
 2021-10-07:
    - 'unclass' "item.vector" objects in 'as.character()' to
      avoid infinite recursion and stack overflow (as suggested by Kurt Hornik)
