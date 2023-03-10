@@ -400,10 +400,27 @@ knit_print.mtable &lt;-function(x,...)
 <div id="reading-in-a-portable-spss-data-file" class="section level2">
 <h2>Reading in a “portable” SPSS data file</h2>
 <p>We start with importing the data into R. The following code extracts the SPSS portable file <code>NES1948.POR</code> from zip file <code>NES1948.ZIP</code> delivered with the <em>memisc</em> package.</p>
-<pre class="r"><code>library(memisc)
-options(digits=3)
+<pre class="r"><code>library(memisc)</code></pre>
+<pre><code>Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?
+
+Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?
+
+Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?
+
+Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?</code></pre>
+<pre><code>Warning in readRDS(pkgInfoFP): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?</code></pre>
+<pre><code>Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?</code></pre>
+<pre class="r"><code>options(digits=3)
 nes1948.por &lt;- unzip(system.file(&quot;anes/NES1948.ZIP&quot;,package=&quot;memisc&quot;),
                      &quot;NES1948.POR&quot;,exdir=tempfile())</code></pre>
+<pre><code>Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?</code></pre>
 <p>Now the portable file is in a temporary directory and the path to the file is contained in the string variable <code>nes1948.por</code>. In the next step, the file is declared as a SPSS/PSPP portable file using the function <code>spss.portable.file</code>, which as first argument takes the path to the file. <code>spss.portable.file</code> reads in the information about the variables contained in the data set and counts the number of cases in the file. That is, standard I/O operations are used on the file, but the data read in are just thrown away without allocating core memory for the data. This counting of cases can, of course, be suppressed if it would take too long.</p>
 <pre class="r"><code>nes1948 &lt;- spss.portable.file(nes1948.por)</code></pre>
 <pre><code>Warning: 9 variables have duplicated labels:
@@ -411,7 +428,7 @@ nes1948.por &lt;- unzip(system.file(&quot;anes/NES1948.ZIP&quot;,package=&quot;m
   V480034A, V480034B</code></pre>
 <pre class="r"><code>print(nes1948)</code></pre>
 <pre><code>
-SPSS portable file &#39;/tmp/RtmpBzRhQX/file20ef73079ff84/NES1948.POR&#39; 
+SPSS portable file &#39;/tmp/RtmpnVvlFq/file1cde666c3b877/NES1948.POR&#39; 
     with 67 variables and 662 observations</code></pre>
 <p>At this stage, the data are not loaded into the memory yet. But we can see which variables exist inside the data set:</p>
 <pre class="r"><code>names(nes1948)</code></pre>

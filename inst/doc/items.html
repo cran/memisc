@@ -2426,6 +2426,8 @@ Kurtosis:
 <p>The function <code>recode()</code> is similar in semantics to the function of the same name in package <a href="https://cran.r-project.org/package=car"><code>&quot;car&quot;</code></a> and designed in such a way that it does not conflict with this function. In fact, if <code>recode()</code> is called in the way as expected in package <code>&quot;car&quot;</code>, it will dispatch processing to this function. In other words, users of this other package may use <code>recode()</code> as they are used to. The version of the <code>recode()</code> function provided by <code>&quot;memisc&quot;</code> differs from the <code>&quot;car&quot;</code> version in so far as its syntax is more R-ish (or so I believe).</p>
 <p>Here we load an example data set – a subset of the German Longitudinal Election Study for 2013<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> – into R’s memory.</p>
 <pre class="r"><code>load(system.file(&quot;gles/gles2013work.RData&quot;,package=&quot;memisc&quot;))</code></pre>
+<pre><code>Warning in readRDS(pfile): Eingabezeichenkette &#39;Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins, 
+        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Müller, and Pieter Schoonees)&#39; kann nicht nach UTF-8 übersetzt werden, ist sie in &#39;ANSI_X3.4-1968&#39; zulässig?</code></pre>
 <p>As a simple example for the use of <code>recode()</code> we use this function to recode German Bundesländer into an item with two values or East and West Germany. But first we create a codebook for the variable that contains the Bundesländer codes:</p>
 <pre class="r"><code>with(gles2013work,
      show_html(codebook(bula)))</code></pre>
