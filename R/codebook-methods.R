@@ -103,6 +103,8 @@ setMethod("codebookEntry","ANY",function(x,weights,unweighted=TRUE,...){
 
   if(mode(x) == "numeric"){
     descr <- Descriptives(x)
+    if(length(descr) > 4)
+        descr <- descr[1:4]
     if(length(weights) && length(descr) > 2){ # There is more than a range
       wdescr <- Descriptives(x,weights)
       if(unweighted)
@@ -385,47 +387,43 @@ codebookStatsChar <- function(x,...){
 
 codebookStatsMetric <- function(x,weights=TRUE,unweighted=TRUE,...){
 
-  if(length(labels(x))){
     tab <- codebookTable_item(x,drop.unlabelled=TRUE)
     tab.title <- attr(tab,"title")
     if(length(weights) && length(tab)){
-      wtab <- codebookTable_item(x,weights=weights,
-                                 drop.unlabelled=TRUE)
-      if(unweighted)
-          tab <- collect(Unweighted=tab,
-                         Weighted=wtab)
-      else
-          tab <- array(wtab,
-                       dim=c(dim(tab),1),
-                       dimnames=c(dimnames(tab),
-                                  list(NULL)))
-      attr(tab,"title") <- tab.title
+        wtab <- codebookTable_item(x,weights=weights,
+                                   drop.unlabelled=TRUE)
+        if(unweighted)
+            tab <- collect(Unweighted=tab,
+                           Weighted=wtab)
+        else
+            tab <- array(wtab,
+                         dim=c(dim(tab),1),
+                         dimnames=c(dimnames(tab),
+                                    list(NULL)))
+        attr(tab,"title") <- tab.title
     }
     else if(length(tab)){
-      tab <- array(tab,
-                   dim=c(dim(tab),1),
-                   dimnames=c(dimnames(tab),
-                              list(NULL)))
-      attr(tab,"title") <- tab.title
+        tab <- array(tab,
+                     dim=c(dim(tab),1),
+                     dimnames=c(dimnames(tab),
+                                list(NULL)))
+        attr(tab,"title") <- tab.title
     }
-  }
-  else
-    tab <- NULL
   
-  descr <- Descriptives(x)[1:4]
-  if(length(weights)){
-      wdescr <- Descriptives(x,weights)[1:4]
-      if(unweighted)
-          descr <- collect(Unweighted=descr,
-                           Weighted=wdescr)
-      else
-          descr <- as.matrix(wdescr)
-  }
-  else 
-      descr <- as.matrix(descr)
-  list(
-    tab=tab,
-    descr=descr
+    descr <- Descriptives(x)[1:4]
+    if(length(weights)){
+        wdescr <- Descriptives(x,weights)[1:4]
+        if(unweighted)
+            descr <- collect(Unweighted=descr,
+                             Weighted=wdescr)
+        else
+            descr <- as.matrix(wdescr)
+    }
+    else 
+        descr <- as.matrix(descr)
+    list(
+        tab=tab,
+        descr=descr
     )
 }
 
