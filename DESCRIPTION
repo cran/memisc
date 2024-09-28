@@ -1,10 +1,19 @@
 Package: memisc
 Type: Package
 Title: Management of Survey Data and Presentation of Analysis Results
-Version: 0.99.31.7
-Date: 2023-12-10
-Author: Martin Elff (with contributions from Christopher N. Lawrence, Dave Atkins,
-        Jason W. Morgan, Achim Zeileis, Mael Astruc-Le Souder, Kiril Mueller, and Pieter Schoonees)
+Version: 0.99.31.8
+Date: 2024-09-28
+Authors@R: c(person(given = "Martin",
+                    family = "Elff",
+                    role = c("aut", "cre"),
+                    email = "memisc@elff.eu"),
+             person(given = "Christopher N.", family = "Lawrence", role = "ctb"),
+             person(given = "Dave", family = "Atkins", role = "ctb"),
+             person(given = "Jason W.", family = "Morgan", role = "ctb"),
+             person(given = "Achim", family = "Zeileis", role = "ctb"),
+             person(given = "Mael", family = "Astruc-Le Souder", role = "ctb"),
+             person(given = "Kiril", family = "Mueller", role = "ctb"),
+             person(given = "Pieter", family = "Schoonees", role = "ctb"))
 Maintainer: Martin Elff <memisc@elff.eu>
 Description: An infrastructure for the management of survey data including
         value labels, definable missing values, recoding of variables,
@@ -20,9 +29,17 @@ Suggests: splines, knitr, rmarkdown, sandwich
 Enhances: AER, car, eha, lme4, ordinal, simex, tibble, haven
 Imports: grid, data.table, yaml, jsonlite
 VignetteBuilder: knitr
-URL: http://memisc.elff.eu,https://github.com/melff/memisc/
+URL: https://melff.github.io/memisc/,https://github.com/melff/memisc/
 BugReports: https://github.com/melff/memisc/issues
 NeedsCompilation: yes
-Packaged: 2023-12-10 20:39:41 UTC; elff
+Packaged: 2024-09-28 19:26:25 UTC; elff
+Author: Martin Elff [aut, cre],
+  Christopher N. Lawrence [ctb],
+  Dave Atkins [ctb],
+  Jason W. Morgan [ctb],
+  Achim Zeileis [ctb],
+  Mael Astruc-Le Souder [ctb],
+  Kiril Mueller [ctb],
+  Pieter Schoonees [ctb]
 Repository: CRAN
-Date/Publication: 2023-12-10 21:20:02 UTC
+Date/Publication: 2024-09-28 20:30:02 UTC

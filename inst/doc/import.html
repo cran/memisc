@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Importing data from SPSS and Stata</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Importing data from SPSS and Stata</h1>
+
+
+
+<div id="motivation" class="section level1">
+<h1>Motivation</h1>
+<p>The &quot;foreign&quot; package for <em>R</em> already provides facilities to
+import data from other statistical software packages such as SPSS or
+Stata, but they are limited by the way survey data are generally
+represented in <em>R</em>. That is, since variables in an R data frame
+can only be numerical vectors or factors, any direct translation of SPSS
+or Stata data sets into data frames will lead to the loss of information
+of information, such as variable labels, variable labels, or
+user-specified missing values. (Value labels can be preserved by
+translating them into factor levels, but this means losing information
+about the original codes. It will also lead to undesired missing values,
+if variables in the original data sets are only partially labelled.) The
+&quot;memisc&quot; package for this reason provides functions that allow to import
+SPSS or Stata data sets into objects of the class
+<code>&quot;data.set&quot;</code> defined in it.</p>
+</div>
+<div id="the-role-of-importer-objects" class="section level1">
+<h1>The role of &quot;importer&quot; objects</h1>
+<p>Importing data using the facilities provided by the &quot;memisc&quot; package
+consists of two steps. In the first step, a description of the data in
+the file is collected in an object of class &quot;importer&quot;. In the second
+step, data are imported into &quot;data.set&quot; objects with the help of these
+&quot;importer&quot; objects. These &quot;importer&quot; objects contain only meta-data
+e.g. about variable labels, value labels, and user-defined missing
+values. This allows to get an overview of the structure of the file
+without the need of loading the complete data, which is advantageous
+esp. if the data set is large. For example, with the help of an
+&quot;importer object&quot; it is possible to see what the labels of the variables
+are so that one can select those variables from the data file that are
+actually needed. The data set object in R memory can then created by --
+if <code>imprtr</code> is an importer object -- by calls like
+<code>subset(imprtr,...)</code>, <code>imprtr[...]</code> or
+<code>as.data.set(imprtr)</code>. Some examples are given in the
+following.</p>
+<p>Note that these examples require data not included in the package
+(you need to register to <a href="https://www.gesis.org">GESIS</a> to
+download the data). The vignette code cannot be run without this
+additional data.</p>
+</div>
+<div id="importing-data-from-spss-files" class="section level1">
+<h1>Importing data from SPSS files</h1>
+<div id="importing-from-a-spss-system-file" class="section level2">
+<h2>Importing from a SPSS &quot;system&quot; file</h2>
+<p>In order to import data from an SPSS &quot;system&quot; file, the usual binary
+format in which SPSS data now is usually saved and often distributed,
+one needs to first make the file that contains the data known to R, as
+in the following example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(memisc)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>ZA5702 <span class="ot">&lt;-</span> <span class="fu">spss.system.file</span>(<span class="st">&quot;Data/ZA5702_v2-0-0.sav&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>ZA5702</span></code></pre></div>
+<p>:</p>
+<pre><code>SPSS system file &#39;Data/ZA5702_v2-0-0.sav&#39; 
+    with 979 variables and 3911 observations</code></pre>
+<p>Once the &quot;system file&quot; is declared using the function
+<code>spss.system.file()</code>, metadata becomes available, such as the
+number of cases and variables (as just seen), the names and labels of
+the variables (as seen below):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">description</span>(ZA5702)</span></code></pre></div>
+<p>:</p>
+<pre><code>study    &#39;Studiennummer&#39;                       
+version  &#39;GESIS Archiv Version&#39;                
+year     &#39;Erhebungsjahr&#39;                       
+field    &#39;Erhebungszeitraum&#39;                   
+glescomp &#39;GLES-Komponente&#39;                     
+survey   &#39;Erhebung/Welle&#39;                      
+lfdn     &#39;Laufende Nummer (Kumulation)&#39;        
+vlfdn    &#39;Laufende Nummer (Vorwahl)&#39;           
+nlfdn    &#39;Laufende Nummer (Nachwahl)&#39;          
+datum    &#39;Datum der Befragung (Monat/Tag/Jahr)&#39;</code></pre>
+<p>(Here only an extract of the full output was shown, since the data
+set contains as many as 979 variables.)</p>
+<p>An &quot;importer&quot; object, such as <code>ZA5702</code> in this example,
+would also allow to obtain a full codebook with</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">codebook</span>(ZA5702)</span></code></pre></div>
+<p>but we refrain from showing such a codebook for the obvious reason of
+not creating too much output. As the inspection of the data in the file
+shows, most variable names have a standardised, yet non-mnemonic
+structure. Variables referring to questions asked in the pre-election
+wave of the GLES 2013 study have names starting with &quot;<code>v</code>&quot;,
+those referring to questions asked in the post-election wave have names
+starting with &quot;<code>v</code>&quot;, while those referring to question asked
+in both waves have names starting &quot;<code>nv</code>&quot;. For a specific
+analysis, such variable names are not very useful. For this reason we
+want to rename them. We could do this after loading the data, but it is
+more convenient to do the data import and the renaming in one step as in
+the example below:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>gles2013work <span class="ot">&lt;-</span> <span class="fu">subset</span>(ZA5702,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                       <span class="at">select=</span><span class="fu">c</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                         <span class="at">wave                  =</span> survey,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                         <span class="at">intent.turnout        =</span> v10,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>                         <span class="at">turnout               =</span> n10,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>                         <span class="at">voteint.candidate     =</span> v11aa,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>                         <span class="at">voteint.list          =</span> v11ba,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>                         <span class="at">postal.vote.candidate =</span> v12aa,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>                         <span class="at">postal.vote.list      =</span> v12ba,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>                         <span class="at">vote.candidate        =</span> n11aa,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>                         <span class="at">vote.list             =</span> n11ba,                 </span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                         <span class="at">bula                  =</span> bl</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>                       ))</span></code></pre></div>
+<p>The variable names to the left of the equality sign are the variable
+names as they will appear in the data set after import, while the
+variable names to the right of the equality aign are the variable names
+as they exist in the data file.</p>
+<p>As a demonstration of what information can be extracted from the data
+file, we create a codebook for one of the items in the data set:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">codebook</span>(gles2013work<span class="sc">$</span>turnout)</span></code></pre></div>
+<pre><code>================================================================================
+
+   gles2013work$turnout &#39;Wahlbeteiligung&#39;
+
+--------------------------------------------------------------------------------
+
+   Storage mode: double
+   Measurement: interval
+   Missing values: -Inf - -1
+
+   Values and labels                      N Valid Total
+                                                       
+   -99 M &#39;keine Angabe&#39;                   3         0.1
+   -97 M &#39;trifft nicht zu&#39;               20         0.5
+   -94 M &#39;nicht in Auswahlgesamtheit&#39;  2003        51.2
+     1   &#39;ja, habe gewaehlt&#39;           1596  84.7  40.8
+     2   &#39;nein, habe nicht gewaehlt&#39;    289  15.3   7.4
+                                                       
+        Min: 1.000                                     
+        Max: 2.000                                     
+       Mean: 1.153                                     
+   Std.Dev.: 0.360   </code></pre>
+</div>
+<div id="import-from-a-spss-portable-file" class="section level2">
+<h2>Import from a SPSS &quot;portable&quot; file</h2>
+<p>Data from SPSS &quot;portable&quot; files are imported in essentially the same
+way as data from SPSS &quot;system&quot; files: The first step again is to make
+the data set known to <em>R</em>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>ZA3861 <span class="ot">&lt;-</span> <span class="fu">spss.portable.file</span>(<span class="st">&quot;Data/ZA3861.por&quot;</span>,<span class="at">iconv=</span><span class="cn">FALSE</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>ZA3861</span></code></pre></div>
+<p>:</p>
+<pre><code>SPSS portable file &#39;Data/ZA3861.por&#39; 
+    with 331 variables and 3263 observations</code></pre>
+<p>Since this file contains German umlauts (in contrast to the previous
+example), we need to convert the character coding of the value labels
+etc. from &quot;Latin-1&quot; (the original coding of the data) into the native
+encoding of the system (unless the computer is using natively &quot;Latin-1&quot;
+encoding and not - as must Mac and most Linux System - a variant of
+UTF8).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>ZA3861 <span class="ot">&lt;-</span> <span class="fu">Iconv</span>(ZA3861,<span class="at">from=</span><span class="st">&quot;latin1&quot;</span>)</span></code></pre></div>
+<p>Importer objects created from &quot;portable&quot; files can be examined in the
+same way as importer objects created from &quot;system&quot; files. For example,
+we get a description of the variables in the data set (the variable
+labels) and a codebook.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">description</span>(ZA3861)</span></code></pre></div>
+<p>:</p>
+<pre><code>vvpnid   &#39;Fallnummer&#39;                                 
+vsplitwo &#39;West-Ost-Kennung&#39;                           
+vvornach &#39;Vor-/Nachwahl&#39;                              
+vland    &#39;Bundesland&#39;                                 
+v10      &#39;Wirtschaftl. Lage allgemein&#39;                
+v20      &#39;Wirtschaftl. Lage retrospektiv&#39;             
+v30      &#39;Wirtschaftl. Lage prospektiv&#39;               
+v31      &#39;Wichtigkeit Erst/Zweitstimme BTW (nicht 94)&#39;
+v40      &#39;Demokratiezufriedenheit&#39;                    
+v50      &#39;Staerke Politikinteresse&#39;                   </code></pre>
+<p>To actually import the data and make them accessible for analysis we
+can (as above), use <code>as.data.set()</code>, or <code>subset()</code>
+as in this example:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>work2002 <span class="ot">&lt;-</span> <span class="fu">subset</span>(ZA3861,</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>    <span class="at">select=</span><span class="fu">c</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>          <span class="at">respid            =</span> VVPNID,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>          <span class="at">split.wo          =</span> VSPLITWO,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>          <span class="at">split.vor.nach    =</span> VVORNACH,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>          <span class="at">Bundesland        =</span> VLAND,</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>          <span class="at">Erststimme        =</span> V69,</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>          <span class="at">Zweitstimme       =</span> V70,</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>          <span class="at">Geschlecht        =</span> VSEX,</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>          <span class="at">GebMonat          =</span> VMONAT,</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>          <span class="at">GebJahr           =</span> VJAHR,</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>          <span class="at">Konfession        =</span> VRELIG,</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>          <span class="at">Kirchgang         =</span> VKIRCHG,</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>          <span class="at">Erwerbst          =</span> VBERUFTG,</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>          <span class="at">FrErwerbst        =</span> VFRBERTG,</span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>          <span class="at">Beruf             =</span> VBERUF,</span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>          <span class="at">Famstand          =</span> VFAMSTDN,</span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>          <span class="at">Partner           =</span> VPARTNER,</span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>          <span class="at">BildungP          =</span> VPBILDGA,</span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>          <span class="at">BerufstP          =</span> VPBERUFT,</span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>          <span class="at">FrBerufstP        =</span> VPFBERTG,</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a>          <span class="at">BerufP            =</span> VPBERUF,</span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>          <span class="at">ReprGewicht       =</span> VGVWNW</span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>        )</span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>    )</span></code></pre></div>
+</div>
+<div id="import-from-a-fixed-width-file-accompanied-by-spss-syntax" class="section level2">
+<h2>Import from a fixed-width file accompanied by SPSS syntax</h2>
+<p>Data from more recent study components of the American National
+Elecion Study comes in fixed-width format, with some additional SPSS
+syntax files that define columns, variable labels, value labels, and
+missing values. <code>memisc</code> also provides an importer function
+such data. Naturally this requires a little bit more information. In
+addition to the actual data file, we also need a file with SPSS syntax
+specifying the data columns. Optionally, Syntax files that define
+variable labels, value lables, and missing values can also be
+specified.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>anes2008TS <span class="ot">&lt;-</span> <span class="fu">spss.fixed.file</span>(<span class="st">&quot;Data/anes2008/anes2008TS_dat.txt&quot;</span>,</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                              <span class="at">columns.file=</span><span class="st">&quot;Data/anes2008/anes2008TS_col.sps&quot;</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                              <span class="at">varlab.file=</span><span class="st">&quot;Data/anes2008/anes2008TS_lab.sps&quot;</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                              <span class="at">codes.file=</span><span class="st">&quot;Data/anes2008/anes2008TS_cod.sps&quot;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>                              <span class="at">missval.file=</span><span class="st">&quot;Data/anes2008/anes2008TS_md.sps&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>anes2008TS</span></code></pre></div>
+<p>:</p>
+<pre><code>SPSS fixed column file &#39;issues/anes2008/anes2008TS_dat.txt&#39; 
+    with 1954 variables and 2322 observations
+    with variable labels from file &#39;issues/anes2008/anes2008TS_lab.sps&#39; 
+    with value labels from file &#39;issues/anes2008/anes2008TS_cod.sps&#39; 
+    with missing value definitions from file &#39;issues/anes2008/anes2008TS_md.sps&#39; </code></pre>
+<p>Further information about the data can now be obtained from the
+returned importer object in the same way as from importer objects that
+describe SPSS &quot;system&quot; or SPSS &quot;portable&quot; files. That is, we can use
+<code>names()</code>, <code>description()</code>, and
+<code>codebook()</code>. To get the data in to the memory of <em>R</em>
+we can use (as above) the functions <code>as.data.set()</code> and
+<code>subset()</code>.</p>
+</div>
+<div id="importing-data-from-a-stata-file" class="section level2">
+<h2>Importing data from a Stata file</h2>
+<p>Data from Stata files (up to Stata Version 12) can be imported in the
+same way as data from SPSS files. The main difference is the function
+used for it, and the fact that user-defined missing values do not exists
+in Stata. For this, see the following example:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">library</span>(memisc)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>ZA5702.dta <span class="ot">&lt;-</span> <span class="fu">Stata.file</span>(<span class="st">&quot;Data/ZA5702_v2-0-0.dta&quot;</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>ZA5702.dta</span></code></pre></div>
+<p>:</p>
+<pre><code>Stata file &#39;Data/ZA5702_v2-0-0.dta&#39; 
+    with 874 variables and 3911 observations</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>gles2013work.dta <span class="ot">&lt;-</span> <span class="fu">subset</span>(ZA5702.dta,</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>                       <span class="at">select=</span><span class="fu">c</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>                         <span class="at">wave                  =</span> survey,</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>                         <span class="at">intent.turnout        =</span> v10,</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>                         <span class="at">turnout               =</span> n10,</span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>                         <span class="at">voteint.candidate     =</span> v11aa,</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>                         <span class="at">voteint.list          =</span> v11ba,</span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>                         <span class="at">postal.vote.candidate =</span> v12aa,</span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>                         <span class="at">postal.vote.list      =</span> v12ba,</span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>                         <span class="at">vote.candidate        =</span> n11aa,</span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>                         <span class="at">vote.list             =</span> n11ba,                 </span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>                         <span class="at">bula                  =</span> bl</span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>                       ))</span>
+<span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="fu">codebook</span>(gles2013work.dta<span class="sc">$</span>turnout)</span></code></pre></div>
+<pre><code>================================================================================
+
+   gles2013work.dta$turnout &#39;Wahlbeteiligung&#39;
+
+--------------------------------------------------------------------------------
+
+   Storage mode: integer
+   Measurement: nominal
+   Missing values: 100 - 127
+
+   Values and labels                               N Percent
+                                                            
+   -99   &#39;keine Angabe&#39;                            3     0.1
+   -98   &#39;weiss nicht&#39;                             0     0.0
+   -97   &#39;trifft nicht zu&#39;                        20     0.5
+   -96   &#39;Split&#39;                                   0     0.0
+   -95   &#39;nicht teilgenommen&#39;                      0     0.0
+   -94   &#39;nicht in Auswahlgesamtheit&#39;           2003    51.2
+   -93   &#39;Interview abgebrochen&#39;                   0     0.0
+   -92   &#39;Fehler in Daten&#39;                         0     0.0
+   -86   &#39;nicht wahlberechtigt&#39;                    0     0.0
+   -85   &#39;nicht waehlen&#39;                           0     0.0
+   -84   &#39;keine Erst-/Zweitstimme abgegeben&#39;       0     0.0
+   -83   &#39;ungueltig waehlen&#39;                       0     0.0
+   -82   &#39;keine andere Partei waehlen&#39;             0     0.0
+   -81   &#39;noch nicht entschieden&#39;                  0     0.0
+   -72   &#39;nicht einzuschaetzen&#39;                    0     0.0
+   -71   &#39;nicht bekannt&#39;                           0     0.0
+     1   &#39;ja, habe gewaehlt&#39;                    1596    40.8
+     2   &#39;nein, habe nicht gewaehlt&#39;             289     7.4</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

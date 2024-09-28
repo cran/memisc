@@ -24,7 +24,7 @@ knit_print.ftable <-function(x,options,...)
 knit_print.mtable <-function(x,...)
   knitr::asis_output(format_html(x,...))
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 library(memisc)
 options(digits=3)
 nes1948.por <- unzip(system.file("anes/NES1948.ZIP",package="memisc"),
@@ -40,7 +40,7 @@ names(nes1948)
 ## -----------------------------------------------------------------------------
 description(nes1948)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  codebook(nes1948)
 
 ## -----------------------------------------------------------------------------
@@ -120,29 +120,29 @@ vote.48 <- within(vote.48,{
 ## -----------------------------------------------------------------------------
 ftable(xtabs(~vote3+occup4,data=vote.48))
 
-## ---- ftable.digits=c(2,2,2,0)------------------------------------------------
+## ----ftable.digits=c(2,2,2,0)-------------------------------------------------
 gt1 <- genTable(percent(vote3)~occup4,data=vote.48)
 ## For knitr-ing, we use ```{r, ftable.digits=c(2,2,2,0)} here.
 ftable(gt1,row.vars=2)
 
-## ---- ftable.digits=c(2,2,2,0)------------------------------------------------
+## ----ftable.digits=c(2,2,2,0)-------------------------------------------------
 gt2 <- genTable(percent(vote3)~relig3,data=vote.48)
 ftable(gt2,row.vars=2)
 
-## ---- ftable.digits=c(2,2,2,0)------------------------------------------------
+## ----ftable.digits=c(2,2,2,0)-------------------------------------------------
 gt3 <- genTable(percent(vote3)~race2,data=vote.48)
 ftable(gt3,row.vars=2)
 
-## ---- ftable.digits=c(2,2,2,0)------------------------------------------------
+## ----ftable.digits=c(2,2,2,0)-------------------------------------------------
 gt4 <- genTable(percent(vote3)~total.income,data=vote.48)
 ftable(gt4,row.vars=2)
 
-## ---- ftable.digits=c(2,2,2)--------------------------------------------------
+## ----ftable.digits=c(2,2,2)---------------------------------------------------
 ## For knitr-ing, we use ```{r, ftable.digits=c(2,2,2)} here.
 inc.tab <- genTable(percent(vote3,ci=TRUE)~total.income,data=vote.48)
 ftable(inc.tab,row.vars=c(3,2))
 
-## ---- ftable.digits=c(2,2,2)--------------------------------------------------
+## ----ftable.digits=c(2,2,2)---------------------------------------------------
 occup.tab <- genTable(percent(vote3,ci=TRUE)~occup4,data=vote.48)
 ftable(occup.tab,row.vars=c(3,2))
 

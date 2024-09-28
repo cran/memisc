@@ -115,6 +115,10 @@
           level for survey items.
     \item A new operator \code{\%if\%} allows to assign values to a variable
           for observations that satisfy a condition.      
+    \item A new operator \code{\%$$\%} allows to abbreviate 
+          object modifications using \code{within()}, i.e.
+          instead of \code{a <- within(a, \{ ... \})}
+          you can write \code{a \%$$\% \{ ... \}}
         }  
   }
   \subsection{IMPROVEMENTS}{
@@ -239,7 +243,10 @@
     \item \code{recode()} keeps \code{NA}s as \code{NA}s when an
           \code{otherwise} argument is given and \code{NA}s are not
           recoded explicitly.
-    \item \code{codebook()} now fully supports logical vectors.      
+    \item \code{codebook()} now fully supports logical vectors.
+    \item HTML output created by \code{format_html} etc. now uses
+          '<style>' elements for formatting. This reduces the size of
+          created HTML code.
     }
  }
   \subsection{BUGFIXES}{

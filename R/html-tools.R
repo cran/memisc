@@ -2,6 +2,7 @@
 show_html <- function(x,output=NULL,...){
   
   ht <- format_html(x,...)
+  ht <- as.character(ht)
   
   if(interactive()){
     # Test whether running under RStudio 
@@ -26,6 +27,7 @@ show_html <- function(x,output=NULL,...){
     
     tf <- tempfile()
     tf <- paste0(tf,".html")
+    ht <- paste0("<!DOCTYPE html>\n",ht)  
     cat(ht,file=tf)
     
     output(tf)
@@ -39,6 +41,7 @@ show_html <- function(x,output=NULL,...){
     
     tf <- tempfile()
     tf <- paste0(tf,".html")
+    ht <- paste0("<!DOCTYPE html>\n",ht)  
     cat(ht,file=tf)
     
     if(output=="file-show")
@@ -49,8 +52,13 @@ show_html <- function(x,output=NULL,...){
   
 }
 
-write_html <- function(x,file,...)
-  cat(format_html(x,...),file=file)
+write_html <- function(x,file,...,standalone=TRUE){
+    ht <- format_html(x,...)
+    ht <- as.character(ht)
+    if(standalone)
+        ht <- paste0("<!DOCTYPE html>\n",ht)  
+    cat(ht,file=file)
+}
 
 format_html <- function(x,...)
   UseMethod("format_html")

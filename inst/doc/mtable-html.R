@@ -3,7 +3,7 @@ knitr::opts_chunk$set(comment=NA,
                fig.align="center",
                results="markup")
 
-## ---- message=FALSE-----------------------------------------------------------
+## ----message=FALSE------------------------------------------------------------
 library(memisc)
 lm0 <- lm(sr ~ pop15 + pop75,              data = LifeCycleSavings)
 lm1 <- lm(sr ~                 dpi + ddpi, data = LifeCycleSavings)
@@ -13,7 +13,7 @@ lm2 <- lm(sr ~ pop15 + pop75 + dpi + ddpi, data = LifeCycleSavings)
 mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
                     summary.stats=c("sigma","R-squared","F","p","N"))
 
-## ---- comment=NA--------------------------------------------------------------
+## ----comment=NA---------------------------------------------------------------
 mtable123 <- relabel(mtable123,
                       "(Intercept)" = "Constant",
                       pop15 = "Percentage of population under 15",
@@ -22,6 +22,6 @@ mtable123 <- relabel(mtable123,
                       ddpi = "Growth rate of real per-capita disp. income"
 )
 
-## ---- results='asis'----------------------------------------------------------
+## ----results='asis'-----------------------------------------------------------
 show_html(mtable123)
 
