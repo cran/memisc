@@ -1,4 +1,4 @@
-86d89f53f0a892e55d3f736264261a8a *DESCRIPTION
+476acefcc806b2189ffc3979f7031676 *DESCRIPTION
 05bd21fac9abad1f8645531030286d02 *NAMESPACE
 160d1ef0551a201f24298a6ee50ee44d *R/AllClasses.R
 08f5e2a44ceacd3d097dc97af9935181 *R/AllGenerics.R
@@ -111,13 +111,13 @@ bc70730d63f2e1bff76b128ee40ca497 *R/yz-getSummary-merMod.R
 b58bc49e2692e7557d38e5479276ae10 *R/yz-getSummary_expcoef.R
 3a001d7e4370ee010fb93b7fe124c2fc *R/zzz.R
 63bb6fa6f43885f78cdc29063013982b *build/vignette.rds
-565005fe129d2a381baef34b0632390a *inst/ChangeLog
+74e22147cc9fac600728a657e0cf2c87 *inst/ChangeLog
 6d68da07b0d1bc6c84a6809433c7211b *inst/ChangeLog-old
 48d8d3df74f713d3faf53352d6ab854b *inst/NEWS.Rd
 41637fb01a9545c5a26248e03217e449 *inst/anes/NES1948.ZIP
 ef09ed54de8fb8a88ff17de209a083fa *inst/doc/anes48.R
 3e94b45afe9b26b37e91166233ef418f *inst/doc/anes48.Rmd
-9a6d8c7e4c6e08892b9b5f73f46249e4 *inst/doc/anes48.html
+f31db423e9362204f475f9e1c861fa0d *inst/doc/anes48.html
 be2a0dc08d9fe4e0566e4885e3c2eb7b *inst/doc/ftable-matrix.R
 6703c050eee43e3c70584df14cff3e39 *inst/doc/ftable-matrix.Rmd
 24a8abcfcbe53005d7a5c7b3ac317505 *inst/doc/ftable-matrix.html
@@ -176,7 +176,7 @@ c7021f521c5cfb4f1f79ccfb9894600a *man/ftable-matrices.Rd
 76803821d2a078bf19115f0722a7903d *man/getSummary.Rd
 7458a6d8865c11257330fd04008a8ce2 *man/html.Rd
 154719312bab5f09eac06dc02c4bcc36 *man/importers.Rd
-80825bec9f1f7fa356b57cfb9bb7c584 *man/items-to-vectors.Rd
+d435108f2b6454ad2aa513deb43dedec *man/items-to-vectors.Rd
 5b7f8a5e82aef71e938688537d47ce84 *man/items.Rd
 c6473553e9d48f29d2d502462123dd2d *man/labels.Rd
 dfc98f6a017e55f1f6e4e728c86a14a2 *man/measurement-autolevel.Rd
