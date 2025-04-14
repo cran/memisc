@@ -41,7 +41,7 @@ names(nes1948)
 description(nes1948)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  codebook(nes1948)
+# codebook(nes1948)
 
 ## -----------------------------------------------------------------------------
 codebook(nes1948[1:5])
@@ -77,18 +77,18 @@ vote.48 <- rename(vote.48,
         )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vote.48 <- subset(nes1948,
-#                    select=c(
-#                      vote           = V480018,
-#                      occupation.hh  = V480029,
-#                      unionized.hh   = V480030,
-#                      gender         = V480045,
-#                      race           = V480046,
-#                      age            = V480047,
-#                      education      = V480048,
-#                      total.income   = V480049,
-#                      religious.pref = V480050
-#                    ))
+# vote.48 <- subset(nes1948,
+#                   select=c(
+#                     vote           = V480018,
+#                     occupation.hh  = V480029,
+#                     unionized.hh   = V480030,
+#                     gender         = V480045,
+#                     race           = V480046,
+#                     age            = V480047,
+#                     education      = V480048,
+#                     total.income   = V480049,
+#                     religious.pref = V480050
+#                   ))
 
 ## -----------------------------------------------------------------------------
 codebook(vote.48)

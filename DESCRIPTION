@@ -1,8 +1,8 @@
 Package: memisc
 Type: Package
 Title: Management of Survey Data and Presentation of Analysis Results
-Version: 0.99.31.8.2
-Date: 2025-02-23
+Version: 0.99.31.8.3
+Date: 2025-04-13
 Authors@R: c(person(given = "Martin",
                     family = "Elff",
                     role = c("aut", "cre"),
@@ -32,7 +32,7 @@ VignetteBuilder: knitr
 URL: https://melff.github.io/memisc/,https://github.com/melff/memisc/
 BugReports: https://github.com/melff/memisc/issues
 NeedsCompilation: yes
-Packaged: 2025-02-23 21:21:41 UTC; elff
+Packaged: 2025-04-13 19:03:31 UTC; elff
 Author: Martin Elff [aut, cre],
   Christopher N. Lawrence [ctb],
   Dave Atkins [ctb],
@@ -42,4 +42,4 @@ Author: Martin Elff [aut, cre],
   Kiril Mueller [ctb],
   Pieter Schoonees [ctb]
 Repository: CRAN
-Date/Publication: 2025-02-23 23:40:05 UTC
+Date/Publication: 2025-04-14 07:50:10 UTC
